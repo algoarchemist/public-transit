@@ -4,8 +4,66 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Kafka } from 'kafkajs';
 import Redis from 'ioredis';
 import { config } from './config';
+import { ACTIVE_BUSES_KEY, busOccupancyKey, busPositionKey } from './redisClient';
+import { estimatePosition, type LastKnownState } from './deadReckoning';
 
 const BUS_STATE_TOPIC = 'bus-state-updates';
+const WATCHDOG_INTERVAL_MS = 5000;
+
+/**
+ * The degradation ladder's active half: real pings are pushed the instant they
+ * arrive (via the Kafka consumer below), but a bus that's gone quiet needs *someone*
+ * to keep telling passengers something — otherwise the marker just freezes, which
+ * reads as "the bus is exactly here" when it's really "we haven't heard from it in
+ * 3 minutes". This ticks independently of any real ping and broadcasts a decaying-
+ * confidence estimate for every bus whose last ping is older than `liveMaxAgeSec`
+ * (see docs/IMPLEMENTATION_ARCHITECTURE.md §7.4, deadReckoning.ts).
+ */
+function startDegradationWatchdog(io: Server, redisClient: Redis) {
+  setInterval(async () => {
+    const busIds = await redisClient.smembers(ACTIVE_BUSES_KEY);
+    const now = Date.now();
+
+    for (const busId of busIds) {
+      const hash = await redisClient.hgetall(busPositionKey(busId));
+      if (!hash.updatedAt) continue;
+
+      const updatedAt = Number(hash.updatedAt);
+      const ageSec = (now - updatedAt) / 1000;
+      if (ageSec <= config.liveMaxAgeSec) continue; // still live — the ping-driven push below covers it
+
+      const last: LastKnownState = {
+        directionId: hash.directionId,
+        distAlongRouteM: Number(hash.distAlongRouteM ?? 0),
+        speedMps: Number(hash.speedMps ?? 0),
+        timestampMs: updatedAt,
+        lastKnownLat: Number(hash.lat),
+        lastKnownLon: Number(hash.lon),
+        nextStopName: hash.nextStopName || null,
+      };
+      const estimate = estimatePosition(last, now);
+      const occupancy = await redisClient.get(busOccupancyKey(busId));
+
+      const payload = {
+        busId,
+        routeId: hash.routeId,
+        directionId: hash.directionId,
+        lat: estimate.lat,
+        lon: estimate.lon,
+        occupancy: occupancy ? Number(occupancy) : null,
+        nextStopId: hash.nextStopId || null,
+        nextStopName: estimate.nextStopName,
+        distanceToNextStopM: estimate.distanceToNextStopM,
+        confidenceTier: estimate.tier,
+        badge: estimate.badge,
+        updatedAt, // the last REAL ping time, not `now` — honest about how stale this is
+      };
+
+      io.to(`bus:${busId}`).emit('bus:update', payload);
+      io.to(`route:${hash.routeId}`).emit('bus:update', payload);
+    }
+  }, WATCHDOG_INTERVAL_MS);
+}
 
 async function main() {
   const httpServer = createServer();
@@ -39,6 +97,8 @@ async function main() {
       io.to(`route:${state.routeId}`).emit('bus:update', state);
     },
   });
+
+  startDegradationWatchdog(io, pubClient.duplicate());
 
   httpServer.listen(config.websocketPort, () => {
     console.log(`[gateway] listening on :${config.websocketPort}`);

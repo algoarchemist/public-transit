@@ -3,7 +3,7 @@ import { Kafka } from 'kafkajs';
 import { config } from './config';
 import { mapMatch, type RawGpsPing } from './mapMatch';
 import { scoreEta } from './etaClient';
-import { redis, busPositionKey, busOccupancyKey } from './redisClient';
+import { redis, busPositionKey, busOccupancyKey, ACTIVE_BUSES_KEY } from './redisClient';
 
 // In a production AIS-140/EMQX deployment, raw GPS pings are bridged from MQTT into the
 // "raw-gps-pings" Kafka topic by EMQX's rule engine, and this process would be a pure Kafka
@@ -18,6 +18,7 @@ const BUS_STATE_TOPIC = 'bus-state-updates';
 async function handlePing(ping: RawGpsPing) {
   const matched = await mapMatch(ping);
   const eta = await scoreEta(ping, matched);
+  const speedMps = ping.speedKmh / 3.6;
 
   await redis
     .multi()
@@ -25,10 +26,15 @@ async function handlePing(ping: RawGpsPing) {
       lat: ping.lat,
       lon: ping.lon,
       routeId: ping.routeId,
-      routeFractionComplete: matched.routeFractionComplete,
+      directionId: ping.directionId,
+      distAlongRouteM: matched.distAlongRouteM,
+      speedMps,
+      nextStopId: matched.nextStopId ?? '',
+      nextStopName: matched.nextStopName ?? '',
       updatedAt: ping.timestamp,
     })
     .set(busOccupancyKey(ping.busId), ping.occupancy)
+    .sadd(ACTIVE_BUSES_KEY, ping.busId)
     .exec();
 
   await producer.send({
@@ -39,11 +45,16 @@ async function handlePing(ping: RawGpsPing) {
         value: JSON.stringify({
           busId: ping.busId,
           routeId: ping.routeId,
+          directionId: ping.directionId,
           lat: ping.lat,
           lon: ping.lon,
           occupancy: ping.occupancy,
           etaSeconds: eta.etaSeconds,
           nextStopId: matched.nextStopId,
+          nextStopName: matched.nextStopName,
+          distanceToNextStopM: matched.distanceToNextStopM,
+          confidenceTier: 'live',
+          badge: 'live',
           updatedAt: ping.timestamp,
         }),
       },

@@ -8,4 +8,12 @@ export const config = {
   databaseUrl: process.env.DATABASE_URL ?? 'postgres://setutrack:setutrack@localhost:5432/setutrack',
   mlServiceUrl: process.env.ML_SERVICE_URL ?? 'http://localhost:8000',
   websocketPort: Number(process.env.WEBSOCKET_PORT ?? 4001),
+  // Which geo-ingest snapshot (data/snapshots/<label>/) to load route/stop/segment
+  // geometry from. See routeStore.ts — this is what map-matching and the
+  // degradation ladder's dead reckoning are computed against.
+  snapshotLabel: process.env.SNAPSHOT_LABEL ?? 'mohali-tricity',
+  // Age thresholds for the passenger-facing confidence ladder (see deadReckoning.ts
+  // and docs/IMPLEMENTATION_ARCHITECTURE.md §7.4).
+  liveMaxAgeSec: Number(process.env.LIVE_MAX_AGE_SEC ?? 60),
+  estimatedMaxAgeSec: Number(process.env.ESTIMATED_MAX_AGE_SEC ?? 180),
 };
