@@ -9,13 +9,13 @@ covers just the repo layout and how to run what's here.
 
 ```
 apps/
-  passenger-app/     Flutter — commuter live map, ETA, ticketing, voice assistant
-  driver-app/        Flutter — driver/conductor trip control, GPS streaming, ticket validation
+  mobile-app/        Flutter — one app for both roles; startup screen picks Passenger vs Driver/Conductor
   admin-dashboard/   React + TS + Vite + Tailwind — fleet map, analytics, planning views
 services/
   api-gateway/       NestJS — routes/stops, buses (REST fallback), tickets, auth
   ml-service/        FastAPI — ETA and crowd-prediction inference (ONNX, naive baseline until trained)
   stream-processor/  Node/TS — MQTT ingestion, map-matching, ETA scoring, Kafka + Socket.IO fan-out
+  geo-ingest/        Python — real OSM/OSRM/Google Maps route+stop ingestion (see its own README)
 packages/
   shared-types/      TypeScript types shared between admin-dashboard and stream-processor
 infra/
@@ -47,9 +47,9 @@ toolchains.
    pip install -r requirements.txt
    uvicorn app.main:app --reload
    ```
-4. **passenger-app / driver-app**: need the Flutter SDK, which wasn't available when
-   this repo was scaffolded — see each app's README for the one-time `flutter create .`
-   step needed to generate the `android/`/`ios/`/`web/` platform folders.
+4. **mobile-app**: needs the Flutter SDK, which wasn't available when this repo was
+   scaffolded — see its README for the one-time `flutter create .` step needed to
+   generate the `android/`/`ios/`/`web/` platform folders.
 
 ## Status
 

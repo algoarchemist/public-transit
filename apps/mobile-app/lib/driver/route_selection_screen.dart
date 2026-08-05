@@ -10,7 +10,7 @@ class RouteSelectionScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Select Route')),
       body: Center(
         child: FilledButton(
-          onPressed: () => Navigator.pushNamed(context, '/on-trip'),
+          onPressed: () => Navigator.pushNamed(context, '/driver/on-trip'),
           child: const Text('Start Trip — TODO'),
         ),
       ),
