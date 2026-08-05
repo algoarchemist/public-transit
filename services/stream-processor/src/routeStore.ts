@@ -89,15 +89,36 @@ export function loadSnapshot(label: string = config.snapshotLabel): Map<string, 
     const directionId: string = routeFeature.properties.direction_id;
     const geometry = toLonLatLine(routeFeature.geometry.coordinates);
 
+    // Each stop's real distance along THIS route's own polyline — via direct
+    // projection, not "cumulative sum of segment lengths starting from 0" (that
+    // assumes the first stop sits at the polyline's own start, which is wrong
+    // whenever it doesn't — found during simulator verification that one real
+    // route's first stop sits ~10km into a ~24km line; the same flawed
+    // assumption was here too, just masked because the route used to test this
+    // module happened to have its first stop near the polyline's start).
+    const stopFeatures = stops.features
+      .filter((f) => f.properties.direction_id === directionId)
+      .sort((a, b) => a.properties.sequence - b.properties.sequence);
+
+    const stopInfos: RouteStopInfo[] = stopFeatures.map((f) => {
+      const lon = f.geometry.coordinates[0];
+      const lat = f.geometry.coordinates[1];
+      return {
+        sequence: f.properties.sequence,
+        osmNodeId: f.properties.osm_node_id,
+        name: f.properties.name,
+        lon,
+        lat,
+        distAlongRouteM: projectOntoPolyline({ lon, lat }, geometry).distAlongLineM,
+      };
+    });
+
     const segFeatures = segments.features
       .filter((f) => f.properties.direction_id === directionId)
       .sort((a, b) => a.properties.sequence - b.properties.sequence);
 
-    let cumulative = 0;
-    const segs: RouteSegmentInfo[] = segFeatures.map((f) => {
+    const segs: RouteSegmentInfo[] = segFeatures.map((f, i) => {
       const lengthM: number = f.properties.length_m;
-      const fromDist = cumulative;
-      cumulative += lengthM;
       const baselineSec: number | null = f.properties.baseline_sec;
       return {
         sequence: f.properties.sequence,
@@ -109,23 +130,10 @@ export function loadSnapshot(label: string = config.snapshotLabel): Map<string, 
         lengthM,
         baselineSec,
         avgSpeedMps: baselineSec ? lengthM / baselineSec : null,
-        fromDistAlongRouteM: fromDist,
-        toDistAlongRouteM: cumulative,
+        fromDistAlongRouteM: stopInfos[i]?.distAlongRouteM ?? 0,
+        toDistAlongRouteM: stopInfos[i + 1]?.distAlongRouteM ?? 0,
       };
     });
-
-    const stopFeatures = stops.features
-      .filter((f) => f.properties.direction_id === directionId)
-      .sort((a, b) => a.properties.sequence - b.properties.sequence);
-
-    const stopInfos: RouteStopInfo[] = stopFeatures.map((f, i) => ({
-      sequence: f.properties.sequence,
-      osmNodeId: f.properties.osm_node_id,
-      name: f.properties.name,
-      lon: f.geometry.coordinates[0],
-      lat: f.geometry.coordinates[1],
-      distAlongRouteM: i === 0 ? 0 : (segs[i - 1]?.toDistAlongRouteM ?? 0),
-    }));
 
     byDirection.set(directionId, {
       directionId,

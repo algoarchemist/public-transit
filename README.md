@@ -16,6 +16,7 @@ services/
   ml-service/        FastAPI — ETA and crowd-prediction inference (ONNX, naive baseline until trained)
   stream-processor/  Node/TS — MQTT ingestion, map-matching, ETA scoring, Kafka + Socket.IO fan-out
   geo-ingest/        Python — real OSM/OSRM/Google Maps route+stop ingestion (see its own README)
+  simulator/         Python — GPS simulator: real routes, calibrated speed/dwell, MQTT live + training backfill
 packages/
   shared-types/      TypeScript types shared between admin-dashboard and stream-processor
 infra/
@@ -50,6 +51,10 @@ toolchains.
 4. **mobile-app**: needs the Flutter SDK, which wasn't available when this repo was
    scaffolded — see its README for the one-time `flutter create .` step needed to
    generate the `android/`/`ios/`/`web/` platform folders.
+5. **simulator** (once infra is up): `cd services/simulator && python -m venv .venv
+   && source .venv/Scripts/activate && pip install -r requirements.txt && python -m
+   app.main --mode live --buses 5` — drives the whole real pipeline with simulated
+   buses on real routes. See its README for backfill mode and what got verified.
 
 ## Status
 

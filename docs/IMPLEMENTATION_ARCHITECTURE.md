@@ -24,6 +24,7 @@ matters and is defended in §5.4.
 | `services/ml-service` | FastAPI, `/eta/predict` + `/crowd/predict`, naive baselines. Runs. |
 | `services/stream-processor` | Real map-matching + route-aware degradation-ladder dead reckoning against the geo-ingest snapshot (`routeStore.ts`, `geo.ts`, `deadReckoning.ts`), both verified against real Mohali-tricity data (§7.3–7.4). `consumer.ts` (MQTT→Redis→Kafka) + `gateway.ts` (Kafka→Socket.IO + watchdog). Still per-ping, not batched (§7.3). Typechecks. |
 | `services/geo-ingest` | Python. Real OSM/OSRM route+stop ingestion — 100 real CTU route directions reconciled and enriched with real OSRM segment baselines, committed as a GeoJSON/GTFS snapshot (see its own README and §4, §11.1). |
+| `services/simulator` | Python. GPS simulator (Phase 2/3, §10) — walks real routes with congestion/crowd models calibrated against real OSRM baselines; `--mode=live` (divergence-triggered MQTT publish, mirrors the mobile-app transmitter) and `--mode=backfill` (training corpus CSV). Verified against all 100 real routes; caught and fixed 3 real bugs along the way, one of which (a flawed "first stop = distance 0" assumption) also existed in `stream-processor/routeStore.ts` and is now fixed in both — see its own README. |
 | `packages/shared-types` | GPS/bus-state/ML request-response types. Builds. |
 | `docker-compose.yml` | Postgres+PostGIS, Redis, Redpanda, EMQX. **Never started — Docker not installed.** |
 
@@ -457,9 +458,9 @@ Ordered by dependency; each phase ends with something demonstrable.
 | Phase | Deliverable | Depends on |
 |---|---|---|
 | **0. Unblock** | Docker Desktop + Flutter SDK installed; `docker compose up` green; self-hosted OSRM with a Punjab extract | — |
-| **1. Real data** | `geo-ingest` run end-to-end → 2 real routes with stops, segments, baselines in PostGIS; GeoJSON snapshot committed | 0 |
-| **2. Safety-net MVP** | `simulator --mode=live` → MQTT → consumer → Redis/Kafka → gateway → **dot moving on the admin MapLibre map** | 1 |
-| **3. Training corpus** | `simulator --mode=backfill --days=90`; calibration fit vs published timetables reported | 1 |
+| **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. PostGIS write still soft-fails (Docker not up) — snapshot-only for now, by design. | 0 |
+| **2. Safety-net MVP** | `simulator --mode=live` built and verified (all 100 real routes, 3 real bugs caught+fixed) but never actually run through MQTT → consumer → Redis/Kafka → gateway → **dot on the admin map** — that whole chain is still blocked on Docker (Phase 0). The consumer/gateway/map-matching/degradation-ladder side is real and tested in isolation (§7.3–7.4); only the live end-to-end wiring is unverified. | 1 |
+| **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
 | **4. ETA model** | Feature extraction, LightGBM, time-split eval, ONNX export, `/eta/predict-batch` live; naive baseline retired | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |
 | **6. Passenger app** | Live map, ETA, occupancy badge, degraded text mode | 2, 4 |
