@@ -1,0 +1,6 @@
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+numpy>=1.26
+onnxruntime>=1.19
+lightgbm>=4.5

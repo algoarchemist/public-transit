@@ -1,0 +1,12 @@
+{
+  "name": "setutrack",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SetuTrack — SIH 2025 PS-25013 real-time public transport tracking for small Punjab cities",
+  "workspaces": [
+    "apps/admin-dashboard",
+    "services/api-gateway",
+    "services/stream-processor",
+    "packages/shared-types"
+  ]
+}
