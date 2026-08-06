@@ -54,7 +54,9 @@ class _TripHistoryScreenState extends State<TripHistoryScreen> {
             return Center(
               child: StateCard.error(
                 message: snapshot.error.toString(),
-                onRetry: () => setState(() => _tripsFuture = ApiScope.of(context).trips(busId: _busId)),
+                onRetry: () => setState(() {
+                  _tripsFuture = ApiScope.of(context).trips(busId: _busId);
+                }),
               ),
             );
           }

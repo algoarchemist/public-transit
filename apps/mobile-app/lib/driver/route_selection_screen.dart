@@ -87,7 +87,9 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
                   return Center(
                     child: StateCard.error(
                       message: snapshot.error.toString(),
-                      onRetry: () => setState(() => _routesFuture = ApiScope.of(context).routes(forceRefresh: true)),
+                      onRetry: () => setState(() {
+                        _routesFuture = ApiScope.of(context).routes(forceRefresh: true);
+                      }),
                     ),
                   );
                 }

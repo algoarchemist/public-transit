@@ -108,7 +108,9 @@ class _RoutePickerViewState extends State<_RoutePickerView> {
                   return Center(
                     child: StateCard.error(
                       message: snapshot.error.toString(),
-                      onRetry: () => setState(() => _routesFuture = ApiScope.of(context).routes(forceRefresh: true)),
+                      onRetry: () => setState(() {
+                        _routesFuture = ApiScope.of(context).routes(forceRefresh: true);
+                      }),
                     ),
                   );
                 }
@@ -169,10 +171,13 @@ class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
   final _mapController = MapController();
   late Future<(List<LatLng> geometry, List<RouteStop> stops)> _routeDataFuture;
   bool _fitted = false;
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
     _routeDataFuture = _loadRouteData(ApiScope.of(context));
     FleetScope.read(context).subscribeRoute(widget.directionId);
   }

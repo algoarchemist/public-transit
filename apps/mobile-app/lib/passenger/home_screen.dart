@@ -37,7 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _load() {
     final api = ApiScope.of(context);
-    setState(() => _stopsFuture = _fetchNearby(api));
+    setState(() {
+      _stopsFuture = _fetchNearby(api);
+    });
   }
 
   Future<List<NearbyStop>> _fetchNearby(ApiClient api) async {
