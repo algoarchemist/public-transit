@@ -26,11 +26,12 @@ from app.enrich import densify_stops_with_google, enrich_footfall_priors, enrich
 from app.models import CanonicalRoute
 from app.overpass import (
     fetch_bus_route_relations,
-    fetch_bus_stop_nodes,
-    fetch_bus_stop_nodes_bbox,
+    fetch_bus_stop_features,
+    fetch_bus_stop_features_bbox,
     fetch_poi_density_points,
     resolve_city_area_id,
     run_query,
+    stop_element_position,
 )
 from app.persist import try_write_postgis, write_geojson_snapshot, write_gtfs_static
 from app.reconcile import RouteValidationError, build_route_from_relation, build_route_with_inferred_stops
@@ -71,7 +72,7 @@ def ingest(
             out geom;
             """
         ).get("elements", [])
-        stop_nodes = fetch_bus_stop_nodes_bbox(south, west, north, east)
+        stop_features = fetch_bus_stop_features_bbox(south, west, north, east)
         # POI density needs an area id for the existing query shape; skipped in bbox
         # mode for now (footfall_prior stays 0 — a real gap, not silently faked).
         poi_points: list[tuple[float, float]] = []
@@ -82,18 +83,40 @@ def ingest(
         area_id = resolve_city_area_id(city_name, state_name)
         logger.info("stage 1 (discover): fetching bus route relations + stops + POIs")
         raw_relations = fetch_bus_route_relations(area_id)
-        stop_nodes = fetch_bus_stop_nodes(area_id)
+        stop_features = fetch_bus_stop_features(area_id)
         poi_nodes = fetch_poi_density_points(area_id)
         poi_points = [(n["lon"], n["lat"]) for n in poi_nodes if "lon" in n]
 
     from app.models import OsmStopNode
 
-    candidate_stops = [
-        OsmStopNode(osm_node_id=n["id"], name=n.get("tags", {}).get("name"), lat=n["lat"], lon=n["lon"])
-        for n in stop_nodes
-    ]
+    # Stop features come back as both nodes and ways (see overpass._STOP_FEATURE_SELECTORS),
+    # so coordinates have to be read via stop_element_position rather than el["lat"].
+    candidate_stops: list[OsmStopNode] = []
+    seen_ids: dict[int, str] = {}
+    for el in stop_features:
+        position = stop_element_position(el)
+        if position is None:
+            logger.warning("  stop feature %s/%s has no usable position — skipped", el.get("type"), el.get("id"))
+            continue
+        # OSM node and way ids are separate namespaces that overlap numerically, but
+        # `osm_node_id` is the stops idempotency key both here and in PostGIS
+        # (ON CONFLICT (city_id, osm_node_id), persist.py). A collision would silently
+        # merge two physically distinct stops, so it fails loudly instead — same
+        # principle as the geometry validation gate (docs §4.2).
+        el_id, el_type = el["id"], el.get("type", "?")
+        if el_id in seen_ids:
+            raise ValueError(
+                f"OSM id {el_id} appears as both {seen_ids[el_id]} and {el_type} — these are "
+                "distinct features sharing an id across namespaces, and osm_node_id cannot "
+                "represent both. Namespace the id before ingesting this area."
+            )
+        seen_ids[el_id] = el_type
+        lat, lon = position
+        candidate_stops.append(
+            OsmStopNode(osm_node_id=el_id, name=el.get("tags", {}).get("name"), lat=lat, lon=lon)
+        )
     logger.info(
-        "found %d route relations, %d candidate real stop nodes, %d POI points",
+        "found %d route relations, %d candidate real stop features, %d POI points",
         len(raw_relations), len(candidate_stops), len(poi_points),
     )
 

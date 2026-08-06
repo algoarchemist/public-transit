@@ -116,40 +116,72 @@ def fetch_relations_by_id(relation_ids: list[int]) -> list[dict]:
     return result.get("elements", [])
 
 
-def fetch_bus_stop_nodes_bbox(south: float, west: float, north: float, east: float) -> list[dict]:
-    """All bus stop / platform nodes within a raw bounding box, bypassing admin-area
-    name resolution. Needed when a real network (e.g. CTU/tricity) spans multiple named
-    admin units (Chandigarh UT, Mohali, Kharar) that don't resolve as one OSM area.
+# Bus stops are not consistently mapped as nodes. Platforms and bus stations are
+# very often drawn as ways (a platform edge, or a station compound polygon), and a
+# node-only query silently misses every one of them: in the tricity bbox the
+# node-only form found 38 features where this form finds 56 (+10 way platforms,
+# +4 way stations, +3 bus_station nodes). `stop_position` is included for PTv2
+# correctness even though it happens to be unused in this bbox.
+_STOP_FEATURE_SELECTORS = (
+    ('node', '["highway"="bus_stop"]'),
+    ('node', '["public_transport"="platform"]'),
+    ('node', '["public_transport"="stop_position"]'),
+    ('node', '["amenity"="bus_station"]'),
+    ('way', '["public_transport"="platform"]'),
+    ('way', '["highway"="platform"]'),
+    ('way', '["amenity"="bus_station"]'),
+)
+
+
+def stop_element_position(element: dict) -> tuple[float, float] | None:
+    """(lat, lon) for a stop feature, whether it came back as a node or a way.
+
+    Overpass gives nodes their coordinates inline but ways only a `center` (from
+    `out center`), so reading `el["lat"]` — as this pipeline used to — drops every
+    way-mapped platform on the floor. Returns None for anything with neither, so a
+    malformed element is skipped rather than crashing the run.
     """
-    query = f"""
+    if "lat" in element and "lon" in element:
+        return element["lat"], element["lon"]
+    center = element.get("center")
+    if center and "lat" in center and "lon" in center:
+        return center["lat"], center["lon"]
+    return None
+
+
+def _stop_feature_query(scope: str, preamble: str = "") -> str:
+    """`scope` is the Overpass filter applied to each selector — a bbox tuple string
+    or `area.searchArea` (which `preamble` must then declare). `out center` (not
+    `out body`) so way features carry a representative point; see stop_element_position."""
+    selectors = "\n      ".join(f"{kind}({scope}){tags};" for kind, tags in _STOP_FEATURE_SELECTORS)
+    return f"""
     [out:json][timeout:{int(settings.request_timeout_sec)}];
+    {preamble}
     (
-      node({south},{west},{north},{east})["highway"="bus_stop"];
-      node({south},{west},{north},{east})["public_transport"="platform"];
+      {selectors}
     );
-    out body;
+    out tags center;
     """
-    result = run_query(query)
-    return result.get("elements", [])
 
 
-def fetch_bus_stop_nodes(area_id: int) -> list[dict]:
-    """All bus stop / platform nodes in the city, independent of route relation membership.
+def fetch_bus_stop_features_bbox(south: float, west: float, north: float, east: float) -> list[dict]:
+    """All bus stop / platform / station features within a raw bounding box, bypassing
+    admin-area name resolution. Needed when a real network (e.g. CTU/tricity) spans
+    multiple named admin units (Chandigarh UT, Mohali, Kharar) that don't resolve as
+    one OSM area. Returns nodes and ways — use stop_element_position to read coords.
+    """
+    return run_query(_stop_feature_query(f"{south},{west},{north},{east}")).get("elements", [])
+
+
+def fetch_bus_stop_features(area_id: int) -> list[dict]:
+    """All bus stop / platform / station features in the city, independent of route
+    relation membership. Returns nodes and ways — use stop_element_position to read coords.
 
     This is the ground truth used for Path B (no relation exists) and for POI-density
     footfall priors regardless of path.
     """
-    query = f"""
-    [out:json][timeout:{int(settings.request_timeout_sec)}];
-    area({area_id})->.searchArea;
-    (
-      node(area.searchArea)["highway"="bus_stop"];
-      node(area.searchArea)["public_transport"="platform"];
-    );
-    out body;
-    """
-    result = run_query(query)
-    return result.get("elements", [])
+    query = _stop_feature_query("area.searchArea", preamble=f"area({area_id})->.searchArea;")
+    return run_query(query).get("elements", [])
 
 
 def fetch_poi_density_points(area_id: int) -> list[dict]:

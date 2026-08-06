@@ -51,11 +51,18 @@ PostGIS write if `DATABASE_URL` is reachable, soft-failing (snapshot-only) if no
    `stop`/`platform` member nodes in PTv2 style. Uses them directly, in relation order.
 2. **Path A-hybrid (`build_route_with_inferred_stops`)** — the relation has real way
    geometry but *zero* stop members, which turned out to be true for **every one of
-   the CTU relations checked** (100/110 reconciled this way in the tricity bbox run,
-   10 skipped for having <2 real stop nodes near their geometry). Real standalone
-   `bus_stop`/`platform` nodes near the route are projected onto the real stitched
-   line and ordered by position — the geometry and the stop locations are both real;
-   only the *pairing* of "these stops belong to this route" is inferred geometrically.
+   the CTU relations checked** (103/110 reconciled this way in the tricity bbox run,
+   7 skipped for having <2 real stop features near their geometry). Real standalone
+   stop features near the route are projected onto the real stitched line and ordered
+   by position — the geometry and the stop locations are both real; only the *pairing*
+   of "these stops belong to this route" is inferred geometrically.
+
+   Stop candidates come from `overpass._STOP_FEATURE_SELECTORS`, which queries both
+   **nodes and ways**: platforms and station compounds are very often drawn as ways,
+   and the original node-only query dropped every one of them (it read `el["lat"]`,
+   which ways don't have). Fixing that took the tricity bbox from 38 to 56 features
+   and 540 to 620 stop rows — 67 routes gained stops, none lost, and 3 previously
+   skipped routes now reconcile.
 3. **Path B (`build_route_from_stop_sequence`)** — no usable relation at all. Needs a
    real, externally-sourced stop order (an operator timetable) passed in; this
    function will not invent one. Not currently wired into `main.py`'s automatic flow
@@ -67,13 +74,15 @@ discontinuous or stops project non-monotonically along the line.
 ## Google Maps integration (optional, needs a key)
 
 Set `GOOGLE_MAPS_API_KEY` in `.env` to unlock:
-- **Stop densification** (`enrich.densify_stops_with_google`) — OSM only has 38
-  tagged `bus_stop`/`platform` nodes in the tricity bbox (30 of them actually used),
-  shared across 100 reconciled route directions — a median of 9 stops per route,
-  well short of a real route's 15-30, and only ~36% of them carry a name in OSM.
-  Google Places Nearby Search, sampled along each
-  route's real geometry, finds real `bus_station`/`transit_station` places to fill
-  that in.
+- **Stop densification** (`enrich.densify_stops_with_google`) — OSM has only 56
+  tagged stop features in the whole tricity bbox, shared across 103 reconciled route
+  directions — a median of 5 stops per route, well short of a real route's 15-30,
+  and most of them carry no name in OSM. Google Places Nearby Search, sampled along
+  each route's real geometry, finds real `bus_station`/`transit_station` places to
+  fill that in. This is the only remaining path to stops on corridors OSM leaves
+  blank entirely — e.g. route 8's last 7.09 km into Mohali Phase XI (35% of the
+  route) has **zero** OSM stop features within 150 m, so no query fix can recover
+  it; see "Known gaps".
 - **Traffic-conditioned segment durations** (`enrich.enrich_segment_baselines`) —
   Google Distance Matrix's `duration_in_traffic` is a stronger simulator-calibration
   signal than OSRM's free-flow-only estimate (see
@@ -88,6 +97,21 @@ check `data/snapshots/<label>/stops.geojson` for the added stops.
 ## Known gaps
 
 - Stop density stays thin without a Google Maps key (see above).
+- **Corridors with no OSM stops at all.** Denser querying cannot help where OSM has
+  nothing mapped. Worked example: route 8 (`P.G.I. => Mohali Phase XI`) has 6 stops,
+  all within Chandigarh, the last at 13.168 km of a 20.26 km line — the remaining
+  **7.09 km into Mohali carries zero** `bus_stop`/`platform`/`bus_station` features
+  within 150 m (verified against Overpass directly, not just via this pipeline; the
+  nearest Mohali `bus_station` node is 2,373 m off the corridor, a different route).
+  Simulated buses traverse that stretch on `SimRoute.average_speed_mps` with no
+  arrival/dwell ground truth, so ETA training has no signal for the Mohali leg.
+  Closing it needs a Google key or a real published CTU stop list (Path B) — **not**
+  invented coordinates.
+- **`.env` is never loaded.** `config.py` reads `os.environ` directly and nothing
+  calls `load_dotenv`, so copying `.env.example` to `.env` has no effect on its own —
+  `OSRM_URL` silently falls back to the *public* demo server, which §4.2 says not to
+  use for batch runs. Until that's wired up, pass it explicitly:
+  `OSRM_URL=http://localhost:5000 python -m app.main --bbox ... --label ...`
 - bbox mode skips POI-based footfall priors (needs an area id for the current query
   shape) — `footfall_prior` stays 0 for bbox-mode routes until that's added.
 - Path B has no automatic trigger; populate a real sourced stop list yourself and

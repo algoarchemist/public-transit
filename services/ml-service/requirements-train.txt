@@ -1,0 +1,8 @@
+# Training-only dependencies (services/ml-service/train/) — not installed into the
+# serving Docker image, which only needs onnxruntime to run an already-exported
+# model. See train/README.md.
+-r requirements.txt
+pandas>=2.2
+scikit-learn>=1.5
+onnxmltools>=1.13
+skl2onnx>=1.17

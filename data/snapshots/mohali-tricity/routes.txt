@@ -12,12 +12,14 @@ route_id,route_short_name,route_long_name,route_type
 9C,9C,Bus 9C: Mansa Devi => Mansa Devi (Clockwise),3
 28A,28A,Bus 28A: ISBT-43 => Rani Majra,3
 239,239,Bus 239: ISBT-43 => Sukhna Lake,3
+28B,28B,Bus 28B: Parol => ISBT-43,3
 2F,2F,Bus 2F: P.G.I. => Dhakoli Border,3
 2G,2G,Bus 2G: P.G.I. => Panchkula Bus Stand,3
 8,8,Bus 8: Mohali Phase XI => P.G.I.,3
 10,10,Bus 10: Mani Majra => ISBT- 43,3
 11,11,Bus 11: Civil Secretariat => Railway Station,3
 17,17,Bus 17: Behlana => ISBT-43,3
+18,18,Bus 18: Kaimbwala => ISBT-43,3
 14,14,Bus 14: Mansa Devi => ISBT-43,3
 20,20,Bus 20: ISBT-17 => Kharar,3
 20A,20A,Bus 20A: Kharar => ISBT-17,3
@@ -43,6 +45,7 @@ route_id,route_short_name,route_long_name,route_type
 85,85,Bus 85: ISBT-43 => Zirakpur,3
 101,101,Bus 101: P.G.I. => Manoli,3
 123A,123A,Bus 123A: Mohali Railway Station => P.G.I.,3
+202,202,Bus 202: ISBT-43 => Civil Secretariat,3
 C551E,C551E,Bus C551E: P.G.I. => ISBT-43,3
 206,206,Bus 206: ISBT-43 => IT Park,3
 212,212,Bus 212: Dera Bassi => P.G.I.,3

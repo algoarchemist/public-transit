@@ -24,6 +24,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16450017",
+        "route_id": "1",
+        "sequence": 1,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -31,7 +49,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -49,7 +67,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -67,7 +85,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -85,7 +103,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -168,6 +186,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16450063",
+        "route_id": "1",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -175,7 +211,7 @@
       "properties": {
         "direction_id": "r16450063",
         "route_id": "1",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -420,6 +456,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16454969",
+        "route_id": "2A",
+        "sequence": 7,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -427,7 +481,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -445,7 +499,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -463,7 +517,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -481,7 +535,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 10,
+        "sequence": 11,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -546,6 +600,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16454980",
+        "route_id": "2C",
+        "sequence": 3,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7817645,
           30.7312616
         ]
@@ -553,7 +625,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11147439160,
         "name": null,
         "footfall_prior": 0.0
@@ -571,7 +643,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -589,7 +661,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -607,7 +679,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -625,7 +697,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -643,7 +715,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -661,7 +733,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -679,7 +751,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 10,
+        "sequence": 11,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -798,6 +870,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16455248",
+        "route_id": "4A",
+        "sequence": 6,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -906,6 +996,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16474801",
+        "route_id": "4C",
+        "sequence": 6,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8058122,
           30.722752
         ]
@@ -1050,6 +1158,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16474825",
+        "route_id": "5A",
+        "sequence": 8,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -1057,7 +1183,7 @@
       "properties": {
         "direction_id": "r16474825",
         "route_id": "5A",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -1086,6 +1212,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16475122",
+        "route_id": "5C",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -1093,7 +1237,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -1111,7 +1255,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11053544182,
         "name": "38/37 Bus Stop",
         "footfall_prior": 0.0
@@ -1129,7 +1273,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11053565187,
         "name": "37/38 Bus Stop",
         "footfall_prior": 0.0
@@ -1147,7 +1291,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -1165,7 +1309,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -1183,7 +1327,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -1201,7 +1345,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -1219,7 +1363,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 11364089920,
         "name": null,
         "footfall_prior": 0.0
@@ -1248,6 +1392,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16475448",
+        "route_id": "6",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -1255,7 +1417,7 @@
       "properties": {
         "direction_id": "r16475448",
         "route_id": "6",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -1273,7 +1435,7 @@
       "properties": {
         "direction_id": "r16475448",
         "route_id": "6",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 813348337,
         "name": null,
         "footfall_prior": 0.0
@@ -1338,6 +1500,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16475511",
+        "route_id": "6",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8391663,
           30.7090224
         ]
@@ -1374,6 +1554,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476014",
+        "route_id": "9A",
+        "sequence": 2,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8074116,
           30.722668
         ]
@@ -1381,7 +1579,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -1399,7 +1597,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -1417,7 +1615,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -1435,7 +1633,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -1453,7 +1651,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -1471,7 +1669,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -1518,6 +1716,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476511",
+        "route_id": "9C",
+        "sequence": 2,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8035954,
           30.7269827
         ]
@@ -1525,7 +1741,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -1543,7 +1759,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -1561,7 +1777,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -1579,7 +1795,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -1597,7 +1813,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -1615,7 +1831,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -1734,6 +1950,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476568",
+        "route_id": "28A",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -1834,6 +2068,60 @@
         "sequence": 2,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476619",
+        "route_id": "239",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7426917,
+          30.7163272
+        ]
+      },
+      "properties": {
+        "direction_id": "r16481476",
+        "route_id": "28B",
+        "sequence": 0,
+        "osm_node_id": 1425480419,
+        "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16481476",
+        "route_id": "28B",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -1950,6 +2238,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16481587",
+        "route_id": "2F",
+        "sequence": 6,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -1957,7 +2263,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -1975,7 +2281,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -1993,7 +2299,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -2011,7 +2317,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 11230226204,
         "name": null,
         "footfall_prior": 0.0
@@ -2029,7 +2335,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 10,
+        "sequence": 11,
         "osm_node_id": 10050998634,
         "name": "Sector 8-17",
         "footfall_prior": 0.0
@@ -2130,6 +2436,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16490639",
+        "route_id": "2F",
+        "sequence": 5,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -2137,7 +2461,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -2155,7 +2479,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -2173,7 +2497,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -2191,7 +2515,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -2209,7 +2533,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -2227,7 +2551,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 10,
+        "sequence": 11,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -2616,6 +2940,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16490718",
+        "route_id": "8",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -2623,7 +2965,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -2641,7 +2983,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 1041047045,
         "name": "Bus Stop, Sector 34-A",
         "footfall_prior": 0.0
@@ -2659,7 +3001,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11147476433,
         "name": null,
         "footfall_prior": 0.0
@@ -2677,7 +3019,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -2760,6 +3102,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16490723",
+        "route_id": "8",
+        "sequence": 4,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -2767,7 +3127,7 @@
       "properties": {
         "direction_id": "r16490723",
         "route_id": "8",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -2850,6 +3210,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492522",
+        "route_id": "10",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -2857,7 +3235,7 @@
       "properties": {
         "direction_id": "r16492522",
         "route_id": "10",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -2875,9 +3253,27 @@
       "properties": {
         "direction_id": "r16492522",
         "route_id": "10",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492522",
+        "route_id": "10",
+        "sequence": 7,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -3066,6 +3462,42 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492534",
+        "route_id": "11",
+        "sequence": 5,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492535",
+        "route_id": "11",
+        "sequence": 0,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -3073,7 +3505,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 0,
+        "sequence": 1,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -3091,7 +3523,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -3109,7 +3541,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -3127,7 +3559,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -3145,7 +3577,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -3192,6 +3624,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492640",
+        "route_id": "17",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -3228,6 +3678,42 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7426917,
+          30.7163272
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492677",
+        "route_id": "18",
+        "sequence": 0,
+        "osm_node_id": 1425480419,
+        "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492677",
+        "route_id": "18",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7660614,
           30.7247451
         ]
@@ -3256,6 +3742,24 @@
         "sequence": 1,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494775",
+        "route_id": "14",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -3336,6 +3840,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494912",
+        "route_id": "20",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7426917,
           30.7163272
         ]
@@ -3354,6 +3876,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494951",
+        "route_id": "20",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7787227,
           30.7326894
         ]
@@ -3361,7 +3901,7 @@
       "properties": {
         "direction_id": "r16494951",
         "route_id": "20",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 11147476433,
         "name": null,
         "footfall_prior": 0.0
@@ -3408,6 +3948,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494973",
+        "route_id": "20A",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7787227,
           30.7326894
         ]
@@ -3415,7 +3973,7 @@
       "properties": {
         "direction_id": "r16494973",
         "route_id": "20A",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11147476433,
         "name": null,
         "footfall_prior": 0.0
@@ -3462,6 +4020,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494974",
+        "route_id": "20A",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7116208,
           30.6904366
         ]
@@ -3469,7 +4045,7 @@
       "properties": {
         "direction_id": "r16494974",
         "route_id": "20A",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 5761967091,
         "name": "Sas Nagar",
         "footfall_prior": 0.0
@@ -3552,6 +4128,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506719",
+        "route_id": "22",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -3559,7 +4153,7 @@
       "properties": {
         "direction_id": "r16506719",
         "route_id": "22",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -3577,9 +4171,27 @@
       "properties": {
         "direction_id": "r16506719",
         "route_id": "22",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506719",
+        "route_id": "22",
+        "sequence": 7,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -3624,6 +4236,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506720",
+        "route_id": "22",
+        "sequence": 2,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -3631,7 +4261,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -3649,7 +4279,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -3667,7 +4297,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -3685,7 +4315,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -3750,6 +4380,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506775",
+        "route_id": "23A",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -3822,6 +4470,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506818",
+        "route_id": "26",
+        "sequence": 1,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7817645,
           30.7312616
         ]
@@ -3829,7 +4495,7 @@
       "properties": {
         "direction_id": "r16506818",
         "route_id": "26",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 11147439160,
         "name": null,
         "footfall_prior": 0.0
@@ -3847,7 +4513,7 @@
       "properties": {
         "direction_id": "r16506818",
         "route_id": "26",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -3904,6 +4570,24 @@
         "sequence": 2,
         "osm_node_id": 11230148264,
         "name": null,
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506819",
+        "route_id": "26",
+        "sequence": 3,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
         "footfall_prior": 0.0
       }
     },
@@ -3984,6 +4668,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507527",
+        "route_id": "28",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -3991,7 +4693,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -4009,7 +4711,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -4027,7 +4729,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -4045,7 +4747,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -4063,7 +4765,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -4164,6 +4866,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507528",
+        "route_id": "28",
+        "sequence": 5,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -4171,7 +4891,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -4189,7 +4909,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -4207,7 +4927,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -4225,7 +4945,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -4390,6 +5110,24 @@
         "sequence": 8,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507557",
+        "route_id": "30",
+        "sequence": 9,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -4632,6 +5370,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507593",
+        "route_id": "30A",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -4639,7 +5395,7 @@
       "properties": {
         "direction_id": "r16507593",
         "route_id": "30A",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -4657,7 +5413,7 @@
       "properties": {
         "direction_id": "r16507593",
         "route_id": "30A",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 813348337,
         "name": null,
         "footfall_prior": 0.0
@@ -4675,9 +5431,27 @@
       "properties": {
         "direction_id": "r16507593",
         "route_id": "30A",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507593",
+        "route_id": "30A",
+        "sequence": 8,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -4740,6 +5514,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507594",
+        "route_id": "30A",
+        "sequence": 3,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -4747,7 +5539,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -4765,7 +5557,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -4783,7 +5575,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -4801,7 +5593,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -4984,6 +5776,24 @@
         "sequence": 9,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16508426",
+        "route_id": "30B",
+        "sequence": 10,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -5460,6 +6270,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16508687",
+        "route_id": "32",
+        "sequence": 6,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -5467,7 +6295,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -5485,7 +6313,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -5503,7 +6331,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -5521,7 +6349,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -5622,6 +6450,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16509592",
+        "route_id": "32B",
+        "sequence": 5,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -5629,7 +6475,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -5647,7 +6493,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -5665,7 +6511,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -5683,7 +6529,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -5701,7 +6547,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -5719,7 +6565,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 10,
+        "sequence": 11,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -5838,6 +6684,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16509593",
+        "route_id": "32B",
+        "sequence": 6,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -5845,7 +6709,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -5863,7 +6727,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -5881,7 +6745,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -5899,7 +6763,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 11230226204,
         "name": null,
         "footfall_prior": 0.0
@@ -5917,7 +6781,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 10,
+        "sequence": 11,
         "osm_node_id": 10050998634,
         "name": "Sector 8-17",
         "footfall_prior": 0.0
@@ -6450,6 +7314,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16512134",
+        "route_id": "35B",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -6457,7 +7339,7 @@
       "properties": {
         "direction_id": "r16512134",
         "route_id": "35B",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -6475,7 +7357,7 @@
       "properties": {
         "direction_id": "r16512134",
         "route_id": "35B",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11147476433,
         "name": null,
         "footfall_prior": 0.0
@@ -6504,6 +7386,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16512135",
+        "route_id": "35B",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7426917,
           30.7163272
         ]
@@ -6511,7 +7411,7 @@
       "properties": {
         "direction_id": "r16512135",
         "route_id": "35B",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 1425480419,
         "name": "ISBT",
         "footfall_prior": 0.0
@@ -6529,7 +7429,7 @@
       "properties": {
         "direction_id": "r16512135",
         "route_id": "35B",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 4461159291,
         "name": null,
         "footfall_prior": 0.0
@@ -6547,7 +7447,7 @@
       "properties": {
         "direction_id": "r16512135",
         "route_id": "35B",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 13131328587,
         "name": null,
         "footfall_prior": 0.0
@@ -6594,6 +7494,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16513790",
+        "route_id": "38",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7426917,
           30.7163272
         ]
@@ -6612,6 +7530,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514043",
+        "route_id": "38",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -6619,7 +7555,7 @@
       "properties": {
         "direction_id": "r16514043",
         "route_id": "38",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -6637,7 +7573,7 @@
       "properties": {
         "direction_id": "r16514043",
         "route_id": "38",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -6684,6 +7620,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514100",
+        "route_id": "38A",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -6691,7 +7645,7 @@
       "properties": {
         "direction_id": "r16514100",
         "route_id": "38A",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -6709,7 +7663,7 @@
       "properties": {
         "direction_id": "r16514100",
         "route_id": "38A",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -6756,6 +7710,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514101",
+        "route_id": "38A",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7121523,
           30.6904159
         ]
@@ -6763,7 +7735,7 @@
       "properties": {
         "direction_id": "r16514101",
         "route_id": "38A",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 9857905217,
         "name": null,
         "footfall_prior": 0.0
@@ -6810,6 +7782,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514262",
+        "route_id": "39",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7426917,
           30.7163272
         ]
@@ -6828,6 +7818,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16516440",
+        "route_id": "39",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -6835,7 +7843,7 @@
       "properties": {
         "direction_id": "r16516440",
         "route_id": "39",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -6853,7 +7861,7 @@
       "properties": {
         "direction_id": "r16516440",
         "route_id": "39",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -6964,6 +7972,24 @@
         "sequence": 5,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16516479",
+        "route_id": "71",
+        "sequence": 6,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -7368,6 +8394,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16517804",
+        "route_id": "85",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7752879,
           30.7600181
         ]
@@ -7458,6 +8502,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519387",
+        "route_id": "123A",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -7465,7 +8527,7 @@
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -7483,7 +8545,7 @@
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 1041047045,
         "name": "Bus Stop, Sector 34-A",
         "footfall_prior": 0.0
@@ -7496,30 +8558,30 @@
         "coordinates": [
           76.7787227,
           30.7326894
-        ]
-      },
-      "properties": {
-        "direction_id": "r16519387",
-        "route_id": "123A",
-        "sequence": 3,
-        "osm_node_id": 11147476433,
-        "name": null,
-        "footfall_prior": 0.0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          76.7752879,
-          30.7600181
         ]
       },
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
         "sequence": 4,
+        "osm_node_id": 11147476433,
+        "name": null,
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7752879,
+          30.7600181
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519387",
+        "route_id": "123A",
+        "sequence": 5,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -7602,6 +8664,78 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519388",
+        "route_id": "123A",
+        "sequence": 4,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7401962,
+          30.6661546
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519388",
+        "route_id": "123A",
+        "sequence": 5,
+        "osm_node_id": 1527087489,
+        "name": null,
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7426917,
+          30.7163272
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521346",
+        "route_id": "202",
+        "sequence": 0,
+        "osm_node_id": 1425480419,
+        "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521346",
+        "route_id": "202",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7752879,
           30.7600181
         ]
@@ -7666,6 +8800,24 @@
         "sequence": 3,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521782",
+        "route_id": "C551E",
+        "sequence": 4,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -7854,6 +9006,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521808",
+        "route_id": "206",
+        "sequence": 6,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -7861,7 +9031,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -7879,7 +9049,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -7897,7 +9067,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -7915,7 +9085,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -7998,6 +9168,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521811",
+        "route_id": "206",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -8005,7 +9193,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -8023,7 +9211,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -8041,7 +9229,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11335525457,
         "name": null,
         "footfall_prior": 0.0
@@ -8059,7 +9247,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 6970853271,
         "name": null,
         "footfall_prior": 0.0
@@ -8077,7 +9265,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 8,
+        "sequence": 9,
         "osm_node_id": 11335525459,
         "name": null,
         "footfall_prior": 0.0
@@ -8095,9 +9283,27 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 9,
+        "sequence": 10,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521811",
+        "route_id": "206",
+        "sequence": 11,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -8358,6 +9564,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522634",
+        "route_id": "213",
+        "sequence": 4,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7116208,
           30.6904366
         ]
@@ -8365,7 +9589,7 @@
       "properties": {
         "direction_id": "r16522634",
         "route_id": "213",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 5761967091,
         "name": "Sas Nagar",
         "footfall_prior": 0.0
@@ -8412,6 +9636,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522635",
+        "route_id": "213",
+        "sequence": 2,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -8419,7 +9661,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -8437,7 +9679,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 813348337,
         "name": null,
         "footfall_prior": 0.0
@@ -8455,7 +9697,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 12596212878,
         "name": null,
         "footfall_prior": 0.0
@@ -8473,7 +9715,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 12596227210,
         "name": null,
         "footfall_prior": 0.0
@@ -8556,6 +9798,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522852",
+        "route_id": "214",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -8563,7 +9823,7 @@
       "properties": {
         "direction_id": "r16522852",
         "route_id": "214",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -8581,7 +9841,7 @@
       "properties": {
         "direction_id": "r16522852",
         "route_id": "214",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0
@@ -8628,6 +9888,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522853",
+        "route_id": "214",
+        "sequence": 2,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -8635,7 +9913,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -8653,7 +9931,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -8671,7 +9949,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -8689,7 +9967,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -8898,6 +10176,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522922",
+        "route_id": "216",
+        "sequence": 5,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -9060,6 +10356,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523079",
+        "route_id": "240",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -9067,7 +10381,7 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -9085,7 +10399,7 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11147476433,
         "name": null,
         "footfall_prior": 0.0
@@ -9103,7 +10417,7 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 1041047045,
         "name": "Bus Stop, Sector 34-A",
         "footfall_prior": 0.0
@@ -9121,9 +10435,27 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523079",
+        "route_id": "240",
+        "sequence": 9,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -9204,6 +10536,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523080",
+        "route_id": "240",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -9211,7 +10561,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -9229,7 +10579,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -9247,7 +10597,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -9265,7 +10615,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -9348,6 +10698,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523623",
+        "route_id": "241",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8227532,
           30.7123935
         ]
@@ -9355,7 +10723,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230165511,
         "name": null,
         "footfall_prior": 0.0
@@ -9373,7 +10741,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11230163714,
         "name": null,
         "footfall_prior": 0.0
@@ -9391,7 +10759,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 10000240246,
         "name": "Housing Board Chowk",
         "footfall_prior": 0.0
@@ -9409,7 +10777,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 10744858599,
         "name": null,
         "footfall_prior": 0.0
@@ -9492,6 +10860,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.8190972,
+          30.702824
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523644",
+        "route_id": "241",
+        "sequence": 4,
+        "osm_node_id": 2914440106,
+        "name": "Chandigarh Railway Station",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.8135477,
           30.7170531
         ]
@@ -9499,7 +10885,7 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11230148264,
         "name": null,
         "footfall_prior": 0.0
@@ -9517,7 +10903,7 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 5,
+        "sequence": 6,
         "osm_node_id": 11335525458,
         "name": null,
         "footfall_prior": 0.0
@@ -9535,7 +10921,7 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 6,
+        "sequence": 7,
         "osm_node_id": 11364089920,
         "name": null,
         "footfall_prior": 0.0
@@ -9553,9 +10939,27 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 7,
+        "sequence": 8,
         "osm_node_id": 1425480419,
         "name": "ISBT",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523644",
+        "route_id": "241",
+        "sequence": 9,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
         "footfall_prior": 0.0
       }
     },
@@ -9618,6 +11022,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523676",
+        "route_id": "242",
+        "sequence": 3,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7426917,
           30.7163272
         ]
@@ -9625,7 +11047,7 @@
       "properties": {
         "direction_id": "r16523676",
         "route_id": "242",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 1425480419,
         "name": "ISBT",
         "footfall_prior": 0.0
@@ -9654,6 +11076,24 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          76.7433637,
+          30.7171785
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523677",
+        "route_id": "242",
+        "sequence": 1,
+        "osm_node_id": 28845205,
+        "name": "CTU Local Bus Station 43",
+        "footfall_prior": 0.0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           76.7504965,
           30.7153735
         ]
@@ -9661,7 +11101,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 1,
+        "sequence": 2,
         "osm_node_id": 4306384689,
         "name": "Sector 43-44 road",
         "footfall_prior": 0.0
@@ -9679,7 +11119,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 2,
+        "sequence": 3,
         "osm_node_id": 1041047045,
         "name": "Bus Stop, Sector 34-A",
         "footfall_prior": 0.0
@@ -9697,7 +11137,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 3,
+        "sequence": 4,
         "osm_node_id": 11147476433,
         "name": null,
         "footfall_prior": 0.0
@@ -9715,7 +11155,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 4,
+        "sequence": 5,
         "osm_node_id": 11053559568,
         "name": "PGI",
         "footfall_prior": 0.0

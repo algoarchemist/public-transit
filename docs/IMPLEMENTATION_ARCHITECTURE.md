@@ -23,7 +23,7 @@ matters and is defended in §5.4.
 | `services/api-gateway` | NestJS, 4 modules (routes/buses/tickets/auth) with stub returns. Builds. |
 | `services/ml-service` | FastAPI, `/eta/predict` + `/crowd/predict`, naive baselines. Runs. |
 | `services/stream-processor` | Real map-matching + route-aware degradation-ladder dead reckoning against the geo-ingest snapshot (`routeStore.ts`, `geo.ts`, `deadReckoning.ts`), both verified against real Mohali-tricity data (§7.3–7.4). `consumer.ts` (MQTT→Redis→Kafka) + `gateway.ts` (Kafka→Socket.IO + watchdog). Still per-ping, not batched (§7.3). Typechecks. |
-| `services/geo-ingest` | Python. Real OSM/OSRM route+stop ingestion — 100 real CTU route directions reconciled and enriched with real OSRM segment baselines, committed as a GeoJSON/GTFS snapshot (see its own README and §4, §11.1). |
+| `services/geo-ingest` | Python. Real OSM/OSRM route+stop ingestion — 103 real CTU route directions reconciled and enriched with real OSRM segment baselines, committed as a GeoJSON/GTFS snapshot (see its own README and §4, §11.1). Stop discovery queries nodes **and** ways; the earlier node-only query silently dropped way-mapped platforms/stations (38→56 features, 540→620 stop rows, +3 routes). |
 | `services/simulator` | Python. GPS simulator (Phase 2/3, §10) — walks real routes with congestion/crowd models calibrated against real OSRM baselines; `--mode=live` (divergence-triggered MQTT publish, mirrors the mobile-app transmitter) and `--mode=backfill` (training corpus CSV). Verified against all 100 real routes; caught and fixed 3 real bugs along the way, one of which (a flawed "first stop = distance 0" assumption) also existed in `stream-processor/routeStore.ts` and is now fixed in both — see its own README. |
 | `packages/shared-types` | GPS/bus-state/ML request-response types. Builds. |
 | `docker-compose.yml` | Postgres+PostGIS, Redis, Redpanda, EMQX, self-hosted OSRM (tricity bbox, `infra/docker/osrm/`). **Up and healthy** (`docker compose up -d`). |
@@ -232,6 +232,16 @@ export into `data/snapshots/` so a run is reproducible and reviewable without a 
 - **Validation gate** — reject a route if the polyline is discontinuous, if stop
   projections are non-monotonic along the line, or if any stop is >150 m from its
   projection. Bad geometry silently destroys ETA accuracy, so it fails loudly at ingest.
+- **Query nodes *and* ways.** Bus stops are not consistently mapped as nodes —
+  platforms and station compounds are frequently drawn as ways, and Overpass returns
+  those with a `center` rather than inline `lat`/`lon`. A node-only query drops them
+  silently (this was a real bug; see geo-ingest's README). `osm_node_id` stays the
+  stop idempotency key, so ingest now fails loudly if an id appears in both the node
+  and way namespace rather than merging two distinct stops.
+- **Some corridors have no OSM stops at all**, and no query change recovers them —
+  route 8's final 7.09 km into Mohali (35% of the line) has zero stop features within
+  150 m. That gap is a *data* limit, closed only by a Google Places key or a real
+  operator timetable (Path B), never by synthesizing coordinates.
 
 ---
 
@@ -481,7 +491,7 @@ Ordered by dependency; each phase ends with something demonstrable.
 | **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. `db/migrations/` (plain PostGIS, no TimescaleDB — MVP scale doesn't need hypertables) creates the full §3 schema; `persist.py` now does real route/stop/segment upserts against it (idempotent by `osm_relation_id`/`osm_node_id`, §4.2), verified against a synthetic fixture exercising every write path including the `ST_LineLocatePoint` stop-projection. Not yet re-verified against a full live 100-route Overpass run — that's the next thing to actually do, not a design gap. | 0 |
 | **2. Safety-net MVP** | ✅ Live end-to-end wiring verified: `simulator --mode=live` → EMQX → `consumer.ts` (real map-match + naive-baseline ETA from `ml-service` + Redis) → Redpanda → `gateway.ts` (consumer group lag 0) → Socket.IO. `apps/admin-dashboard`'s `LiveFleetMap.tsx` now subscribes for real (`useFleetSocket` + `FleetMap`, MapLibre, a new `admin:fleet` broadcast room in `gateway.ts`) — backend confirmed serving it live traffic (Kafka lag 0, Redis position keys populated) while the page was up. The rendered "dot on the map" hasn't been eyeballed by a human yet (no browser automation available in this environment) — everything server-side of the browser is verified live; the pixels aren't. | 1 |
 | **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
-| **4. ETA model** | Feature extraction, LightGBM, time-split eval, ONNX export, `/eta/predict-batch` live; naive baseline retired | 3 |
+| **4. ETA model** | 🔶 In progress. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, horizon-bucketed MAE vs naive baseline, ONNX export), `/eta/predict-batch` all built and verified end-to-end (smoke-trained on a 5-day partial corpus — see train/README.md for why that run's numbers don't count). Blocked on the full 90-day backfill finishing to produce the real metrics.json. **Not done even once that lands**: `services/stream-processor/src/etaClient.ts` still sends placeholder features (own speed as both 7d/30d avg, `current_delay_sec=0`, flat dwell prior, neutral traffic factor) and still calls `/eta/predict` per-ping, not `/eta/predict-batch` — the model can't show real accuracy in production, or actually retire the naive baseline, until that's rewired. That's the real remaining blocker, not a footnote. | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |
 | **6. Passenger app** | Live map, ETA, occupancy badge, degraded text mode | 2, 4 |
 | **7. Ticketing** | Fare calc, UPI sandbox, Ed25519 QR, offline validation + replay sync | 5, 6 |

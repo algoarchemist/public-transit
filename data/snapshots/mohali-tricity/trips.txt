@@ -17,6 +17,7 @@ route_id,trip_id,trip_headsign,direction_id
 28A,r16476568,ISBT-43,1
 239,r16476602,Sukhna Lake,0
 239,r16476619,ISBT-43,1
+28B,r16481476,ISBT-43,0
 2F,r16481587,Dhakoli Border,0
 2F,r16490639,P.G.I.,1
 2G,r16490647,Panchkula Bus Stand,0
@@ -29,6 +30,7 @@ route_id,trip_id,trip_headsign,direction_id
 11,r16492535,Civil Secretariat,1
 17,r16492640,ISBT-43,0
 17,r16492641,Behlana,1
+18,r16492677,ISBT-43,0
 14,r16494775,ISBT-43,0
 14,r16494776,Mansa Devi,1
 20,r16494912,Kharar,0
@@ -79,6 +81,7 @@ route_id,trip_id,trip_headsign,direction_id
 101,r16519349,P.G.I.,1
 123A,r16519387,P.G.I.,0
 123A,r16519388,Mohali Railway Station,1
+202,r16521346,Civil Secretariat,0
 C551E,r16521782,ISBT-43,0
 C551E,r16521783,P.G.I.,1
 206,r16521808,IT Park,0

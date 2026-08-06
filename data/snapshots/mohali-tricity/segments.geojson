@@ -111,6 +111,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16450017",
+        "route_id": "1",
+        "sequence": 0,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -191,13 +219,13 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 0,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 1,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -267,7 +295,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -331,7 +359,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -395,7 +423,7 @@
       "properties": {
         "direction_id": "r16450017",
         "route_id": "1",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -671,6 +699,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16450063",
+        "route_id": "1",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -787,13 +843,13 @@
       "properties": {
         "direction_id": "r16450063",
         "route_id": "1",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -4015,6 +4071,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16454969",
+        "route_id": "2A",
+        "sequence": 6,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -4095,13 +4179,13 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 6,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 7,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -4171,7 +4255,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -4235,7 +4319,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -4299,7 +4383,7 @@
       "properties": {
         "direction_id": "r16454969",
         "route_id": "2A",
-        "sequence": 9,
+        "sequence": 10,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -4545,6 +4629,34 @@
           [
             76.8191796,
             30.703092900000005
+          ],
+          [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16454980",
+        "route_id": "2C",
+        "sequence": 2,
+        "from_stop_id": 11230163714,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1910.8155548398654,
+        "baseline_sec": 285.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
           ],
           [
             76.8189046,
@@ -5347,13 +5459,13 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 2,
-        "from_stop_id": 11230163714,
-        "from_stop_name": null,
+        "sequence": 3,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11147439160,
         "to_stop_name": null,
-        "length_m": 13087.620235700415,
-        "baseline_sec": 579.3,
+        "length_m": 11176.804680860552,
+        "baseline_sec": 506.8,
         "baseline_source": "osrm"
       }
     },
@@ -6547,7 +6659,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11147439160,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -7195,7 +7307,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11053559568,
         "from_stop_name": "PGI",
         "to_stop_id": 11335525459,
@@ -7227,7 +7339,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11335525459,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -7439,7 +7551,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -7551,7 +7663,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -7607,7 +7719,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11230148264,
@@ -7699,7 +7811,7 @@
       "properties": {
         "direction_id": "r16454980",
         "route_id": "2C",
-        "sequence": 9,
+        "sequence": 10,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11230165511,
@@ -10254,6 +10366,38 @@
         "to_stop_name": "ISBT",
         "length_m": 3466.1874903515145,
         "baseline_sec": 183.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16455248",
+        "route_id": "4A",
+        "sequence": 5,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -12955,6 +13099,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16474801",
+        "route_id": "4C",
+        "sequence": 5,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.80571183967113,
             30.72287116296803
           ],
@@ -14907,6 +15083,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16474825",
+        "route_id": "5A",
+        "sequence": 7,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -15015,13 +15219,13 @@
       "properties": {
         "direction_id": "r16474825",
         "route_id": "5A",
-        "sequence": 7,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 8,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -15037,6 +15241,34 @@
           [
             76.7435399,
             30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16475122",
+        "route_id": "5C",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
           ],
           [
             76.743835,
@@ -15147,13 +15379,13 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -15903,7 +16135,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 11053544182,
@@ -15987,7 +16219,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11053544182,
         "from_stop_name": "38/37 Bus Stop",
         "to_stop_id": 11053565187,
@@ -16287,7 +16519,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11053565187,
         "from_stop_name": "37/38 Bus Stop",
         "to_stop_id": 11053559568,
@@ -16627,7 +16859,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11053559568,
         "from_stop_name": "PGI",
         "to_stop_id": 11335525459,
@@ -16659,7 +16891,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11335525459,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -16871,7 +17103,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -17023,7 +17255,7 @@
       "properties": {
         "direction_id": "r16475122",
         "route_id": "5C",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 11364089920,
@@ -17045,6 +17277,34 @@
           [
             76.7435399,
             30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16475448",
+        "route_id": "6",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
           ],
           [
             76.743835,
@@ -17155,13 +17415,13 @@
       "properties": {
         "direction_id": "r16475448",
         "route_id": "6",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -18007,7 +18267,7 @@
       "properties": {
         "direction_id": "r16475448",
         "route_id": "6",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 813348337,
@@ -18991,6 +19251,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16475511",
+        "route_id": "6",
+        "sequence": 2,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.83913457115268,
             30.709065632966922
           ],
@@ -19195,6 +19487,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476014",
+        "route_id": "9A",
+        "sequence": 1,
+        "from_stop_id": 10000240246,
+        "from_stop_name": "Housing Board Chowk",
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2563.0617353752536,
+        "baseline_sec": 214.5,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -19343,13 +19663,13 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 1,
-        "from_stop_id": 10000240246,
-        "from_stop_name": "Housing Board Chowk",
+        "sequence": 2,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11335525458,
         "to_stop_name": null,
-        "length_m": 5577.601491450631,
-        "baseline_sec": 239.6,
+        "length_m": 3014.539756075377,
+        "baseline_sec": 266.4,
         "baseline_source": "osrm"
       }
     },
@@ -19471,7 +19791,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -20875,7 +21195,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 11230148264,
@@ -20967,7 +21287,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11230165511,
@@ -21043,7 +21363,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -21143,7 +21463,7 @@
       "properties": {
         "direction_id": "r16476014",
         "route_id": "9A",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10744858599,
@@ -21361,6 +21681,34 @@
           [
             76.8191796,
             30.703092900000005
+          ],
+          [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476511",
+        "route_id": "9C",
+        "sequence": 1,
+        "from_stop_id": 10000240246,
+        "from_stop_name": "Housing Board Chowk",
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2563.0617353752536,
+        "baseline_sec": 214.5,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
           ],
           [
             76.8189046,
@@ -22947,13 +23295,13 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 1,
-        "from_stop_id": 10000240246,
-        "from_stop_name": "Housing Board Chowk",
+        "sequence": 2,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11335525457,
         "to_stop_name": null,
-        "length_m": 28001.80937437395,
-        "baseline_sec": 332.6,
+        "length_m": 25438.74763899869,
+        "baseline_sec": 359.4,
         "baseline_source": "osrm"
       }
     },
@@ -23059,7 +23407,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -23115,7 +23463,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11230148264,
@@ -23207,7 +23555,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11230165511,
@@ -23283,7 +23631,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -23383,7 +23731,7 @@
       "properties": {
         "direction_id": "r16476511",
         "route_id": "9C",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10744858599,
@@ -25515,6 +25863,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476568",
+        "route_id": "28A",
+        "sequence": 2,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.75056028329362,
             30.71529725841315
           ],
@@ -26126,6 +26506,70 @@
         "to_stop_name": "ISBT",
         "length_m": 3117.2331728379927,
         "baseline_sec": 248,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16476619",
+        "route_id": "239",
+        "sequence": 2,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16481476",
+        "route_id": "28B",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -27331,6 +27775,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16481587",
+        "route_id": "2F",
+        "sequence": 5,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -27411,13 +27883,13 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 5,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 6,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -27487,7 +27959,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -27551,7 +28023,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -27615,7 +28087,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 11230226204,
@@ -27751,7 +28223,7 @@
       "properties": {
         "direction_id": "r16481587",
         "route_id": "2F",
-        "sequence": 9,
+        "sequence": 10,
         "from_stop_id": 11230226204,
         "from_stop_name": null,
         "to_stop_id": 10050998634,
@@ -28175,6 +28647,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16490639",
+        "route_id": "2F",
+        "sequence": 4,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -28291,13 +28791,13 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 4,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 5,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -28351,7 +28851,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -28479,7 +28979,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -28695,7 +29195,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -28727,7 +29227,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525459,
@@ -29471,7 +29971,7 @@
       "properties": {
         "direction_id": "r16490639",
         "route_id": "2F",
-        "sequence": 9,
+        "sequence": 10,
         "from_stop_id": 11335525459,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -31655,6 +32155,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16490718",
+        "route_id": "8",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -31763,13 +32291,13 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -31955,7 +32483,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 1041047045,
@@ -32059,7 +32587,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 1041047045,
         "from_stop_name": "Bus Stop, Sector 34-A",
         "to_stop_id": 11147476433,
@@ -32663,7 +33191,7 @@
       "properties": {
         "direction_id": "r16490718",
         "route_id": "8",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11147476433,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -33695,6 +34223,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16490723",
+        "route_id": "8",
+        "sequence": 3,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -33803,13 +34359,13 @@
       "properties": {
         "direction_id": "r16490723",
         "route_id": "8",
-        "sequence": 3,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 4,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -34079,6 +34635,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492522",
+        "route_id": "10",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -34195,13 +34779,13 @@
       "properties": {
         "direction_id": "r16492522",
         "route_id": "10",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -35235,13 +35819,181 @@
       "properties": {
         "direction_id": "r16492522",
         "route_id": "10",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 11462.484120883724,
         "baseline_sec": 578.6,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74253163629007,
+            30.71623038452458
+          ],
+          [
+            76.7410679,
+            30.718036799999993
+          ],
+          [
+            76.7408883,
+            30.718278100000006
+          ],
+          [
+            76.7408255,
+            30.718356399999998
+          ],
+          [
+            76.740755,
+            30.718443299999993
+          ],
+          [
+            76.740672,
+            30.71852010000001
+          ],
+          [
+            76.7405031,
+            30.718629900000003
+          ],
+          [
+            76.7403577,
+            30.718633100000005
+          ],
+          [
+            76.7403253,
+            30.718641199999993
+          ],
+          [
+            76.7402199,
+            30.718690899999988
+          ],
+          [
+            76.7401209,
+            30.71879890000001
+          ],
+          [
+            76.7400888,
+            30.718902399999997
+          ],
+          [
+            76.7401114,
+            30.719036499999998
+          ],
+          [
+            76.7401894,
+            30.71913989999999
+          ],
+          [
+            76.74026340000002,
+            30.7191858
+          ],
+          [
+            76.74035540000001,
+            30.7192208
+          ],
+          [
+            76.7404113,
+            30.719228599999997
+          ],
+          [
+            76.7405441,
+            30.7192158
+          ],
+          [
+            76.7406768,
+            30.719150200000005
+          ],
+          [
+            76.7407506,
+            30.719067999999996
+          ],
+          [
+            76.740791,
+            30.718924499999993
+          ],
+          [
+            76.7407828,
+            30.718862199999997
+          ],
+          [
+            76.7407605,
+            30.718803899999997
+          ],
+          [
+            76.7408059,
+            30.71863519999999
+          ],
+          [
+            76.7408325,
+            30.718574999999994
+          ],
+          [
+            76.7408583,
+            30.718523700000002
+          ],
+          [
+            76.7409602,
+            30.7183982
+          ],
+          [
+            76.74122,
+            30.7180623
+          ],
+          [
+            76.7416355,
+            30.717947499999994
+          ],
+          [
+            76.7421089,
+            30.7173718
+          ],
+          [
+            76.7421864,
+            30.71727749999999
+          ],
+          [
+            76.7425037,
+            30.716891699999998
+          ],
+          [
+            76.7425519,
+            30.716833
+          ],
+          [
+            76.7427264,
+            30.7166208
+          ],
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492522",
+        "route_id": "10",
+        "sequence": 6,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -35959,6 +36711,254 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.81341958410239,
+            30.716956527490403
+          ],
+          [
+            76.8135728,
+            30.716804800000002
+          ],
+          [
+            76.81380930000002,
+            30.716571100000007
+          ],
+          [
+            76.8145084,
+            30.715880199999987
+          ],
+          [
+            76.8147263,
+            30.715664199999985
+          ],
+          [
+            76.8157336,
+            30.71466549999999
+          ],
+          [
+            76.8161004,
+            30.714433
+          ],
+          [
+            76.8166505,
+            30.7141925
+          ],
+          [
+            76.8179471,
+            30.713724699999993
+          ],
+          [
+            76.8191551,
+            30.7132887
+          ],
+          [
+            76.8198646,
+            30.7130327
+          ],
+          [
+            76.8208531,
+            30.71267999999999
+          ],
+          [
+            76.8210402,
+            30.7126323
+          ],
+          [
+            76.8215387,
+            30.712514500000005
+          ],
+          [
+            76.8216798,
+            30.712481200000006
+          ],
+          [
+            76.8217929,
+            30.712454
+          ],
+          [
+            76.8217589,
+            30.712343800000003
+          ],
+          [
+            76.8215472,
+            30.7116777
+          ],
+          [
+            76.82153940000002,
+            30.711632899999994
+          ],
+          [
+            76.82150000000001,
+            30.711505300000002
+          ],
+          [
+            76.82139670000001,
+            30.711168499999992
+          ],
+          [
+            76.8206085,
+            30.708603600000004
+          ],
+          [
+            76.8202857,
+            30.707547699999996
+          ],
+          [
+            76.8190207,
+            30.703365799999993
+          ],
+          [
+            76.8189509,
+            30.7031467
+          ],
+          [
+            76.8191796,
+            30.703092900000005
+          ],
+          [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492534",
+        "route_id": "11",
+        "sequence": 4,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81878566067144,
+            30.702897539752822
+          ],
+          [
+            76.8189397,
+            30.7033848
+          ],
+          [
+            76.8200142,
+            30.7069806
+          ],
+          [
+            76.8201894,
+            30.707567
+          ],
+          [
+            76.8203453,
+            30.708082700000002
+          ],
+          [
+            76.8205097,
+            30.708626699999996
+          ],
+          [
+            76.8213076,
+            30.7111852
+          ],
+          [
+            76.8214117,
+            30.711518699999992
+          ],
+          [
+            76.8214593,
+            30.711671600000017
+          ],
+          [
+            76.8215009,
+            30.711832000000005
+          ],
+          [
+            76.8213609,
+            30.71210970000001
+          ],
+          [
+            76.8212921,
+            30.712254900000005
+          ],
+          [
+            76.8211049,
+            30.712460899999993
+          ],
+          [
+            76.8207816,
+            30.71255960000001
+          ],
+          [
+            76.8193617,
+            30.712933700000004
+          ],
+          [
+            76.8190271,
+            30.713057499999987
+          ],
+          [
+            76.8178251,
+            30.713502199999994
+          ],
+          [
+            76.816594,
+            30.713957799999992
+          ],
+          [
+            76.8161787,
+            30.714199399999984
+          ],
+          [
+            76.8156814,
+            30.714577800000008
+          ],
+          [
+            76.8151328,
+            30.715114900000003
+          ],
+          [
+            76.8144215,
+            30.71581140000001
+          ],
+          [
+            76.8140351,
+            30.716187399999995
+          ],
+          [
+            76.8138164,
+            30.71640009999999
+          ],
+          [
+            76.81332265829013,
+            30.716880418015723
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492535",
+        "route_id": "11",
+        "sequence": 0,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
+        "to_stop_id": 11230148264,
+        "to_stop_name": null,
+        "length_m": 2019.858585824443,
+        "baseline_sec": 271.8,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.81332265829013,
             30.716880418015723
           ],
@@ -36003,7 +37003,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 0,
+        "sequence": 1,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -36131,7 +37131,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -36347,7 +37347,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -36379,7 +37379,7 @@
       "properties": {
         "direction_id": "r16492535",
         "route_id": "11",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525459,
@@ -36838,6 +37838,38 @@
         "to_stop_name": "ISBT",
         "length_m": 5256.358286456355,
         "baseline_sec": 326.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492640",
+        "route_id": "17",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -37563,6 +38595,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16492677",
+        "route_id": "18",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.76601110637641,
             30.724804638705827
           ],
@@ -37790,6 +38854,38 @@
         "to_stop_name": "ISBT",
         "length_m": 3117.2331728379927,
         "baseline_sec": 248,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494775",
+        "route_id": "14",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -38723,6 +39819,202 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494912",
+        "route_id": "20",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74253163629007,
+            30.71623038452458
+          ],
+          [
+            76.7410679,
+            30.718036799999993
+          ],
+          [
+            76.7408883,
+            30.718278100000006
+          ],
+          [
+            76.7408255,
+            30.718356399999998
+          ],
+          [
+            76.740755,
+            30.718443299999993
+          ],
+          [
+            76.740672,
+            30.71852010000001
+          ],
+          [
+            76.7405031,
+            30.718629900000003
+          ],
+          [
+            76.7403577,
+            30.718633100000005
+          ],
+          [
+            76.7403253,
+            30.718641199999993
+          ],
+          [
+            76.7402199,
+            30.718690899999988
+          ],
+          [
+            76.7401209,
+            30.71879890000001
+          ],
+          [
+            76.7400888,
+            30.718902399999997
+          ],
+          [
+            76.7401114,
+            30.719036499999998
+          ],
+          [
+            76.7401894,
+            30.71913989999999
+          ],
+          [
+            76.74026340000002,
+            30.7191858
+          ],
+          [
+            76.74035540000001,
+            30.7192208
+          ],
+          [
+            76.7404113,
+            30.719228599999997
+          ],
+          [
+            76.7405441,
+            30.7192158
+          ],
+          [
+            76.7406768,
+            30.719150200000005
+          ],
+          [
+            76.7407506,
+            30.719067999999996
+          ],
+          [
+            76.740791,
+            30.718924499999993
+          ],
+          [
+            76.7407828,
+            30.718862199999997
+          ],
+          [
+            76.7407605,
+            30.718803899999997
+          ],
+          [
+            76.7408059,
+            30.71863519999999
+          ],
+          [
+            76.7408325,
+            30.718574999999994
+          ],
+          [
+            76.7408583,
+            30.718523700000002
+          ],
+          [
+            76.7409602,
+            30.7183982
+          ],
+          [
+            76.74122,
+            30.7180623
+          ],
+          [
+            76.7416355,
+            30.717947499999994
+          ],
+          [
+            76.7421089,
+            30.7173718
+          ],
+          [
+            76.7421864,
+            30.71727749999999
+          ],
+          [
+            76.7425037,
+            30.716891699999998
+          ],
+          [
+            76.7425519,
+            30.716833
+          ],
+          [
+            76.7427264,
+            30.7166208
+          ],
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494951",
+        "route_id": "20",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -39215,13 +40507,13 @@
       "properties": {
         "direction_id": "r16494951",
         "route_id": "20",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 11147476433,
         "to_stop_name": null,
-        "length_m": 7148.421498305411,
-        "baseline_sec": 307.1,
+        "length_m": 6224.8731346658515,
+        "baseline_sec": 359.1,
         "baseline_source": "osrm"
       }
     },
@@ -39933,7 +41225,7 @@
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 6181.631966838842,
-        "baseline_sec": 388.9,
+        "baseline_sec": 414.7,
         "baseline_source": "osrm"
       }
     },
@@ -40085,6 +41377,34 @@
           [
             76.7435399,
             30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494973",
+        "route_id": "20A",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
           ],
           [
             76.743835,
@@ -40579,13 +41899,13 @@
       "properties": {
         "direction_id": "r16494973",
         "route_id": "20A",
-        "sequence": 1,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 2,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 11147476433,
         "to_stop_name": null,
-        "length_m": 7148.421498305411,
-        "baseline_sec": 307.1,
+        "length_m": 6224.8731346658515,
+        "baseline_sec": 359.1,
         "baseline_source": "osrm"
       }
     },
@@ -41327,6 +42647,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16494974",
+        "route_id": "20A",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -42059,13 +43407,13 @@
       "properties": {
         "direction_id": "r16494974",
         "route_id": "20A",
-        "sequence": 1,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 2,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 5761967091,
         "to_stop_name": "Sas Nagar",
-        "length_m": 8430.959414356605,
-        "baseline_sec": 290,
+        "length_m": 7507.411050717046,
+        "baseline_sec": 342,
         "baseline_source": "osrm"
       }
     },
@@ -42335,6 +43683,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506719",
+        "route_id": "22",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -42451,13 +43827,13 @@
       "properties": {
         "direction_id": "r16506719",
         "route_id": "22",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -43479,13 +44855,45 @@
       "properties": {
         "direction_id": "r16506719",
         "route_id": "22",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 10018.48962698879,
         "baseline_sec": 578.6,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506719",
+        "route_id": "22",
+        "sequence": 6,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -44735,6 +46143,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506720",
+        "route_id": "22",
+        "sequence": 1,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -44815,13 +46251,13 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 1,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 2,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -44891,7 +46327,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -44955,7 +46391,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -45019,7 +46455,7 @@
       "properties": {
         "direction_id": "r16506720",
         "route_id": "22",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -45350,6 +46786,38 @@
         "to_stop_name": "ISBT",
         "length_m": 3117.2331728379927,
         "baseline_sec": 248,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506775",
+        "route_id": "23A",
+        "sequence": 2,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -45757,6 +47225,34 @@
           [
             76.8191796,
             30.703092900000005
+          ],
+          [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506818",
+        "route_id": "26",
+        "sequence": 0,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
           ],
           [
             76.8189046,
@@ -46235,13 +47731,13 @@
       "properties": {
         "direction_id": "r16506818",
         "route_id": "26",
-        "sequence": 0,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 1,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11147439160,
         "to_stop_name": null,
-        "length_m": 8670.819362951166,
-        "baseline_sec": 411.3,
+        "length_m": 6582.001517788413,
+        "baseline_sec": 506.8,
         "baseline_source": "osrm"
       }
     },
@@ -46891,7 +48387,7 @@
       "properties": {
         "direction_id": "r16506818",
         "route_id": "26",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 11147439160,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -47951,6 +49447,134 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.81341958410239,
+            30.716956527490403
+          ],
+          [
+            76.8135728,
+            30.716804800000002
+          ],
+          [
+            76.81380930000002,
+            30.716571100000007
+          ],
+          [
+            76.8145084,
+            30.715880199999987
+          ],
+          [
+            76.8147263,
+            30.715664199999985
+          ],
+          [
+            76.8157336,
+            30.71466549999999
+          ],
+          [
+            76.8161004,
+            30.714433
+          ],
+          [
+            76.8166505,
+            30.7141925
+          ],
+          [
+            76.8179471,
+            30.713724699999993
+          ],
+          [
+            76.8191551,
+            30.7132887
+          ],
+          [
+            76.8198646,
+            30.7130327
+          ],
+          [
+            76.8208531,
+            30.71267999999999
+          ],
+          [
+            76.8210402,
+            30.7126323
+          ],
+          [
+            76.8215387,
+            30.712514500000005
+          ],
+          [
+            76.8216798,
+            30.712481200000006
+          ],
+          [
+            76.8217929,
+            30.712454
+          ],
+          [
+            76.8217589,
+            30.712343800000003
+          ],
+          [
+            76.8215472,
+            30.7116777
+          ],
+          [
+            76.82153940000002,
+            30.711632899999994
+          ],
+          [
+            76.82150000000001,
+            30.711505300000002
+          ],
+          [
+            76.82139670000001,
+            30.711168499999992
+          ],
+          [
+            76.8206085,
+            30.708603600000004
+          ],
+          [
+            76.8202857,
+            30.707547699999996
+          ],
+          [
+            76.8190207,
+            30.703365799999993
+          ],
+          [
+            76.8189509,
+            30.7031467
+          ],
+          [
+            76.8191796,
+            30.703092900000005
+          ],
+          [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16506819",
+        "route_id": "26",
+        "sequence": 2,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.83913457115268,
             30.709065632966922
           ],
@@ -48211,6 +49835,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507527",
+        "route_id": "28",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -48327,13 +49979,13 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -48387,7 +50039,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -48515,7 +50167,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -48731,7 +50383,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -48763,7 +50415,7 @@
       "properties": {
         "direction_id": "r16507527",
         "route_id": "28",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525459,
@@ -49295,6 +50947,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507528",
+        "route_id": "28",
+        "sequence": 4,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -49375,13 +51055,13 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 4,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 5,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -49451,7 +51131,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -49515,7 +51195,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -49579,7 +51259,7 @@
       "properties": {
         "direction_id": "r16507528",
         "route_id": "28",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -50902,6 +52582,38 @@
         "to_stop_name": "ISBT",
         "length_m": 5256.358286456355,
         "baseline_sec": 326.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507557",
+        "route_id": "30",
+        "sequence": 8,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -52771,6 +54483,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507593",
+        "route_id": "30A",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -52887,13 +54627,13 @@
       "properties": {
         "direction_id": "r16507593",
         "route_id": "30A",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -53435,7 +55175,7 @@
       "properties": {
         "direction_id": "r16507593",
         "route_id": "30A",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 813348337,
@@ -54123,13 +55863,45 @@
       "properties": {
         "direction_id": "r16507593",
         "route_id": "30A",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 813348337,
         "from_stop_name": null,
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 7315.950836711721,
         "baseline_sec": 336.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507593",
+        "route_id": "30A",
+        "sequence": 7,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -55439,6 +57211,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16507594",
+        "route_id": "30A",
+        "sequence": 2,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -55519,13 +57319,13 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 2,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 3,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -55595,7 +57395,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -55659,7 +57459,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -55723,7 +57523,7 @@
       "properties": {
         "direction_id": "r16507594",
         "route_id": "30A",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -57218,6 +59018,38 @@
         "to_stop_name": "ISBT",
         "length_m": 5256.358286456355,
         "baseline_sec": 326.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16508426",
+        "route_id": "30B",
+        "sequence": 9,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -61623,6 +63455,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16508687",
+        "route_id": "32",
+        "sequence": 5,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -61703,13 +63563,13 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 5,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 6,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -61779,7 +63639,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -61843,7 +63703,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -61907,7 +63767,7 @@
       "properties": {
         "direction_id": "r16508687",
         "route_id": "32",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -62331,6 +64191,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16509592",
+        "route_id": "32B",
+        "sequence": 4,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -62447,13 +64335,13 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 4,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 5,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -62507,7 +64395,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -62635,7 +64523,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -62851,7 +64739,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -62883,7 +64771,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525459,
@@ -63627,7 +65515,7 @@
       "properties": {
         "direction_id": "r16509592",
         "route_id": "32B",
-        "sequence": 9,
+        "sequence": 10,
         "from_stop_id": 11335525459,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -64839,6 +66727,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16509593",
+        "route_id": "32B",
+        "sequence": 5,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -64919,13 +66835,13 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 5,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 6,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -64995,7 +66911,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -65059,7 +66975,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -65123,7 +67039,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 11230226204,
@@ -65259,7 +67175,7 @@
       "properties": {
         "direction_id": "r16509593",
         "route_id": "32B",
-        "sequence": 9,
+        "sequence": 10,
         "from_stop_id": 11230226204,
         "from_stop_name": null,
         "to_stop_id": 10050998634,
@@ -72643,6 +74559,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16512134",
+        "route_id": "35B",
+        "sequence": 2,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -72751,13 +74695,13 @@
       "properties": {
         "direction_id": "r16512134",
         "route_id": "35B",
-        "sequence": 2,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 3,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -73199,7 +75143,7 @@
       "properties": {
         "direction_id": "r16512134",
         "route_id": "35B",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 11147476433,
@@ -73535,6 +75479,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16512135",
+        "route_id": "35B",
+        "sequence": 0,
+        "from_stop_id": 11147476433,
+        "from_stop_name": null,
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 5145.646968263404,
+        "baseline_sec": 404.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -73767,13 +75739,13 @@
       "properties": {
         "direction_id": "r16512135",
         "route_id": "35B",
-        "sequence": 0,
-        "from_stop_id": 11147476433,
-        "from_stop_name": null,
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
-        "length_m": 6532.231032310421,
-        "baseline_sec": 326.7,
+        "length_m": 1386.584064047016,
+        "baseline_sec": 140.7,
         "baseline_source": "osrm"
       }
     },
@@ -74207,7 +76179,7 @@
       "properties": {
         "direction_id": "r16512135",
         "route_id": "35B",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 1425480419,
         "from_stop_name": "ISBT",
         "to_stop_id": 4461159291,
@@ -74359,7 +76331,7 @@
       "properties": {
         "direction_id": "r16512135",
         "route_id": "35B",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 4461159291,
         "from_stop_name": null,
         "to_stop_id": 13131328587,
@@ -75491,6 +77463,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16513790",
+        "route_id": "38",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.74253163629007,
             30.71623038452458
           ],
@@ -75635,6 +77639,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514043",
+        "route_id": "38",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -75743,13 +77775,13 @@
       "properties": {
         "direction_id": "r16514043",
         "route_id": "38",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 2079.269995455741,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -77043,7 +79075,7 @@
       "properties": {
         "direction_id": "r16514043",
         "route_id": "38",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 11053559568,
@@ -77575,6 +79607,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514100",
+        "route_id": "38A",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -77683,13 +79743,13 @@
       "properties": {
         "direction_id": "r16514100",
         "route_id": "38A",
-        "sequence": 1,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 2,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 2079.269995455741,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -78983,7 +81043,7 @@
       "properties": {
         "direction_id": "r16514100",
         "route_id": "38A",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 11053559568,
@@ -80123,6 +82183,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514101",
+        "route_id": "38A",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -80595,13 +82683,13 @@
       "properties": {
         "direction_id": "r16514101",
         "route_id": "38A",
-        "sequence": 1,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 2,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 9857905217,
         "to_stop_name": null,
-        "length_m": 4948.609314168325,
-        "baseline_sec": 263.6,
+        "length_m": 4866.896579202955,
+        "baseline_sec": 315.6,
         "baseline_source": "osrm"
       }
     },
@@ -81727,6 +83815,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16514262",
+        "route_id": "39",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.74253163629007,
             30.71623038452458
           ],
@@ -81871,6 +83991,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16516440",
+        "route_id": "39",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -81979,13 +84127,13 @@
       "properties": {
         "direction_id": "r16516440",
         "route_id": "39",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 2079.269995455741,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -83279,7 +85427,7 @@
       "properties": {
         "direction_id": "r16516440",
         "route_id": "39",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 11053559568,
@@ -84446,6 +86594,38 @@
         "to_stop_name": "ISBT",
         "length_m": 3117.2331728379927,
         "baseline_sec": 248,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16516479",
+        "route_id": "71",
+        "sequence": 5,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -91451,6 +93631,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16517804",
+        "route_id": "85",
+        "sequence": 2,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.77513333461586,
             30.759933395813125
           ],
@@ -92883,6 +95095,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519387",
+        "route_id": "123A",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -92991,13 +95231,13 @@
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 2079.269995455741,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -93183,7 +95423,7 @@
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 1041047045,
@@ -93287,7 +95527,7 @@
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 1041047045,
         "from_stop_name": "Bus Stop, Sector 34-A",
         "to_stop_id": 11147476433,
@@ -93891,7 +96131,7 @@
       "properties": {
         "direction_id": "r16519387",
         "route_id": "123A",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11147476433,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -94915,6 +97155,866 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519388",
+        "route_id": "123A",
+        "sequence": 3,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
+            76.743835,
+            30.7170381
+          ],
+          [
+            76.7439235,
+            30.716961999999995
+          ],
+          [
+            76.7439691,
+            30.716858299999984
+          ],
+          [
+            76.74390740000001,
+            30.7166669
+          ],
+          [
+            76.7439154,
+            30.716523900000002
+          ],
+          [
+            76.7439423,
+            30.716291000000002
+          ],
+          [
+            76.744071,
+            30.716106499999995
+          ],
+          [
+            76.7443473,
+            30.715912799999998
+          ],
+          [
+            76.7445458,
+            30.715742200000008
+          ],
+          [
+            76.744583,
+            30.715627100000006
+          ],
+          [
+            76.74459940000001,
+            30.7155762
+          ],
+          [
+            76.7445324,
+            30.715437800000004
+          ],
+          [
+            76.743962,
+            30.71511509999999
+          ],
+          [
+            76.7447975,
+            30.714096700000002
+          ],
+          [
+            76.74489920000002,
+            30.713969799999994
+          ],
+          [
+            76.7451063,
+            30.713713799999987
+          ],
+          [
+            76.7451809,
+            30.7136265
+          ],
+          [
+            76.745108,
+            30.7133091
+          ],
+          [
+            76.7451431,
+            30.713264200000005
+          ],
+          [
+            76.7452335,
+            30.713148599999997
+          ],
+          [
+            76.74541960000002,
+            30.712910699999995
+          ],
+          [
+            76.7455639,
+            30.712758799999996
+          ],
+          [
+            76.7456374,
+            30.712713500000003
+          ],
+          [
+            76.7457151,
+            30.712674800000002
+          ],
+          [
+            76.7459353,
+            30.712611199999994
+          ],
+          [
+            76.7460168,
+            30.712594699999997
+          ],
+          [
+            76.7460933,
+            30.712565500000004
+          ],
+          [
+            76.74619680000002,
+            30.7124966
+          ],
+          [
+            76.7462727,
+            30.712405000000004
+          ],
+          [
+            76.74631450000001,
+            30.712298400000005
+          ],
+          [
+            76.7463185,
+            30.712184399999998
+          ],
+          [
+            76.7462834,
+            30.7120744
+          ],
+          [
+            76.7462198,
+            30.711985699999996
+          ],
+          [
+            76.7461309,
+            30.711914899999996
+          ],
+          [
+            76.7460232,
+            30.7118673
+          ],
+          [
+            76.7459046,
+            30.711846200000004
+          ],
+          [
+            76.7458107,
+            30.711849100000006
+          ],
+          [
+            76.7455677,
+            30.711865500000002
+          ],
+          [
+            76.7454454,
+            30.71185450000001
+          ],
+          [
+            76.7453722,
+            30.711828899999993
+          ],
+          [
+            76.7453018,
+            30.711796
+          ],
+          [
+            76.7451006,
+            30.711696200000002
+          ],
+          [
+            76.7450242,
+            30.711658300000003
+          ],
+          [
+            76.7448513,
+            30.711562100000002
+          ],
+          [
+            76.7441523,
+            30.711123799999992
+          ],
+          [
+            76.7421962,
+            30.709897200000007
+          ],
+          [
+            76.7420603,
+            30.709813199999992
+          ],
+          [
+            76.7414989,
+            30.709465999999992
+          ],
+          [
+            76.7411307,
+            30.70921269999999
+          ],
+          [
+            76.7410756,
+            30.708652699999995
+          ],
+          [
+            76.7414508,
+            30.708230599999997
+          ],
+          [
+            76.7419521,
+            30.707647799999997
+          ],
+          [
+            76.7426584,
+            30.706791699999993
+          ],
+          [
+            76.7431732,
+            30.706164899999994
+          ],
+          [
+            76.7432751,
+            30.706043500000003
+          ],
+          [
+            76.7434243,
+            30.705865600000003
+          ],
+          [
+            76.7439242,
+            30.705261
+          ],
+          [
+            76.7441002,
+            30.7050533
+          ],
+          [
+            76.7441984,
+            30.704903699999996
+          ],
+          [
+            76.7446883,
+            30.704346500000003
+          ],
+          [
+            76.745195,
+            30.703701000000002
+          ],
+          [
+            76.7452181,
+            30.70364259999999
+          ],
+          [
+            76.7452816,
+            30.703602
+          ],
+          [
+            76.7453413,
+            30.703549600000006
+          ],
+          [
+            76.7455809,
+            30.703324899999995
+          ],
+          [
+            76.7456298,
+            30.7033314
+          ],
+          [
+            76.7456792,
+            30.703329200000002
+          ],
+          [
+            76.745727,
+            30.703318300000003
+          ],
+          [
+            76.7457712,
+            30.7032992
+          ],
+          [
+            76.7458157,
+            30.70326760000001
+          ],
+          [
+            76.7458503,
+            30.7032278
+          ],
+          [
+            76.7458727,
+            30.703182100000003
+          ],
+          [
+            76.7458819,
+            30.703118899999993
+          ],
+          [
+            76.7458682,
+            30.703056300000007
+          ],
+          [
+            76.745833,
+            30.703000199999998
+          ],
+          [
+            76.7457773,
+            30.702954699999996
+          ],
+          [
+            76.74570770000001,
+            30.70292660000001
+          ],
+          [
+            76.7456313,
+            30.70291890000001
+          ],
+          [
+            76.7454775,
+            30.70290530000001
+          ],
+          [
+            76.7453351,
+            30.702859100000005
+          ],
+          [
+            76.7450685,
+            30.702509500000005
+          ],
+          [
+            76.7447528,
+            30.701916799999996
+          ],
+          [
+            76.7441051,
+            30.701082899999996
+          ],
+          [
+            76.7438184,
+            30.700772499999992
+          ],
+          [
+            76.7432959,
+            30.700470999999997
+          ],
+          [
+            76.7430221,
+            30.700313
+          ],
+          [
+            76.7423921,
+            30.70005739999999
+          ],
+          [
+            76.7416779,
+            30.699903499999998
+          ],
+          [
+            76.7411475,
+            30.6998424
+          ],
+          [
+            76.7407908,
+            30.699812400000003
+          ],
+          [
+            76.7406694,
+            30.699792799999997
+          ],
+          [
+            76.740601,
+            30.699782999999993
+          ],
+          [
+            76.7405185,
+            30.699770899999997
+          ],
+          [
+            76.7402959,
+            30.699711800000003
+          ],
+          [
+            76.7401671,
+            30.699650999999992
+          ],
+          [
+            76.7400531,
+            30.699582400000004
+          ],
+          [
+            76.7399123,
+            30.699489499999995
+          ],
+          [
+            76.7388636,
+            30.698839099999997
+          ],
+          [
+            76.7380668,
+            30.698308300000008
+          ],
+          [
+            76.7378667,
+            30.6981872
+          ],
+          [
+            76.7376796,
+            30.698069799999992
+          ],
+          [
+            76.7375289,
+            30.698050400000003
+          ],
+          [
+            76.737516,
+            30.6980416
+          ],
+          [
+            76.7373348,
+            30.697933399999997
+          ],
+          [
+            76.7368412,
+            30.697650999999993
+          ],
+          [
+            76.7368246,
+            30.697596100000002
+          ],
+          [
+            76.7361611,
+            30.6971031
+          ],
+          [
+            76.7340237,
+            30.695773600000003
+          ],
+          [
+            76.7333681,
+            30.695349499999995
+          ],
+          [
+            76.73314570000001,
+            30.695205599999994
+          ],
+          [
+            76.73328,
+            30.695050899999995
+          ],
+          [
+            76.7333214,
+            30.6950031
+          ],
+          [
+            76.7338909,
+            30.694346900000003
+          ],
+          [
+            76.73396430000001,
+            30.6942644
+          ],
+          [
+            76.734056,
+            30.69415529999999
+          ],
+          [
+            76.7342178,
+            30.6939648
+          ],
+          [
+            76.73428860000001,
+            30.693868900000002
+          ],
+          [
+            76.7343506,
+            30.693770900000008
+          ],
+          [
+            76.7344038,
+            30.693668699999996
+          ],
+          [
+            76.73445900000002,
+            30.693527000000003
+          ],
+          [
+            76.7345613,
+            30.693167699999993
+          ],
+          [
+            76.7346414,
+            30.692747600000004
+          ],
+          [
+            76.7346931,
+            30.692476199999994
+          ],
+          [
+            76.7348386,
+            30.69220389999999
+          ],
+          [
+            76.7352014,
+            30.6917512
+          ],
+          [
+            76.7352624,
+            30.691668599999996
+          ],
+          [
+            76.7353498,
+            30.691562899999997
+          ],
+          [
+            76.7358035,
+            30.69099979999999
+          ],
+          [
+            76.7358549,
+            30.690915599999997
+          ],
+          [
+            76.7358938,
+            30.690852000000003
+          ],
+          [
+            76.7359614,
+            30.690799100000003
+          ],
+          [
+            76.7359986,
+            30.690767900000004
+          ],
+          [
+            76.7368936,
+            30.689721599999984
+          ],
+          [
+            76.7373851,
+            30.689136499999993
+          ],
+          [
+            76.7374183,
+            30.689096999999997
+          ],
+          [
+            76.7374575,
+            30.689043
+          ],
+          [
+            76.7380289,
+            30.688349099999996
+          ],
+          [
+            76.73816290000002,
+            30.688186499999997
+          ],
+          [
+            76.7386548,
+            30.687589100000007
+          ],
+          [
+            76.7388609,
+            30.687349799999996
+          ],
+          [
+            76.73920130000002,
+            30.686927599999997
+          ],
+          [
+            76.739338,
+            30.68682
+          ],
+          [
+            76.7395476,
+            30.68667900000001
+          ],
+          [
+            76.7400956,
+            30.686371799999996
+          ],
+          [
+            76.7408351,
+            30.685957199999994
+          ],
+          [
+            76.7409061,
+            30.685889399999994
+          ],
+          [
+            76.7409704,
+            30.6858344
+          ],
+          [
+            76.74155,
+            30.6852562
+          ],
+          [
+            76.7421338,
+            30.684579200000005
+          ],
+          [
+            76.74239120000001,
+            30.6842565
+          ],
+          [
+            76.7424437,
+            30.68419569999999
+          ],
+          [
+            76.742594,
+            30.6840197
+          ],
+          [
+            76.742968,
+            30.683593799999997
+          ],
+          [
+            76.7430237,
+            30.6835253
+          ],
+          [
+            76.7422154,
+            30.6830295
+          ],
+          [
+            76.7407703,
+            30.682112500000002
+          ],
+          [
+            76.7402441,
+            30.6817825
+          ],
+          [
+            76.739664,
+            30.681413700000007
+          ],
+          [
+            76.7384688,
+            30.6806962
+          ],
+          [
+            76.7383116,
+            30.680193700000004
+          ],
+          [
+            76.7384906,
+            30.679979900000006
+          ],
+          [
+            76.7385946,
+            30.679839099999985
+          ],
+          [
+            76.7399022,
+            30.678276600000004
+          ],
+          [
+            76.74054510000002,
+            30.677496599999998
+          ],
+          [
+            76.7416746,
+            30.676153899999992
+          ],
+          [
+            76.7422689,
+            30.675447400000003
+          ],
+          [
+            76.7427615,
+            30.6749313
+          ],
+          [
+            76.74285090000001,
+            30.67484219999999
+          ],
+          [
+            76.7429194,
+            30.674777399999993
+          ],
+          [
+            76.7429934,
+            30.674713399999995
+          ],
+          [
+            76.7430596,
+            30.674655299999998
+          ],
+          [
+            76.7432823,
+            30.674448399999992
+          ],
+          [
+            76.7461981,
+            30.6714249
+          ],
+          [
+            76.7462657,
+            30.671351999999995
+          ],
+          [
+            76.7465825,
+            30.6709856
+          ],
+          [
+            76.7465828,
+            30.670923499999986
+          ],
+          [
+            76.746583,
+            30.670866199999992
+          ],
+          [
+            76.7465548,
+            30.670797399999994
+          ],
+          [
+            76.7464866,
+            30.6707552
+          ],
+          [
+            76.7451485,
+            30.669927600000005
+          ],
+          [
+            76.7438893,
+            30.6691613
+          ],
+          [
+            76.74364380000002,
+            30.669088399999993
+          ],
+          [
+            76.7432406,
+            30.6690056
+          ],
+          [
+            76.7428354,
+            30.66890730000001
+          ],
+          [
+            76.7425777,
+            30.6687856
+          ],
+          [
+            76.742258,
+            30.668595000000003
+          ],
+          [
+            76.7422225,
+            30.6685713
+          ],
+          [
+            76.7411948,
+            30.66788650000001
+          ],
+          [
+            76.7400703,
+            30.6671567
+          ],
+          [
+            76.7397368,
+            30.666942500000005
+          ],
+          [
+            76.7400181,
+            30.666529900000004
+          ],
+          [
+            76.7400178,
+            30.666477499999992
+          ],
+          [
+            76.7399788,
+            30.666439899999997
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16519388",
+        "route_id": "123A",
+        "sequence": 4,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
+        "to_stop_id": 1527087489,
+        "to_stop_name": null,
+        "length_m": 8116.784609947622,
+        "baseline_sec": 557.8,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521346",
+        "route_id": "202",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.77513333461586,
             30.759933395813125
           ],
@@ -95914,6 +99014,38 @@
         "to_stop_name": "ISBT",
         "length_m": 3117.2331728379927,
         "baseline_sec": 248,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521782",
+        "route_id": "C551E",
+        "sequence": 3,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -98303,6 +101435,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521808",
+        "route_id": "206",
+        "sequence": 5,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -98383,13 +101543,13 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 5,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 6,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -98459,7 +101619,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -98523,7 +101683,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -98587,7 +101747,7 @@
       "properties": {
         "direction_id": "r16521808",
         "route_id": "206",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -98863,6 +102023,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521811",
+        "route_id": "206",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -98979,13 +102167,13 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -99039,7 +102227,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -99167,7 +102355,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11335525457,
@@ -99383,7 +102571,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11335525457,
         "from_stop_name": null,
         "to_stop_id": 6970853271,
@@ -99415,7 +102603,7 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 7,
+        "sequence": 8,
         "from_stop_id": 6970853271,
         "from_stop_name": null,
         "to_stop_id": 11335525459,
@@ -100007,13 +103195,45 @@
       "properties": {
         "direction_id": "r16521811",
         "route_id": "206",
-        "sequence": 8,
+        "sequence": 9,
         "from_stop_id": 11335525459,
         "from_stop_name": null,
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 6798.0053761477675,
         "baseline_sec": 546.3,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16521811",
+        "route_id": "206",
+        "sequence": 10,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -104307,6 +107527,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522634",
+        "route_id": "213",
+        "sequence": 3,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -104907,13 +108155,13 @@
       "properties": {
         "direction_id": "r16522634",
         "route_id": "213",
-        "sequence": 3,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 4,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 5761967091,
         "to_stop_name": "Sas Nagar",
-        "length_m": 6613.165937713966,
-        "baseline_sec": 290,
+        "length_m": 6531.453202748597,
+        "baseline_sec": 342,
         "baseline_source": "osrm"
       }
     },
@@ -105361,7 +108609,7 @@
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 6125.5715738037525,
-        "baseline_sec": 388.9,
+        "baseline_sec": 414.7,
         "baseline_source": "osrm"
       }
     },
@@ -105515,6 +108763,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522635",
+        "route_id": "213",
+        "sequence": 1,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 923.5483636395596,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -105623,13 +108899,13 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 1,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 2,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 2079.269995455741,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -106323,7 +109599,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 813348337,
@@ -106775,7 +110051,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 813348337,
         "from_stop_name": null,
         "to_stop_id": 12596212878,
@@ -106811,7 +110087,7 @@
       "properties": {
         "direction_id": "r16522635",
         "route_id": "213",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 12596212878,
         "from_stop_name": null,
         "to_stop_id": 12596227210,
@@ -107087,6 +110363,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522852",
+        "route_id": "214",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -107203,13 +110507,13 @@
       "properties": {
         "direction_id": "r16522852",
         "route_id": "214",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -108383,7 +111687,7 @@
       "properties": {
         "direction_id": "r16522852",
         "route_id": "214",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
@@ -109615,6 +112919,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522853",
+        "route_id": "214",
+        "sequence": 1,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -109695,13 +113027,13 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 1,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 2,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -109771,7 +113103,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -109835,7 +113167,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -109899,7 +113231,7 @@
       "properties": {
         "direction_id": "r16522853",
         "route_id": "214",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -113535,6 +116867,38 @@
         "type": "LineString",
         "coordinates": [
           [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16522922",
+        "route_id": "216",
+        "sequence": 4,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
             76.75056028329362,
             30.71529725841315
           ],
@@ -115479,6 +118843,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523079",
+        "route_id": "240",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -115595,13 +118987,13 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -116363,7 +119755,7 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11147476433,
@@ -116607,7 +119999,7 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11147476433,
         "from_stop_name": null,
         "to_stop_id": 1041047045,
@@ -116843,13 +120235,45 @@
       "properties": {
         "direction_id": "r16523079",
         "route_id": "240",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 1041047045,
         "from_stop_name": "Bus Stop, Sector 34-A",
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 3117.2331728379927,
         "baseline_sec": 248,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523079",
+        "route_id": "240",
+        "sequence": 8,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -118347,6 +121771,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523080",
+        "route_id": "240",
+        "sequence": 3,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -118427,13 +121879,13 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 3,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -118503,7 +121955,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -118567,7 +122019,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -118631,7 +122083,7 @@
       "properties": {
         "direction_id": "r16523080",
         "route_id": "240",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -119867,6 +123319,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523623",
+        "route_id": "241",
+        "sequence": 3,
+        "from_stop_id": 11230148264,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 2088.8178451627523,
+        "baseline_sec": 254.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -119947,13 +123427,13 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 3,
-        "from_stop_id": 11230148264,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230165511,
         "to_stop_name": null,
-        "length_m": 3427.822537412643,
-        "baseline_sec": 144,
+        "length_m": 1339.0046922498911,
+        "baseline_sec": 136.7,
         "baseline_source": "osrm"
       }
     },
@@ -120023,7 +123503,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230165511,
         "from_stop_name": null,
         "to_stop_id": 11230163714,
@@ -120087,7 +123567,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11230163714,
         "from_stop_name": null,
         "to_stop_id": 10000240246,
@@ -120151,7 +123631,7 @@
       "properties": {
         "direction_id": "r16523623",
         "route_id": "241",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 10000240246,
         "from_stop_name": "Housing Board Chowk",
         "to_stop_id": 10744858599,
@@ -120427,6 +123907,34 @@
             30.703092900000005
           ],
           [
+            76.81902228480571,
+            30.702862133418474
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523644",
+        "route_id": "241",
+        "sequence": 3,
+        "from_stop_id": 11230165511,
+        "from_stop_name": null,
+        "to_stop_id": 2914440106,
+        "to_stop_name": "Chandigarh Railway Station",
+        "length_m": 1157.5893533712137,
+        "baseline_sec": 220,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.81902228480571,
+            30.702862133418474
+          ],
+          [
             76.8189046,
             30.702689500000005
           ],
@@ -120543,13 +124051,13 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 3,
-        "from_stop_id": 11230165511,
-        "from_stop_name": null,
+        "sequence": 4,
+        "from_stop_id": 2914440106,
+        "from_stop_name": "Chandigarh Railway Station",
         "to_stop_id": 11230148264,
         "to_stop_name": null,
-        "length_m": 3316.3744390881325,
-        "baseline_sec": 250.5,
+        "length_m": 2158.7850857169187,
+        "baseline_sec": 271.8,
         "baseline_source": "osrm"
       }
     },
@@ -120603,7 +124111,7 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 4,
+        "sequence": 5,
         "from_stop_id": 11230148264,
         "from_stop_name": null,
         "to_stop_id": 11335525458,
@@ -120679,7 +124187,7 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 5,
+        "sequence": 6,
         "from_stop_id": 11335525458,
         "from_stop_name": null,
         "to_stop_id": 11364089920,
@@ -121935,13 +125443,45 @@
       "properties": {
         "direction_id": "r16523644",
         "route_id": "241",
-        "sequence": 6,
+        "sequence": 7,
         "from_stop_id": 11364089920,
         "from_stop_name": null,
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
         "length_m": 12141.843396755063,
         "baseline_sec": 529.1,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.7428328,
+            30.7164931
+          ],
+          [
+            76.7435399,
+            30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523644",
+        "route_id": "241",
+        "sequence": 8,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
         "baseline_source": "osrm"
       }
     },
@@ -122943,6 +126483,34 @@
             30.716895199999993
           ],
           [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523676",
+        "route_id": "242",
+        "sequence": 2,
+        "from_stop_id": 1041047045,
+        "from_stop_name": "Bus Stop, Sector 34-A",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 3198.9459078033624,
+        "baseline_sec": 326,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
+          ],
+          [
             76.743835,
             30.7170381
           ],
@@ -123175,13 +126743,13 @@
       "properties": {
         "direction_id": "r16523676",
         "route_id": "242",
-        "sequence": 2,
-        "from_stop_id": 1041047045,
-        "from_stop_name": "Bus Stop, Sector 34-A",
+        "sequence": 3,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 1425480419,
         "to_stop_name": "ISBT",
-        "length_m": 4585.5299718503775,
-        "baseline_sec": 248,
+        "length_m": 1386.584064047016,
+        "baseline_sec": 140.7,
         "baseline_source": "osrm"
       }
     },
@@ -123197,6 +126765,34 @@
           [
             76.7435399,
             30.716895199999993
+          ],
+          [
+            76.74354566903439,
+            30.716897993623085
+          ]
+        ]
+      },
+      "properties": {
+        "direction_id": "r16523677",
+        "route_id": "242",
+        "sequence": 0,
+        "from_stop_id": 1425480419,
+        "from_stop_name": "ISBT",
+        "to_stop_id": 28845205,
+        "to_stop_name": "CTU Local Bus Station 43",
+        "length_m": 81.71273496536958,
+        "baseline_sec": 166.7,
+        "baseline_source": "osrm"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            76.74354566903439,
+            30.716897993623085
           ],
           [
             76.743835,
@@ -123307,13 +126903,13 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 0,
-        "from_stop_id": 1425480419,
-        "from_stop_name": "ISBT",
+        "sequence": 1,
+        "from_stop_id": 28845205,
+        "from_stop_name": "CTU Local Bus Station 43",
         "to_stop_id": 4306384689,
         "to_stop_name": "Sector 43-44 road",
-        "length_m": 1237.4343667815504,
-        "baseline_sec": 57.5,
+        "length_m": 1155.721631816181,
+        "baseline_sec": 109.5,
         "baseline_source": "osrm"
       }
     },
@@ -123499,7 +127095,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 1,
+        "sequence": 2,
         "from_stop_id": 4306384689,
         "from_stop_name": "Sector 43-44 road",
         "to_stop_id": 1041047045,
@@ -123603,7 +127199,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 2,
+        "sequence": 3,
         "from_stop_id": 1041047045,
         "from_stop_name": "Bus Stop, Sector 34-A",
         "to_stop_id": 11147476433,
@@ -124207,7 +127803,7 @@
       "properties": {
         "direction_id": "r16523677",
         "route_id": "242",
-        "sequence": 3,
+        "sequence": 4,
         "from_stop_id": 11147476433,
         "from_stop_name": null,
         "to_stop_id": 11053559568,
