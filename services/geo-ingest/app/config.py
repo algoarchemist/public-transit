@@ -10,8 +10,9 @@ SNAPSHOT_DIR = REPO_ROOT / "data" / "snapshots"
 @dataclass
 class Settings:
     overpass_url: str = os.environ.get("OVERPASS_URL", "https://overpass-api.de/api/interpreter")
-    # Swap to a self-hosted instance once Docker/OSRM is up (see docs/IMPLEMENTATION_ARCHITECTURE.md §4.2) —
-    # the public demo server is not for batch use and will throttle a full-city enrichment pass.
+    # Defaults to the self-hosted instance (docker-compose.yml's `osrm` service, see
+    # infra/docker/osrm/build.sh) via .env's OSRM_URL. The public demo server here is
+    # just a fallback — it's not for batch use and will throttle a full-city pass.
     osrm_url: str = os.environ.get("OSRM_URL", "https://router.project-osrm.org")
     # Optional upgrade over the free OSRM/OSM path: denser real stop discovery (Places
     # Nearby Search) and traffic-conditioned segment durations (Distance Matrix). Every

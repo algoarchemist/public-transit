@@ -18,7 +18,7 @@ matters and is defended in §5.4.
 
 | Component | State |
 |---|---|
-| `apps/admin-dashboard` | Vite+React+TS+Tailwind, routed shell, 6 stub pages. Builds. |
+| `apps/admin-dashboard` | Vite+React+TS+Tailwind, routed shell, 5 stub pages + a real Live Fleet Map (`useFleetSocket` + `FleetMap`, MapLibre, socket.io-client against `gateway.ts`'s new `admin:fleet` room). Builds. |
 | `apps/mobile-app` | One Flutter app, both roles — startup screen picks Passenger vs Driver/Conductor, persisted via `shared_preferences`. Driver flow has a real, tested divergence-triggered GPS transmitter + SQLite offline buffer (§7.4); passenger flow is still screen stubs. **No platform folders** — needs `flutter create .` |
 | `services/api-gateway` | NestJS, 4 modules (routes/buses/tickets/auth) with stub returns. Builds. |
 | `services/ml-service` | FastAPI, `/eta/predict` + `/crowd/predict`, naive baselines. Runs. |
@@ -26,21 +26,34 @@ matters and is defended in §5.4.
 | `services/geo-ingest` | Python. Real OSM/OSRM route+stop ingestion — 100 real CTU route directions reconciled and enriched with real OSRM segment baselines, committed as a GeoJSON/GTFS snapshot (see its own README and §4, §11.1). |
 | `services/simulator` | Python. GPS simulator (Phase 2/3, §10) — walks real routes with congestion/crowd models calibrated against real OSRM baselines; `--mode=live` (divergence-triggered MQTT publish, mirrors the mobile-app transmitter) and `--mode=backfill` (training corpus CSV). Verified against all 100 real routes; caught and fixed 3 real bugs along the way, one of which (a flawed "first stop = distance 0" assumption) also existed in `stream-processor/routeStore.ts` and is now fixed in both — see its own README. |
 | `packages/shared-types` | GPS/bus-state/ML request-response types. Builds. |
-| `docker-compose.yml` | Postgres+PostGIS, Redis, Redpanda, EMQX. **Never started — Docker not installed.** |
+| `docker-compose.yml` | Postgres+PostGIS, Redis, Redpanda, EMQX, self-hosted OSRM (tricity bbox, `infra/docker/osrm/`). **Up and healthy** (`docker compose up -d`). |
 
 Real data now flows through the stream-processor: `routeStore.ts` loads the
 committed geo-ingest snapshot at process start, and map-matching / dead reckoning
-run against that real geometry — not stubs. What's still wiring-with-`TODO`: the
-protobuf wire format, batched (rather than per-ping) map-matching/ETA scoring, and
-everything gated on Docker (PostGIS-backed persistence, the actual MQTT/Kafka/Redis
-transport this has all been tested to run *through* but not yet run *on*, since
-Docker isn't installed here).
+run against that real geometry — not stubs. The live MQTT→consumer→Kafka→gateway→
+Socket.IO chain has been run end-to-end against simulated buses (§10 Phase 2) — real
+map-matching, real (naive-baseline) ETA scoring, Kafka consumer lag 0, and now the
+admin dashboard's Live Fleet Map actually subscribed and rendering (server-side
+confirmed live; not yet human-eyeballed in a browser as of this writing). What's
+still wiring-with-`TODO`: the protobuf wire format, batched (rather than per-ping)
+map-matching/ETA scoring, and route-polyline overlay on the fleet map (no GeoJSON
+endpoint reachable by the browser yet). `db/migrations/` now
+creates the full §3 schema (plain PostGIS — TimescaleDB was dropped from the MVP
+scope for speed, see §2) and `persist.py` does real route/stop/segment upserts
+against it, not just `cities`.
 
 ### Environment gaps blocking work
 
-1. **Docker Desktop is not installed** — blocks Postgres/PostGIS, Redis, Redpanda, EMQX, and therefore blocks actually running the MQTT→Kafka→Redis→Socket.IO pipeline end-to-end (the logic on both sides of it — map-matching, dead reckoning, the transmitter — is built and unit-verified without it).
-2. **Flutter/Dart SDK is not installed** — blocks the mobile app (no platform folders, no way to run `dart analyze`/`flutter test`; the Dart source was reviewed by hand instead).
-3. Overpass and the public OSRM demo server are both reachable from this machine (verified).
+1. ~~Docker Desktop is not installed~~ — **resolved.** Docker Desktop is installed and
+   `docker compose up -d` brings up Postgres/PostGIS, Redis, Redpanda, EMQX, and a
+   self-hosted OSRM instance (tricity bbox) all healthy. Remaining PostGIS-write gap is
+   schema (`db/migrations` doesn't exist yet), not Docker.
+2. ~~Flutter/Dart SDK is not installed~~ — **resolved.** Flutter 3.44.8 is installed;
+   `apps/mobile-app` has real `android/`/`ios/` platform folders now (`flutter create .`
+   has been run), unblocking `flutter analyze`/`flutter test`.
+3. Overpass and the public OSRM demo server are both reachable from this machine
+   (verified) — though `geo-ingest`'s `OSRM_URL` now points at the self-hosted instance
+   by default (§4.2).
 
 ---
 
@@ -59,7 +72,8 @@ packages/
   proto/             [NEW]  .proto ping schema, codegen for TS / Python / Dart
   shared-types/      [exists]
 db/
-  migrations/        [NEW]  versioned SQL (PostGIS + TimescaleDB); replaces TypeORM synchronize
+  migrations/        [NEW]  versioned SQL (PostGIS); replaces TypeORM synchronize. TimescaleDB
+                     dropped from the MVP — plain indexed tables are enough at this data volume.
 data/
   cache/             raw Overpass/OSRM responses (reproducibility, rate-limit friendliness)
   snapshots/         committed GeoJSON + GTFS-static export of the ingested city
@@ -79,8 +93,12 @@ migrations; TypeORM entities become read models over that schema.
 
 ## 3. Data model
 
-PostgreSQL 16 + PostGIS 3.4 + TimescaleDB. All geometry `SRID 4326`; distance math in
-`geography` or a projected CRS (EPSG:32643, UTM 43N covers Punjab) — never raw degrees.
+PostgreSQL 16 + PostGIS 3.4. (TimescaleDB was in the original design for the
+time-series tables below but dropped from the MVP for speed/complexity — plain
+`time`-indexed tables instead of hypertables; §3.3's continuous-aggregate tables are
+deferred past MVP entirely, see `db/migrations/0001_init.sql`.) All geometry `SRID
+4326`; distance math in `geography` or a projected CRS (EPSG:32643, UTM 43N covers
+Punjab) — never raw degrees.
 
 ### 3.1 Static / reference tables
 
@@ -204,9 +222,11 @@ export into `data/snapshots/` so a run is reproducible and reviewable without a 
 - **Cache every raw response** under `data/cache/` keyed by query hash. Overpass allows
   2 concurrent slots; an uncached pipeline will get throttled and makes runs
   irreproducible.
-- **Self-host OSRM** in Docker for the enrichment pass (a Punjab OSM extract is small).
-  The public demo server is rate-limited and explicitly not for batch use — depending on
-  it would make the pipeline unreliable exactly when demoing.
+- **Self-host OSRM** in Docker for the enrichment pass — done, `docker-compose.yml`'s
+  `osrm` service serves a pre-built tricity-bbox graph (`infra/docker/osrm/build.sh`
+  reproduces it from a fresh Overpass extract). The public demo server is rate-limited
+  and explicitly not for batch use, so `OSRM_URL` defaults to the self-hosted instance
+  now; it's still available as a manual fallback.
 - **Idempotent by `osm_node_id` / `osm_relation_id`** so re-running updates rather than
   duplicates.
 - **Validation gate** — reject a route if the polyline is discontinuous, if stop
@@ -457,9 +477,9 @@ Ordered by dependency; each phase ends with something demonstrable.
 
 | Phase | Deliverable | Depends on |
 |---|---|---|
-| **0. Unblock** | Docker Desktop + Flutter SDK installed; `docker compose up` green; self-hosted OSRM with a Punjab extract | — |
-| **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. PostGIS write still soft-fails (Docker not up) — snapshot-only for now, by design. | 0 |
-| **2. Safety-net MVP** | `simulator --mode=live` built and verified (all 100 real routes, 3 real bugs caught+fixed) but never actually run through MQTT → consumer → Redis/Kafka → gateway → **dot on the admin map** — that whole chain is still blocked on Docker (Phase 0). The consumer/gateway/map-matching/degradation-ladder side is real and tested in isolation (§7.3–7.4); only the live end-to-end wiring is unverified. | 1 |
+| **0. Unblock** | ✅ Docker Desktop + Flutter SDK installed; `docker compose up` green (postgres/redis/redpanda/emqx/osrm all healthy); self-hosted OSRM serving the tricity bbox | — |
+| **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. `db/migrations/` (plain PostGIS, no TimescaleDB — MVP scale doesn't need hypertables) creates the full §3 schema; `persist.py` now does real route/stop/segment upserts against it (idempotent by `osm_relation_id`/`osm_node_id`, §4.2), verified against a synthetic fixture exercising every write path including the `ST_LineLocatePoint` stop-projection. Not yet re-verified against a full live 100-route Overpass run — that's the next thing to actually do, not a design gap. | 0 |
+| **2. Safety-net MVP** | ✅ Live end-to-end wiring verified: `simulator --mode=live` → EMQX → `consumer.ts` (real map-match + naive-baseline ETA from `ml-service` + Redis) → Redpanda → `gateway.ts` (consumer group lag 0) → Socket.IO. `apps/admin-dashboard`'s `LiveFleetMap.tsx` now subscribes for real (`useFleetSocket` + `FleetMap`, MapLibre, a new `admin:fleet` broadcast room in `gateway.ts`) — backend confirmed serving it live traffic (Kafka lag 0, Redis position keys populated) while the page was up. The rendered "dot on the map" hasn't been eyeballed by a human yet (no browser automation available in this environment) — everything server-side of the browser is verified live; the pixels aren't. | 1 |
 | **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
 | **4. ETA model** | Feature extraction, LightGBM, time-split eval, ONNX export, `/eta/predict-batch` live; naive baseline retired | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |

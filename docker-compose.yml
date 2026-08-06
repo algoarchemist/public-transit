@@ -33,7 +33,10 @@ services:
       - --overprovisioned
       - --node-id=0
       - --kafka-addr=PLAINTEXT://0.0.0.0:9092
-      - --advertise-kafka-addr=PLAINTEXT://redpanda:9092
+      # Everything that talks to Kafka (consumer.ts, gateway.ts, the simulator) runs on
+      # the host, not inside the compose network — advertise localhost so the metadata
+      # redpanda hands back on connect is actually reachable, not just the bootstrap port.
+      - --advertise-kafka-addr=PLAINTEXT://localhost:9092
     ports:
       - "9092:9092"
     volumes:
@@ -46,6 +49,18 @@ services:
       - "18083:18083" # dashboard (admin/public by default)
     volumes:
       - emqx-data:/opt/emqx/data
+
+  # Self-hosted routing for the Chandigarh Tricity bbox — replaces the public demo
+  # server geo-ingest falls back to. Graph is pre-built (osrm-extract/partition/
+  # customize already run against infra/docker/osrm/data/tricity.osm); this just
+  # serves it. Rebuild via infra/docker/osrm/build.sh if the bbox or OSM data changes.
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend
+    command: osrm-routed --algorithm mld /data/tricity.osrm
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./infra/docker/osrm/data:/data
 
 volumes:
   postgres-data:

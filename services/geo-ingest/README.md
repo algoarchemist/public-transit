@@ -43,7 +43,7 @@ PostGIS write if `DATABASE_URL` is reachable, soft-failing (snapshot-only) if no
 | `persist.py` | 4. Persist | GeoJSON/GTFS snapshot (always) + PostGIS (best-effort). |
 | `google_maps.py` | 3 (optional) | Places Nearby Search + Distance Matrix client. No-ops entirely if `GOOGLE_MAPS_API_KEY` is unset — **not yet live-tested**, no key was available when this was written. |
 | `geometry.py` | shared | UTM-projected length/projection/substring/distance helpers. |
-| `osrm.py` | shared | Free-flow routing/duration client (public demo server; self-host once Docker is up). |
+| `osrm.py` | shared | Free-flow routing/duration client (self-hosted via `docker compose up -d osrm`, tricity bbox — see `infra/docker/osrm/build.sh`). |
 
 ### Reconciliation paths, in the order `main._reconcile_one` tries them
 

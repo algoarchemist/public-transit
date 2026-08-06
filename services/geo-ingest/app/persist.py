@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 
 from app.config import SNAPSHOT_DIR, settings
-from app.models import CanonicalRoute
+from app.models import CanonicalRoute, CanonicalStop
 
 logger = logging.getLogger(__name__)
 
@@ -167,9 +167,125 @@ def write_gtfs_static(city_name: str, routes: list[CanonicalRoute]) -> Path:
     return city_dir
 
 
+def _point_wkt(lon: float, lat: float) -> str:
+    return f"POINT({lon} {lat})"
+
+
+def _linestring_wkt(coords: list[tuple[float, float]]) -> str:
+    return "LINESTRING(" + ", ".join(f"{lon} {lat}" for lon, lat in coords) + ")"
+
+
+def _upsert_city(cur, city_name: str) -> int:
+    # DO UPDATE (not DO NOTHING) so RETURNING always yields a row, including on a
+    # second run against an already-seeded city — DO NOTHING returns nothing on
+    # conflict, which would leave city_id unbound for every route insert below.
+    cur.execute(
+        "INSERT INTO cities (name, state) VALUES (%s, %s) "
+        "ON CONFLICT (name) DO UPDATE SET state = EXCLUDED.state "
+        "RETURNING id",
+        (city_name, "Punjab"),
+    )
+    return cur.fetchone()[0]
+
+
+def _upsert_route(cur, city_id: int, route: CanonicalRoute) -> int:
+    # GTFS-style headsign as a stand-in for `direction` — same derivation
+    # write_gtfs_static already uses for trip_headsign.
+    direction = (route.name or "").split("=>")[-1].strip() or None
+    cur.execute(
+        """
+        INSERT INTO routes (city_id, ref, name, operator, direction, osm_relation_id, source, geom, length_m)
+        VALUES (%(city_id)s, %(ref)s, %(name)s, %(operator)s, %(direction)s, %(osm_relation_id)s,
+                %(source)s, ST_GeomFromText(%(geom_wkt)s, 4326), %(length_m)s)
+        ON CONFLICT (city_id, osm_relation_id) WHERE osm_relation_id IS NOT NULL
+        DO UPDATE SET ref = EXCLUDED.ref, name = EXCLUDED.name, operator = EXCLUDED.operator,
+                       direction = EXCLUDED.direction, source = EXCLUDED.source,
+                       geom = EXCLUDED.geom, length_m = EXCLUDED.length_m
+        RETURNING id
+        """,
+        {
+            "city_id": city_id,
+            "ref": route.ref,
+            "name": route.name,
+            "operator": route.operator,
+            "direction": direction,
+            "osm_relation_id": route.osm_relation_id,
+            "source": route.source.value,
+            "geom_wkt": _linestring_wkt(route.geom_lonlat),
+            "length_m": route.length_m,
+        },
+    )
+    return cur.fetchone()[0]
+
+
+def _upsert_stop(cur, city_id: int, stop: CanonicalStop) -> int:
+    cur.execute(
+        """
+        INSERT INTO stops (city_id, osm_node_id, name, geom, footfall_prior)
+        VALUES (%s, %s, %s, ST_GeomFromText(%s, 4326), %s)
+        ON CONFLICT (city_id, osm_node_id) DO UPDATE
+        SET name = EXCLUDED.name, geom = EXCLUDED.geom, footfall_prior = EXCLUDED.footfall_prior
+        RETURNING id
+        """,
+        (city_id, stop.osm_node_id, stop.name, _point_wkt(stop.lon, stop.lat), stop.footfall_prior),
+    )
+    return cur.fetchone()[0]
+
+
+def _replace_route_stops(cur, route_id: int, route: CanonicalRoute, stop_ids: list[int]) -> None:
+    """Delete-then-reinsert rather than an upsert: the ordered stop list can shrink or
+    reorder between runs, and diffing that is more code than just replacing it — this
+    table has no other tables depending on its rows surviving, so it's safe."""
+    cur.execute("DELETE FROM route_stops WHERE route_id = %s", (route_id,))
+    for sequence, stop_id in enumerate(stop_ids):
+        # dist_along_route_m computed here (not in Python) so it's the exact same
+        # ST_LineLocatePoint projection docs/IMPLEMENTATION_ARCHITECTURE.md §3.1
+        # specifies, and the same one stream-processor/simulator project stops onto —
+        # summing segment lengths instead was the bug both of those fixed (see
+        # services/simulator/README.md "Bugs found").
+        cur.execute(
+            """
+            INSERT INTO route_stops (route_id, stop_id, sequence, dist_along_route_m)
+            SELECT %(route_id)s, %(stop_id)s, %(sequence)s,
+                   ST_LineLocatePoint(r.geom, s.geom) * r.length_m
+            FROM routes r, stops s
+            WHERE r.id = %(route_id)s AND s.id = %(stop_id)s
+            """,
+            {"route_id": route_id, "stop_id": stop_id, "sequence": sequence},
+        )
+
+
+def _replace_route_segments(
+    cur, route_id: int, route: CanonicalRoute, stop_id_by_osm_node: dict[int, int]
+) -> None:
+    cur.execute("DELETE FROM route_segments WHERE route_id = %s", (route_id,))
+    for seg in route.segments:
+        cur.execute(
+            """
+            INSERT INTO route_segments
+                (route_id, sequence, from_stop_id, to_stop_id, geom, length_m,
+                 osrm_baseline_sec, dominant_highway_class)
+            VALUES (%s, %s, %s, %s, ST_GeomFromText(%s, 4326), %s, %s, %s)
+            """,
+            (
+                route_id,
+                seg.sequence,
+                stop_id_by_osm_node[seg.from_stop.osm_node_id],
+                stop_id_by_osm_node[seg.to_stop.osm_node_id],
+                _linestring_wkt(seg.geom_lonlat),
+                seg.length_m,
+                seg.osrm_baseline_sec,
+                seg.dominant_highway_class,
+            ),
+        )
+
+
 def try_write_postgis(city_name: str, routes: list[CanonicalRoute]) -> bool:
     """Returns True if the write succeeded, False if PostGIS just isn't reachable yet
-    (expected while Docker isn't running — this is a soft-fail, not a pipeline abort)."""
+    (soft-fail, not a pipeline abort — the GeoJSON/GTFS snapshot above is already
+    written regardless). Full route/stop/segment upsert against db/migrations/
+    (docs/IMPLEMENTATION_ARCHITECTURE.md §3); idempotent by (city, osm_relation_id)
+    for routes and (city, osm_node_id) for stops — see §4.2."""
     if not settings.database_url:
         logger.warning("DATABASE_URL not set — skipping PostGIS write, snapshot-only for now")
         return False
@@ -183,17 +299,22 @@ def try_write_postgis(city_name: str, routes: list[CanonicalRoute]) -> bool:
     try:
         with psycopg.connect(settings.database_url, connect_timeout=5) as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    "INSERT INTO cities (name, state) VALUES (%s, %s) "
-                    "ON CONFLICT (name) DO NOTHING RETURNING id",
-                    (city_name, "Punjab"),
-                )
-                # Full route/stop/segment upserts land here once db/migrations exist
-                # (docs/IMPLEMENTATION_ARCHITECTURE.md §3) — this connects the pipeline
-                # end-to-end without yet duplicating the schema DDL in Python.
-                conn.commit()
-        logger.info("wrote %d routes to PostGIS for %s", len(routes), city_name)
+                city_id = _upsert_city(cur, city_name)
+                for route in routes:
+                    route_id = _upsert_route(cur, city_id, route)
+                    stop_ids = [_upsert_stop(cur, city_id, stop) for stop in route.stops]
+                    stop_id_by_osm_node = dict(zip((s.osm_node_id for s in route.stops), stop_ids))
+                    _replace_route_stops(cur, route_id, route, stop_ids)
+                    _replace_route_segments(cur, route_id, route, stop_id_by_osm_node)
+            conn.commit()
+        logger.info(
+            "wrote %d routes (%d stops, %d segments) to PostGIS for %s",
+            len(routes),
+            sum(len(r.stops) for r in routes),
+            sum(len(r.segments) for r in routes),
+            city_name,
+        )
         return True
     except Exception:
-        logger.warning("PostGIS not reachable (Docker not up?) — snapshot-only for now", exc_info=True)
+        logger.warning("PostGIS write failed — snapshot-only for now", exc_info=True)
         return False

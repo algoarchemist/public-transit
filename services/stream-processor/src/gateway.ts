@@ -61,6 +61,8 @@ function startDegradationWatchdog(io: Server, redisClient: Redis) {
 
       io.to(`bus:${busId}`).emit('bus:update', payload);
       io.to(`route:${hash.routeId}`).emit('bus:update', payload);
+      // admin:fleet mirrors the two rooms above — keep all three in sync on future edits.
+      io.to('admin:fleet').emit('bus:update', payload);
     }
   }, WATCHDOG_INTERVAL_MS);
 }
@@ -76,6 +78,10 @@ async function main() {
   io.adapter(createAdapter(pubClient, subClient));
 
   io.on('connection', (socket) => {
+    // Every client sees the whole fleet by default — there's no meaningful "opt out
+    // of the whole fleet" case for an admin view, so this is an unconditional join
+    // rather than a subscribe:fleet round-trip like the per-bus/per-route rooms below.
+    socket.join('admin:fleet');
     socket.on('subscribe:bus', (busId: string) => socket.join(`bus:${busId}`));
     socket.on('subscribe:route', (routeId: string) => socket.join(`route:${routeId}`));
     socket.on('unsubscribe:bus', (busId: string) => socket.leave(`bus:${busId}`));
@@ -95,6 +101,8 @@ async function main() {
       // proportional to active viewers, not total fleet size (solution doc section 5.1 step 5).
       io.to(`bus:${state.busId}`).emit('bus:update', state);
       io.to(`route:${state.routeId}`).emit('bus:update', state);
+      // admin:fleet mirrors the two rooms above — keep all three in sync on future edits.
+      io.to('admin:fleet').emit('bus:update', state);
     },
   });
 

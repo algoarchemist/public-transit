@@ -2,10 +2,11 @@
 1. Path B route synthesis (snap an ordered list of real stop coords to the road network)
 2. Per-segment baseline duration + dominant road class (Stage 3 enrichment)
 
-Pointed at the public demo server for now (verified reachable). Swap OSRM_URL to a
-self-hosted instance once Docker is available — the public server explicitly asks not
+Points at the self-hosted OSRM instance (see infra/docker/osrm/build.sh,
+docker-compose.yml's `osrm` service) by default now that Docker is up. Falls back to
+the public demo server if OSRM_URL is repointed at it — that server explicitly asks not
 to be used for batch workloads (see docs/IMPLEMENTATION_ARCHITECTURE.md §4.2), so this
-client throttles itself to `max_concurrent_osrm_requests`.
+client throttles itself to `max_concurrent_osrm_requests` regardless of target.
 """
 from __future__ import annotations
 
