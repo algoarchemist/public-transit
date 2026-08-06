@@ -1,6 +1,6 @@
 {
-  "trained_at": "2026-08-06T08:05:55.102161+00:00",
-  "git_sha": "c08c16607e448e91c76c8b67d0d936e5c7c60e7f",
+  "trained_at": "2026-08-06T08:40:12.143788+00:00",
+  "git_sha": "cbb4d291cac3532f0498a5a23ff97e695fe4ec0e",
   "smoke_run": false,
   "snapshot_label": "mohali-tricity",
   "feature_columns": [

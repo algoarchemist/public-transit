@@ -73,7 +73,7 @@ class Dataset:
     fallback_counts: dict[str, int]  # how often each historical lookup missed its bucket
 
 
-def _load_segments(label: str) -> dict[tuple[str, int], SegmentInfo]:
+def load_segments(label: str) -> dict[tuple[str, int], SegmentInfo]:
     path = REPO_ROOT / "data" / "snapshots" / label / "segments.geojson"
     fc = json.loads(path.read_text(encoding="utf-8"))
     out: dict[tuple[str, int], SegmentInfo] = {}
@@ -90,7 +90,7 @@ def _load_segments(label: str) -> dict[tuple[str, int], SegmentInfo]:
     return out
 
 
-def _load_stop_events(label: str) -> pd.DataFrame:
+def load_stop_events(label: str) -> pd.DataFrame:
     path = REPO_ROOT / "data" / "backfill" / label / "stop_events.csv"
     df = pd.read_csv(path)
     df = df.sort_values(["trip_id", "sequence"]).reset_index(drop=True)
@@ -101,18 +101,25 @@ def _ist(ms: int) -> datetime:
     return datetime.fromtimestamp(ms / 1000, tz=IST)
 
 
+def enrich_stop_events(events: pd.DataFrame) -> pd.DataFrame:
+    """Adds IST-local arrived_dt/departed_dt/service_date columns to a raw
+    stop_events.csv frame. Shared by build_dataset (below) and
+    train/refresh_stats.py so both compute hour/dow/service-date the same way."""
+    events = events.copy()
+    events["arrived_dt"] = events["arrived_at"].map(_ist)
+    events["departed_dt"] = events["departed_at"].map(_ist)
+    events["service_date"] = events["departed_dt"].dt.date
+    return events
+
+
 def build_dataset(
     label: str = "mohali-tricity",
     train_days: int = 60,
     val_days: int = 15,
     test_days: int = 15,
 ) -> Dataset:
-    segments = _load_segments(label)
-    events = _load_stop_events(label)
-
-    events["arrived_dt"] = events["arrived_at"].map(_ist)
-    events["departed_dt"] = events["departed_at"].map(_ist)
-    events["service_date"] = events["departed_dt"].dt.date
+    segments = load_segments(label)
+    events = enrich_stop_events(load_stop_events(label))
 
     all_dates = sorted(events["service_date"].unique())
     available_days = len(all_dates)
@@ -157,7 +164,7 @@ def build_dataset(
     train_events["hour"] = train_events["departed_dt"].dt.hour
     # duration_sec computed per-trip below is needed for both the label AND these
     # aggregates, so pass 1 also builds the per-row traversal table for train rows.
-    seg_durations = _traversal_durations(train_events, segments)
+    seg_durations = traversal_durations(train_events, segments)
     if not seg_durations.empty:
         recent_cutoff = max(train_dates) - timedelta(days=6) if train_dates else None
         speed_30d = (
@@ -278,12 +285,14 @@ def build_dataset(
                     fallback_counts=fallback_counts)
 
 
-def _traversal_durations(train_events: pd.DataFrame, segments: dict[tuple[str, int], SegmentInfo]) -> pd.DataFrame:
-    """One row per completed segment traversal within the training window — used only
-    to build the frozen historical-stats tables in pass 1, never as feature rows
-    themselves (pass 2 rebuilds features for every split from scratch)."""
+def traversal_durations(events: pd.DataFrame, segments: dict[tuple[str, int], SegmentInfo]) -> pd.DataFrame:
+    """One row per completed segment traversal in `events` — real (direction_id,
+    sequence, hour, service_date, duration_sec, speed_mps) ground truth. Used by
+    build_dataset (below, over the training-window slice only, to build frozen
+    historical-stats tables in pass 1 — never as feature rows themselves) and by
+    train/refresh_stats.py (over the whole corpus, to populate segment_travel_stats)."""
     out = []
-    for trip_id, grp in train_events.groupby("trip_id", sort=False):
+    for trip_id, grp in events.groupby("trip_id", sort=False):
         grp = grp.sort_values("sequence")
         recs = grp.to_dict("records")
         direction_id = recs[0]["direction_id"] if recs else None
@@ -299,6 +308,7 @@ def _traversal_durations(train_events: pd.DataFrame, segments: dict[tuple[str, i
             out.append({
                 "direction_id": direction_id,
                 "sequence": i,
+                "route_id": seg.route_id,
                 "hour": recs[i]["departed_dt"].hour,
                 "service_date": recs[i]["service_date"],
                 "duration_sec": duration,

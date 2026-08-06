@@ -6,3 +6,4 @@ pandas>=2.2
 scikit-learn>=1.5
 onnxmltools>=1.13
 skl2onnx>=1.17
+psycopg[binary]>=3.2

@@ -31,6 +31,7 @@ import { config } from './config';
 import { ACTIVE_BUSES_KEY, busOccupancyKey, busPositionKey } from './redisClient';
 import { getDirection, type RouteSegmentInfo } from './routeStore';
 import { predictEtaBatch, type BusEtaQuery, type SegmentEtaFeatures } from './etaBatchClient';
+import { getSegmentStat, getDwellStat, lookupCounts } from './statsStore';
 
 const BUS_STATE_TOPIC = 'bus-state-updates';
 const N_UPCOMING_STOPS = 3; // docs §6.4: "the passenger UI shows the next three stops"
@@ -104,24 +105,38 @@ function buildQuery(row: LiveBusRow): BusEtaQuery | null {
 
   const segments: SegmentEtaFeatures[] = upcoming.map((seg: RouteSegmentInfo, i: number) => {
     const isCurrent = i === 0;
-    const baselineSpeed = seg.avgSpeedMps ?? FALLBACK_SPEED_MPS;
+    const stopId = String(seg.toStopId ?? `${row.directionId}:${seg.sequence}`);
+    const baselineSpeedMps = seg.avgSpeedMps ?? FALLBACK_SPEED_MPS;
+
+    // segment_travel_stats (db/migrations/0003_derived_stats.sql) if a real bucket
+    // exists for this (direction, segment, hour); otherwise the OSRM free-flow
+    // baseline — a real, route-specific number, but not a rolling historical
+    // average (see this module's docstring).
+    const stat30d = getSegmentStat(row.directionId, seg.sequence, hour, dow, '30d');
+    const stat7d = getSegmentStat(row.directionId, seg.sequence, hour, dow, '7d');
+    const speed30dMps = stat30d ? stat30d.avgSpeedKmh / 3.6 : baselineSpeedMps;
+    const speed7dMps = stat7d ? stat7d.avgSpeedKmh / 3.6 : baselineSpeedMps;
+
+    const dwellStat = getDwellStat(stopId, hour, dow);
+    const dwellPriorSec = dwellStat ? dwellStat.p50DwellSec : DWELL_PRIOR_FALLBACK_SEC;
+
     const distanceToStopM = isCurrent
       ? Math.max(seg.toDistAlongRouteM - row.distAlongRouteM, 0)
       : seg.lengthM;
     const liveTrafficFactor = isCurrent && row.speedMps > 0
-      ? clamp(row.speedMps / baselineSpeed, LIVE_TRAFFIC_FACTOR_CLAMP)
+      ? clamp(row.speedMps / baselineSpeedMps, LIVE_TRAFFIC_FACTOR_CLAMP)
       : 1.0; // no observation yet for a segment the bus hasn't entered
 
     return {
-      stop_id: String(seg.toStopId ?? `${row.directionId}:${seg.sequence}`),
-      segment_avg_speed_7d: baselineSpeed,
-      segment_avg_speed_30d: baselineSpeed,
+      stop_id: stopId,
+      segment_avg_speed_7d: speed7dMps,
+      segment_avg_speed_30d: speed30dMps,
       time_of_day_bucket: hour,
       day_of_week: dow,
       distance_to_stop_m: distanceToStopM,
       current_delay_sec: 0, // no schedule to measure delay against — see module docstring
       weather_bucket: 0,
-      upcoming_stop_dwell_prior_sec: DWELL_PRIOR_FALLBACK_SEC,
+      upcoming_stop_dwell_prior_sec: dwellPriorSec,
       live_traffic_factor: liveTrafficFactor,
     };
   });
@@ -134,9 +149,21 @@ function buildQuery(row: LiveBusRow): BusEtaQuery | null {
  * update between batch ticks, instead of shipping position with no ETA at all. */
 export const latestEtaCache = new Map<string, { stopId: string; stopName: string | null; etaSeconds: number }[]>();
 
+const LOOKUP_LOG_INTERVAL_TICKS = 60; // ~once/minute at the default 1s tick
+let tickCount = 0;
+
 export function startEtaScoringLoop(redis: Redis, producer: Producer): NodeJS.Timeout {
   return setInterval(async () => {
     try {
+      tickCount++;
+      if (tickCount % LOOKUP_LOG_INTERVAL_TICKS === 0) {
+        // Observability for the segment_travel_stats/stop_dwell_stats fallback rate —
+        // same honesty principle as ml-service's dataset.py fallback_counts. A
+        // consistently high miss rate means the stats tables need a re-run of
+        // refresh_stats.py (stale/missing), not that anything here is broken.
+        console.log(`[etaScoringLoop] stats lookup rates since start: ${JSON.stringify(lookupCounts)}`);
+      }
+
       const liveBuses = await loadLiveBuses(redis);
       if (liveBuses.length === 0) return;
 

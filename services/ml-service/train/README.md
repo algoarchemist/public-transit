@@ -24,6 +24,22 @@ signal a full 60-day window provides. `historical_stat_fallback_counts` in
 metrics.json is exactly this — check it's a small fraction of row count before
 trusting the run.
 
+## Refreshing segment_travel_stats / stop_dwell_stats
+
+Separate from model training — this populates the Postgres tables
+`stream-processor`'s live ETA scoring reads (docs §3.3, §7.3 item 3), from the same
+backfill corpus:
+
+```
+python -m train.refresh_stats --label mohali-tricity
+```
+
+Needs `DATABASE_URL` set (or pass `--database-url`) and `psycopg[binary]` (in
+`requirements-train.txt`). Re-run after regenerating the backfill corpus — see
+`db/migrations/0003_derived_stats.sql`'s header comment and §3.3 for the full
+design (keying, the `dow=-1` sentinel, why this is a batch script and not a
+TimescaleDB continuous aggregate).
+
 ## What one training row is
 
 One row = one bus's traversal of one `route_segment`, start to finish (docs §6.2:
@@ -52,28 +68,35 @@ to keep test rows genuinely free of future leakage under the time-based split.
 bucket by hour-of-day but deliberately not by day-of-week (too sparse at 4
 trips/route/day — a same-weekday 7-day window has only ~1 matching day).
 
-## Serving-side gap: partially closed
+## Serving-side gap: mostly closed
 
-`services/stream-processor/src/etaScoringLoop.ts` (docs §7.3 item 3) now calls
+`services/stream-processor/src/etaScoringLoop.ts` (docs §7.3 item 3) calls
 `/eta/predict-batch` once a second for every live bus, replacing the old
-`etaClient.ts` per-ping `/eta/predict` call — that file is deleted. Feature quality
-improved but is still bounded by what §3.3's aggregate tables would provide once
-built:
+`etaClient.ts` per-ping `/eta/predict` call — that file is deleted. §3.3's
+`segment_travel_stats`/`stop_dwell_stats` tables are now built
+(`db/migrations/0003_derived_stats.sql`) and populated by `train/refresh_stats.py`
+(this directory — reuses `dataset.py`'s `load_segments`/`load_stop_events`/
+`traversal_durations` rather than re-parsing the corpus a second way), loaded into
+`stream-processor`'s `statsStore.ts` at startup:
 
-- `live_traffic_factor` is now a real live signal (this tick's observed speed ÷ the
-  current segment's OSRM baseline, clamped [0.2, 3.0]) instead of the old flat `1`.
-- `segment_avg_speed_7d` and `segment_avg_speed_30d` both still read the segment's
-  OSRM free-flow baseline (`routeStore`'s `avgSpeedMps`), not a genuine rolling
-  historical average — `segment_travel_stats` doesn't exist yet (§3.3, MVP cut).
-- `current_delay_sec` stays `0` (no per-trip schedule to measure delay against) and
-  `upcoming_stop_dwell_prior_sec` stays a flat constant (no `stop_dwell_stats`
-  table). `weather_bucket` stays `0` (nothing simulates or observes weather).
+- `live_traffic_factor` is a real live signal (this tick's observed speed ÷ the
+  current segment's OSRM baseline, clamped [0.2, 3.0]).
+- `segment_avg_speed_7d`/`segment_avg_speed_30d` and `upcoming_stop_dwell_prior_sec`
+  now read real rolling stats from Postgres where a (segment, hour)/(stop, hour)
+  bucket has one, falling back to the OSRM baseline / a flat constant where it
+  doesn't (`statsStore`'s `lookupCounts`, logged once a minute by
+  `etaScoringLoop.ts` — same honesty pattern as this directory's
+  `historical_stat_fallback_counts`).
+- `current_delay_sec` still stays `0` (no per-trip schedule to measure delay
+  against — buses run on randomized headways, not a fixed timetable) and
+  `weather_bucket` stays `0` (nothing simulates or observes weather).
 
-Net effect: this model is trained on genuine historical rolling aggregates and is
-correct to be, but it will predict less sharply live than `metrics.json` suggests
-until `segment_travel_stats`/`stop_dwell_stats` exist for real and `etaScoringLoop.ts`
-reads from them instead of the OSRM baseline. That table is the next real blocker on
-this specific gap, not a nice-to-have.
+What's still a real gap, and the honest reason this is "mostly" rather than fully
+closed: `segment_travel_stats`/`stop_dwell_stats` are populated from the *offline
+backfill corpus*, not live traffic. `consumer.ts` doesn't persist real-time
+`gps_pings`/`stop_events` to Postgres, so there's no live signal to aggregate from —
+re-running `refresh_stats.py` after a fresh backfill is currently the only way
+these tables update. That's the next real blocker, not a nice-to-have.
 
 ## Weather
 

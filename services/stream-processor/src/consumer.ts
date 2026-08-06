@@ -4,6 +4,7 @@ import { config } from './config';
 import { mapMatch, type RawGpsPing } from './mapMatch';
 import { redis, busPositionKey, busOccupancyKey, ACTIVE_BUSES_KEY } from './redisClient';
 import { startEtaScoringLoop, latestEtaCache } from './etaScoringLoop';
+import { startStatsStore } from './statsStore';
 
 // In a production AIS-140/EMQX deployment, raw GPS pings are bridged from MQTT into the
 // "raw-gps-pings" Kafka topic by EMQX's rule engine, and this process would be a pure Kafka
@@ -71,6 +72,7 @@ async function handlePing(ping: RawGpsPing) {
 
 async function main() {
   await producer.connect();
+  await startStatsStore();
   startEtaScoringLoop(redis, producer);
 
   const client = mqtt.connect(config.mqttBrokerUrl);

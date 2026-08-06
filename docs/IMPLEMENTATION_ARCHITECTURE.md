@@ -95,10 +95,12 @@ migrations; TypeORM entities become read models over that schema.
 
 PostgreSQL 16 + PostGIS 3.4. (TimescaleDB was in the original design for the
 time-series tables below but dropped from the MVP for speed/complexity — plain
-`time`-indexed tables instead of hypertables; §3.3's continuous-aggregate tables are
-deferred past MVP entirely, see `db/migrations/0001_init.sql`.) All geometry `SRID
-4326`; distance math in `geography` or a projected CRS (EPSG:32643, UTM 43N covers
-Punjab) — never raw degrees.
+`time`-indexed tables instead of hypertables. §3.3's `segment_travel_stats`/
+`stop_dwell_stats` are now built, but as plain tables populated by an offline
+batch script, not a live TimescaleDB continuous aggregate — see §3.3 and
+`db/migrations/0003_derived_stats.sql`.) All geometry `SRID 4326`; distance math
+in `geography` or a projected CRS (EPSG:32643, UTM 43N covers Punjab) — never raw
+degrees.
 
 ### 3.1 Static / reference tables
 
@@ -170,16 +172,46 @@ boarding_count, alighting_count
 
 **`alerts`** — `id, type enum('sos','breakdown','route_deviation','signal_lost'), trip_id, bus_id, geom, raised_at, resolved_at, notes`
 
-### 3.3 Derived feature tables
+### 3.3 Derived feature tables — ✅ built (`db/migrations/0003_derived_stats.sql`)
 
-**`segment_travel_stats`** — TimescaleDB continuous aggregate, refreshed hourly.
-This is the single most important table for ETA quality.
+**`segment_travel_stats`** — the single most important table for ETA quality.
 ```
-route_id, segment_id, dow, hour_bucket, window enum('7d','30d'),
+direction_id, sequence, route_id, dow, hour_bucket, agg_window enum('7d','30d'),
 avg_speed_kmh, p50_duration_sec, p85_duration_sec, sample_count
 ```
 
-**`stop_dwell_stats`** — `stop_id, dow, hour_bucket, p50_dwell_sec, avg_boarding, avg_alighting, sample_count`
+**`stop_dwell_stats`** — `stop_osm_node_id, dow, hour_bucket, p50_dwell_sec, avg_boarding, avg_alighting, sample_count`
+
+Two deliberate deviations from the schema as originally specified, both explained
+in full in `0003_derived_stats.sql`'s header comment:
+
+- **Keyed by `(direction_id, sequence)` / `stop_osm_node_id`, not `route_segments.id`/
+  `stops.id`.** The live in-memory pipeline (`stream-processor/routeStore.ts`,
+  `data/snapshots/<label>/segments.geojson`) never queries Postgres for anything —
+  it only knows the geojson snapshot's own identifiers. Keying these tables to match
+  avoids a fragile join between two separate id systems in a 1-second-tick hot loop.
+  `route_id` is carried as plain text for readability/filtering only, not a FK.
+- **Not a live TimescaleDB continuous aggregate — a batch script**
+  (`services/ml-service/train/refresh_stats.py`), re-run against the simulator's
+  backfill corpus. `consumer.ts` doesn't persist raw `gps_pings`/`stop_events` to
+  Postgres (a separate, still-open gap — see §7.3), so there's no live traffic to
+  continuously aggregate from yet; that's the actual reason TimescaleDB stayed out
+  of scope here, not `agg_window`/`hour_bucket` bucketing being unimportant.
+- **`dow` is schema-complete but populated as `-1`** ("any day") for every row: at
+  the simulator's ~4 trips/route/day, a (segment, dow, hour) cell over even a 30-day
+  window gets roughly 1-3 samples — too sparse to be a real per-weekday signal
+  rather than noise (the same finding `train/dataset.py` already made for the
+  offline training pipeline, which drops `dow` from its own bucket key for the same
+  reason). Consumers (`stream-processor/statsStore.ts`) look up the real `dow`
+  first, falling back to `-1` — real per-dow data can slot in later with no code
+  change on either side.
+
+First real run against the full 90-day/103-route corpus: 15,639 `segment_travel_stats`
+rows (94.5% of the realistically populatable (segment, hour, window) cells within the
+6am-10pm service window) and 559 `stop_dwell_stats` rows, spanning 33 distinct real
+stop ids — not a bug, matches `services/geo-ingest/README.md`'s already-documented
+finding that only ~30 of the tricity's real OSM stop nodes actually get matched to a
+route, shared across all 103 directions.
 
 ---
 
@@ -396,20 +428,26 @@ of that per-ping path. What IS built, replacing the earlier `mapMatch.ts` stub:
    names resolved where OSM has them. `etaClient.ts`'s old per-ping `/eta/predict`
    call (and its placeholder features) is deleted, not just unused.
 
-   Feature quality is real but still bounded by what §3.3's aggregate tables would
-   provide once built: `segment_avg_speed_7d/30d` both read the segment's OSRM
-   free-flow baseline (`routeStore`'s `avgSpeedMps`) rather than a genuine rolling
-   historical average — `segment_travel_stats`/`stop_dwell_stats` don't exist yet
-   (§2's MVP cut), so there's no rolling window to read one from. `live_traffic_factor`
-   IS a real live signal now (this tick's observed speed ÷ the current segment's
-   baseline, clamped to [0.2, 3.0]) rather than the old flat `1`.
-   `upcoming_stop_dwell_prior_sec` stays a flat constant, and `current_delay_sec`
-   stays `0` — there's no per-trip schedule to measure delay against (buses run on
-   randomized headways, not a fixed timetable) — see `etaScoringLoop.ts`'s module
-   docstring for the full honesty accounting. Net effect: the model trained in Phase
-   4 against genuine historical aggregates will predict less sharply live than
-   `metrics.json` suggests, until `segment_travel_stats`/`stop_dwell_stats` exist for
-   real.
+   Feature quality: `segment_avg_speed_7d/30d` and `upcoming_stop_dwell_prior_sec`
+   now read real rolling stats from §3.3's `segment_travel_stats`/`stop_dwell_stats`
+   (`statsStore.ts`, loaded into memory at startup and reloaded every 5 min — a
+   1-second-tick hot loop querying Postgres per bus per tick would add real load
+   for no benefit, since these tables only change when `refresh_stats.py` is
+   re-run). Verified against Postgres directly: a known cell
+   (`r16490723`, segment 0, hour 8, 30d window) returned `49.335205` km/h through
+   `statsStore.getSegmentStat`, matching the DB row exactly; an out-of-service-hours
+   lookup (3am) correctly returned `null`. `live_traffic_factor` is a real live
+   signal (this tick's observed speed ÷ the current segment's baseline, clamped to
+   [0.2, 3.0]). `current_delay_sec` still stays `0` — there's no per-trip schedule
+   to measure delay against (buses run on randomized headways, not a fixed
+   timetable) — see `etaScoringLoop.ts`'s module docstring for the full accounting.
+
+   What's still a real gap: these tables are populated from the *offline backfill
+   corpus*, not live traffic — `consumer.ts` doesn't persist raw `gps_pings`/
+   `stop_events` to Postgres, so there's nothing live to aggregate from yet. A
+   miss (no row for a given segment/hour/window) falls back to the OSRM baseline,
+   logged via `statsStore`'s `lookupCounts` (`etaScoringLoop.ts` reports the
+   hit/miss rate once a minute) rather than silently degrading unnoticed.
 4. Pipelined Redis writes (`bus:{id}:position` now also carries `directionId`,
    `distAlongRouteM`, `speedMps`, `nextStopId/Name` — the state the degradation
    ladder below needs) plus an `active-buses` Set the ladder's watchdog scans.
@@ -516,7 +554,7 @@ Ordered by dependency; each phase ends with something demonstrable.
 | **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. `db/migrations/` (plain PostGIS, no TimescaleDB — MVP scale doesn't need hypertables) creates the full §3 schema; `persist.py` now does real route/stop/segment upserts against it (idempotent by `osm_relation_id`/`osm_node_id`, §4.2), verified against a synthetic fixture exercising every write path including the `ST_LineLocatePoint` stop-projection. Not yet re-verified against a full live 100-route Overpass run — that's the next thing to actually do, not a design gap. | 0 |
 | **2. Safety-net MVP** | ✅ Live end-to-end wiring verified: `simulator --mode=live` → EMQX → `consumer.ts` (real map-match + naive-baseline ETA from `ml-service` + Redis) → Redpanda → `gateway.ts` (consumer group lag 0) → Socket.IO. `apps/admin-dashboard`'s `LiveFleetMap.tsx` now subscribes for real (`useFleetSocket` + `FleetMap`, MapLibre, a new `admin:fleet` broadcast room in `gateway.ts`) — backend confirmed serving it live traffic (Kafka lag 0, Redis position keys populated) while the page was up. The rendered "dot on the map" hasn't been eyeballed by a human yet (no browser automation available in this environment) — everything server-side of the browser is verified live; the pixels aren't. | 1 |
 | **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
-| **4. ETA model** | ✅ Trained and live. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, ONNX export) trained on the full 90-day/103-route corpus: per-segment MAE 5.8s vs naive baseline 49.4s (88.3% improvement), horizon-bucketed MAE well under the §6.2 target (<2min within a 10-min horizon) at every bucket including 10min+ (21.2s) — see `artifacts/metrics.json`. `/eta/predict-batch` is live and wired into `stream-processor` (§7.3 item 3) — `etaScoringLoop.ts` scores every live bus once a second, verified end-to-end against the real simulator. Remaining gap, honestly: the live features it's scored against are real but not as rich as what it was trained on (`segment_avg_speed_7d/30d` read the OSRM baseline, not a rolling historical average — §3.3's aggregate tables still don't exist) — see §7.3 for the full accounting. | 3 |
+| **4. ETA model** | ✅ Trained and live. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, ONNX export) trained on the full 90-day/103-route corpus: per-segment MAE 5.8s vs naive baseline 49.4s (88.3% improvement), horizon-bucketed MAE well under the §6.2 target (<2min within a 10-min horizon) at every bucket including 10min+ (21.2s) — see `artifacts/metrics.json`. `/eta/predict-batch` is live and wired into `stream-processor` (§7.3 item 3) — `etaScoringLoop.ts` scores every live bus once a second. §3.3's `segment_travel_stats`/`stop_dwell_stats` are now built and wired in too (`refresh_stats.py`, `statsStore.ts`) — live features are real rolling stats where a bucket exists, OSRM-baseline fallback where it doesn't, not placeholders. Remaining gap, honestly: those tables are populated from the offline backfill corpus, not live traffic — `consumer.ts` still doesn't persist real-time `gps_pings`/`stop_events` to Postgres, so there's no live signal to aggregate from yet. | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |
 | **6. Passenger app** | Live map, ETA, occupancy badge, degraded text mode | 2, 4 |
 | **7. Ticketing** | Fare calc, UPI sandbox, Ed25519 QR, offline validation + replay sync | 5, 6 |
