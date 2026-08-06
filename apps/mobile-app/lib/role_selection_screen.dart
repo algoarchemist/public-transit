@@ -30,12 +30,22 @@ class RoleSelectionScreen extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            // Stretch rather than the default center: FilledButton/OutlinedButton
+            // size to their own label width, so "I'm a Passenger" and "I'm a Driver
+            // / Conductor" would otherwise sit at different left/right edges even
+            // though their centers technically line up — stretching both to the
+            // full width is what actually reads as centered.
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Icon(Icons.directions_bus, size: 72),
               const SizedBox(height: 16),
-              Text('SetuTrack', style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                'SetuTrack',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 8),
-              const Text('How are you using the app?'),
+              const Text('How are you using the app?', textAlign: TextAlign.center),
               const SizedBox(height: 32),
               FilledButton.icon(
                 onPressed: () => _selectRole(context, 'passenger'),
