@@ -1,13 +1,24 @@
 """Populates segment_travel_stats and stop_dwell_stats (db/migrations/0003_derived_stats.sql,
-docs/IMPLEMENTATION_ARCHITECTURE.md §3.3) from the simulator's backfill corpus.
+docs/IMPLEMENTATION_ARCHITECTURE.md §3.3) from either the simulator's offline
+backfill corpus or Postgres's real, live stop_events (stream-processor's
+pgPersist.ts).
 
-This is a BATCH refresh, not a live continuous aggregate — consumer.ts doesn't
-persist raw gps_pings/stop_events to Postgres (that's a separate, still-open gap),
-so there is no live traffic to continuously aggregate from. Re-run this after
-regenerating data/backfill/<label>/ to refresh both tables.
+This is a BATCH refresh either way, not a live continuous aggregate — even
+`--source live` is a one-shot snapshot of whatever real stop_events exist right
+now, re-run on demand, not a standing TimescaleDB aggregate.
 
 Usage:
-    python -m train.refresh_stats --label mohali-tricity
+    python -m train.refresh_stats --label mohali-tricity                  # offline backfill (default)
+    python -m train.refresh_stats --label mohali-tricity --source live    # real Postgres traffic
+
+Both sources upsert into the SAME tables via ON CONFLICT — a row this run
+doesn't touch (e.g. a (segment, hour) bucket `--source live` has no real traffic
+for yet) is left as whatever a previous `--source backfill` run wrote, not wiped.
+So running `--source live` early, before much real traffic has accumulated, is
+safe: it can only refine buckets it actually has data for, never blank out the
+rest. Check `sample_count` in Postgres (or the row counts this script logs)
+before trusting a `--source live` run's numbers over the backfill-derived ones —
+a handful of real trips is not the same statistical weight as the 90-day corpus.
 
 `--database-url` defaults to $DATABASE_URL (the same variable every other service
 in this repo uses).
@@ -35,7 +46,13 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from train.dataset import enrich_stop_events, load_segments, load_stop_events, traversal_durations  # noqa: E402
+from train.dataset import (  # noqa: E402
+    enrich_stop_events,
+    load_live_stop_events,
+    load_segments,
+    load_stop_events,
+    traversal_durations,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("refresh_stats")
@@ -144,6 +161,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Refresh segment_travel_stats / stop_dwell_stats")
     parser.add_argument("--label", default="mohali-tricity")
     parser.add_argument("--database-url", default=os.environ.get("DATABASE_URL"))
+    parser.add_argument(
+        "--source", choices=["backfill", "live"], default="backfill",
+        help="backfill = offline simulator corpus (default); live = real Postgres stop_events",
+    )
     args = parser.parse_args()
 
     if not args.database_url:
@@ -151,12 +172,34 @@ def main() -> None:
         sys.exit(1)
 
     segments = load_segments(args.label)
-    events = enrich_stop_events(load_stop_events(args.label))
-    events["hour"] = events["departed_dt"].dt.hour
+    if args.source == "live":
+        raw_events = load_live_stop_events(args.database_url, args.label)
+        source_desc = f"Postgres stop_events (city={args.label!r})"
+    else:
+        raw_events = load_stop_events(args.label)
+        source_desc = f"data/backfill/{args.label}/stop_events.csv"
+
+    if raw_events.empty:
+        if args.source == "live":
+            # Not an error: early on (or right after a truncate), there simply
+            # isn't real traffic yet. Existing backfill-derived rows are
+            # untouched — see the module docstring's upsert-is-additive note.
+            logger.info("no rows in %s yet — nothing to add this run", source_desc)
+            return
+        logger.error("no rows in %s — nothing to write", source_desc)
+        sys.exit(1)
+
+    events = enrich_stop_events(raw_events)
 
     all_durations = traversal_durations(events, segments)
     if all_durations.empty:
-        logger.error("no segment traversals reconstructed from data/backfill/%s/stop_events.csv — nothing to write", args.label)
+        if args.source == "live":
+            # Not an error: early on (or right after a truncate), there simply
+            # isn't real traffic yet. Existing backfill-derived rows are
+            # untouched — see the module docstring's upsert-is-additive note.
+            logger.info("no live segment traversals in %s yet — nothing to add this run", source_desc)
+            return
+        logger.error("no segment traversals reconstructed from %s — nothing to write", source_desc)
         sys.exit(1)
 
     max_date = all_durations["service_date"].max()
@@ -166,17 +209,37 @@ def main() -> None:
     seg_stats_30d = _segment_stats(window_30d, "30d")
     seg_stats_7d = _segment_stats(window_7d, "7d")
     seg_stats = pd.concat([seg_stats_30d, seg_stats_7d], ignore_index=True)
-    dwell_stats = _dwell_stats(events)
+
+    if args.source == "live":
+        # pgPersist.ts writes dwell_sec = NULL for every live row (map-matching
+        # only observes one coarse "confirmed passed" instant per stop, not a
+        # real arrival/departure pair — see its module docstring). Computing
+        # _dwell_stats() against all-NULL dwell_sec would upsert a fabricated
+        # "0 dwell" over every touched (stop, hour) cell, silently clobbering the
+        # real backfill-derived dwell stats with a worse number. Skip entirely
+        # until pgPersist.ts can observe real dwell (needs speed-based
+        # near-stop-stationary detection, not built).
+        dwell_stats = pd.DataFrame(columns=[
+            "stop_osm_node_id", "hour_bucket", "p50_dwell_sec", "avg_boarding", "avg_alighting", "sample_count",
+        ])
+        logger.info("source=live: skipping stop_dwell_stats — dwell isn't observable from live data yet (see pgPersist.ts)")
+    else:
+        dwell_stats = _dwell_stats(events)
 
     n_directions = len(segments and {k[0] for k in segments})
     n_segments = len(segments)
     max_possible_seg_cells = n_segments * 24 * 2  # x2 for the two windows
     logger.info(
-        "computed %d segment_travel_stats rows (%d/%d possible (segment, hour, window) cells populated, "
+        "source=%s: computed %d segment_travel_stats rows (%d/%d possible (segment, hour, window) cells populated, "
         "%d directions, %d segments) and %d stop_dwell_stats rows over service days %s..%s",
-        len(seg_stats), len(seg_stats), max_possible_seg_cells, n_directions, n_segments,
+        args.source, len(seg_stats), len(seg_stats), max_possible_seg_cells, n_directions, n_segments,
         len(dwell_stats), all_durations["service_date"].min(), max_date,
     )
+    if args.source == "live" and (all_durations["service_date"].max() - all_durations["service_date"].min()).days < 7:
+        logger.warning(
+            "live source spans less than 7 real days — this run's rows carry real but low sample_count; "
+            "check Postgres before treating them as a replacement for the backfill-derived stats"
+        )
 
     import psycopg
 
@@ -185,7 +248,10 @@ def main() -> None:
         _upsert_dwell_stats(conn, dwell_stats)
         conn.commit()
 
-    logger.info("done — wrote %d segment_travel_stats rows, %d stop_dwell_stats rows", len(seg_stats), len(dwell_stats))
+    logger.info(
+        "done — wrote %d segment_travel_stats rows, %d stop_dwell_stats rows (source=%s)",
+        len(seg_stats), len(dwell_stats), args.source,
+    )
 
 
 if __name__ == "__main__":

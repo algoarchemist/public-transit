@@ -91,13 +91,31 @@ trips/route/day — a same-weekday 7-day window has only ~1 matching day).
   against — buses run on randomized headways, not a fixed timetable) and
   `weather_bucket` stays `0` (nothing simulates or observes weather).
 
-What's still a real gap, and the honest reason this is "mostly" rather than fully
-closed: `segment_travel_stats`/`stop_dwell_stats` are still populated from the
-*offline backfill corpus*, not live traffic — even though `consumer.ts` now
-persists real-time `gps_pings`/`stop_events` to Postgres (`pgPersist.ts`, docs
-§7.3), `refresh_stats.py` hasn't been pointed at those live rows yet. Re-running
-it after a fresh backfill is currently the only way these tables update. Wiring
-it to read live data instead is the natural next step, not yet done.
+`refresh_stats.py --source live` now reads real Postgres traffic instead of the
+offline corpus (see "Refreshing segment_travel_stats / stop_dwell_stats" above).
+Upserts only touch the cells they compute, so running it early — before much
+real traffic exists — only refines a handful of buckets and leaves the 90-day
+corpus-derived rest untouched.
+
+**Why "mostly" rather than fully closed**: `--source live` only ever refreshes
+`segment_travel_stats`, never `stop_dwell_stats`. `pgPersist.ts` (stream-processor)
+only observes one coarse "confirmed passed this stop" instant per stop from
+map-matching, not a real arrival/departure pair, so `dwell_sec` is honestly
+`NULL` for every live row — computing dwell stats from it would upsert a
+fabricated "0 dwell" over real backfill-derived numbers, so `refresh_stats.py`
+skips that table entirely for `--source live` and logs why. Real dwell needs a
+speed-based near-stop-stationary detector in `pgPersist.ts`, which isn't built.
+
+**A real bug lived here until this was actually exercised against live data**:
+an earlier version of `pgPersist.ts` reused its one confirmation instant as both
+"departed the previous stop" and "arrived this stop," which made every derived
+segment duration compute to exactly zero — invisible until `--source live` was
+run against genuine `stop_events` and returned zero traversals. Root-caused by
+comparing consecutive rows directly in Postgres (`departed_at[i]` and
+`arrived_at[i+1]` were byte-identical) and fixed by recording only the one real
+signal, with `dataset.py`'s `traversal_durations()` falling back to
+consecutive-arrival deltas when `departed_at` is `NULL`. Re-verified afterward:
+real, plausible per-segment speeds (2.5–77 km/h) from genuine live traversals.
 
 ## Weather
 

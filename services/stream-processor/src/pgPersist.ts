@@ -28,15 +28,19 @@
  * Stop-event detection is inferred from map-matching, not a real arrival sensor:
  * mapMatch.ts's `nextStopId` is the stop the bus hasn't reached yet. When it
  * changes from A to B, the bus has passed A sometime between the previous ping
- * and this one — `arrived_at` uses the previous ping's timestamp (a lower-bound
- * proxy; the real arrival instant is unknowable at ping granularity) and
- * `departed_at` uses this ping's timestamp, so `dwell_sec` is the ping interval
- * that straddled the crossing — correctly spans a real dwell too, since
- * `nextStopId` stays constant across every ping taken while parked (see
- * simulator's PARKED_TICK_INTERVAL_SEC). `boarding_count`/`alighting_count` come
- * from the occupancy delta between those same two pings (a real signal — the
- * ping payload's own `occupancy` field — not fabricated, but an approximation:
- * it's a net delta, not an actual boarding+alighting tally).
+ * and this one, so `arrived_at` is recorded as this ping's timestamp (a
+ * best-available confirmation instant, not the true arrival moment — that's
+ * somewhere in the gap since the previous ping). `departed_at`/`dwell_sec` are
+ * left NULL rather than fabricated: map-matching gives exactly one coarse
+ * "passed" signal per stop, not separate arrival/departure instants, so real
+ * dwell isn't observable this way — it would need a speed-based
+ * approaching/stationary/departed state machine, which isn't built. (An earlier
+ * version reused the confirmation instant as both "departed the previous stop"
+ * and "arrived this stop" — every derived segment duration came out to exactly
+ * zero as a result, caught via train/refresh_stats.py --source live against
+ * real data.) `boarding_count`/`alighting_count` come from the occupancy delta
+ * between consecutive confirmations (a real signal — the ping payload's own
+ * `occupancy` field — but a net delta, not an actual boarding+alighting tally).
  *
  * One real, unclosed limitation: a route's FINAL stop never gets a stop_event
  * here. `nextStopId` simply stops changing once the bus reaches the last stop
@@ -189,23 +193,30 @@ async function maybeRecordStopEvent(
   }
 
   // nextStopId changed -> the bus has passed/reached state.lastNextStopOsmNodeId
-  // sometime between the previous ping and this one.
+  // sometime between the previous ping and this one. `ping.timestamp` is the
+  // confirmation instant, not the true arrival instant (map-matching only gives
+  // one coarse "passed" signal per stop, not separate arrival/departure events —
+  // see this module's docstring). departed_at/dwell_sec are honestly NULL, not
+  // fabricated: an earlier version reused this same confirmation instant as both
+  // "departed previous stop" and "arrived this stop", which made every computed
+  // segment duration exactly zero (caught via train/refresh_stats.py --source
+  // live returning zero traversals against real data — every stop_event's
+  // departed_at was byte-identical to the next one's arrived_at by construction).
+  // Real dwell requires watching speed for a near-stop stationary period, which
+  // isn't built — see docs §7.3's "Real-time persistence" section.
   const reachedStopOsmNodeId = state.lastNextStopOsmNodeId;
   const pgStopId = stopIdByOsmNodeId.get(reachedStopOsmNodeId);
   const direction = getDirection(state.directionId);
   const sequence = direction?.stops.find((s) => s.osmNodeId === reachedStopOsmNodeId)?.sequence ?? null;
 
   if (pgStopId !== undefined && sequence !== null) {
-    // dwell_sec is `integer` in the schema (0001_init.sql) — round, don't truncate,
-    // so a sub-second span still records as 1s rather than silently 0.
-    const dwellSec = Math.max(1, Math.round((ping.timestamp - state.lastStopChangeAtMs) / 1000));
     const boarding = Math.max(Math.round(ping.occupancy - state.lastOccupancy), 0);
     const alighting = Math.max(Math.round(state.lastOccupancy - ping.occupancy), 0);
 
     await getPgPool().query(
       `INSERT INTO stop_events (trip_id, stop_id, sequence, arrived_at, departed_at, dwell_sec, boarding_count, alighting_count)
-       VALUES ($1, $2, $3, to_timestamp($4 / 1000.0), to_timestamp($5 / 1000.0), $6, $7, $8)`,
-      [state.pgTripId, pgStopId, sequence, state.lastStopChangeAtMs, ping.timestamp, dwellSec, boarding, alighting],
+       VALUES ($1, $2, $3, to_timestamp($4 / 1000.0), NULL, NULL, $5, $6)`,
+      [state.pgTripId, pgStopId, sequence, ping.timestamp, boarding, alighting],
     );
   }
 

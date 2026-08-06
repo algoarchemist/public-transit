@@ -39,7 +39,7 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import timezone, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -97,18 +97,90 @@ def load_stop_events(label: str) -> pd.DataFrame:
     return df
 
 
-def _ist(ms: int) -> datetime:
-    return datetime.fromtimestamp(ms / 1000, tz=IST)
+def load_live_stop_events(database_url: str, label: str) -> pd.DataFrame:
+    """Same shape as load_stop_events (trip_id, direction_id, route_id,
+    stop_osm_node_id, sequence, arrived_at/departed_at as epoch ms, dwell_sec,
+    boarding_count, alighting_count) — read from Postgres's real stop_events
+    (docs §3.2) instead of the offline backfill CSV, so every downstream function
+    (enrich_stop_events, traversal_durations, refresh_stats.py's aggregations)
+    works unchanged regardless of source.
+
+    `direction_id` is reconstructed as f"r{osm_relation_id}" — the same
+    convention geo-ingest's persist.py uses (each direction is its own `routes`
+    row, so `trips.route_id` already uniquely identifies a direction; there's no
+    separate direction_id column in Postgres to read directly). Only real pings
+    that stream-processor's pgPersist.ts has actually written populate this —
+    see its module docstring for what is and isn't captured (notably: a route's
+    final stop never gets an event this way, and departed_at/dwell_sec are
+    always NULL — pgPersist.ts only observes one coarse "confirmed passed"
+    instant per stop, not a real arrival/departure pair, so real dwell isn't
+    derivable from live data yet; traversal_durations() below falls back to
+    consecutive arrived_at deltas when departed_at is NULL).
+    """
+    import psycopg
+
+    query = """
+        SELECT
+            se.trip_id,
+            'r' || r.osm_relation_id AS direction_id,
+            r.ref AS route_id,
+            s.osm_node_id AS stop_osm_node_id,
+            se.sequence,
+            EXTRACT(EPOCH FROM se.arrived_at) * 1000 AS arrived_at,
+            EXTRACT(EPOCH FROM se.departed_at) * 1000 AS departed_at,
+            se.dwell_sec,
+            se.boarding_count,
+            se.alighting_count
+        FROM stop_events se
+        JOIN trips t ON t.id = se.trip_id
+        JOIN routes r ON r.id = t.route_id
+        JOIN stops s ON s.id = se.stop_id
+        JOIN cities c ON c.id = r.city_id
+        WHERE c.name = %(label)s
+          AND r.osm_relation_id IS NOT NULL
+          AND se.arrived_at IS NOT NULL
+        ORDER BY se.trip_id, se.sequence
+    """
+    # Fetched via a plain cursor (not pd.read_sql_query) — psycopg3's connection
+    # isn't a DBAPI2 object pandas has been tested against, and read_sql_query
+    # warns accordingly even though it happens to work.
+    with psycopg.connect(database_url) as conn, conn.cursor() as cur:
+        cur.execute(query, {"label": label})
+        columns = [c.name for c in cur.description]
+        rows = cur.fetchall()
+    df = pd.DataFrame(rows, columns=columns)
+    if df.empty:
+        return df
+    df["arrived_at"] = df["arrived_at"].round().astype("int64")
+    # pd.to_numeric first: psycopg returns SQL NULL as Python None, giving an
+    # object-dtype column .round() can't handle directly (None has no
+    # __round__). Coercing to numeric turns None into a real NaN, which the
+    # nullable Int64 (capital I) dtype can then hold — departed_at is NULL for
+    # every live row today (see docstring above); a plain int64 column can't.
+    df["departed_at"] = pd.to_numeric(df["departed_at"], errors="coerce").round().astype("Int64")
+    return df
 
 
 def enrich_stop_events(events: pd.DataFrame) -> pd.DataFrame:
     """Adds IST-local arrived_dt/departed_dt/service_date columns to a raw
-    stop_events.csv frame. Shared by build_dataset (below) and
-    train/refresh_stats.py so both compute hour/dow/service-date the same way."""
+    stop_events frame (CSV-backfill or live-Postgres shape — see
+    load_stop_events/load_live_stop_events). Shared by build_dataset (below) and
+    train/refresh_stats.py so both compute hour/dow/service-date the same way.
+
+    Vectorized pd.to_datetime, not a per-row .map — live data's departed_at is
+    NULL for every row (pgPersist.ts only observes one confirmation instant per
+    stop, not a real arrival/departure pair; see its module docstring), and NaN
+    can't round-trip through a plain Python datetime constructor the way NaT
+    does through pandas' own conversion. service_date prefers departed_dt,
+    falling back to arrived_dt when NULL — same "prefer departure, fall back to
+    arrival" pattern as traversal_durations() below, for the same reason: it
+    keeps offline/training behavior byte-for-byte unchanged (departed_dt is
+    always present there) while still producing a real date for live data.
+    """
     events = events.copy()
-    events["arrived_dt"] = events["arrived_at"].map(_ist)
-    events["departed_dt"] = events["departed_at"].map(_ist)
-    events["service_date"] = events["departed_dt"].dt.date
+    events["arrived_dt"] = pd.to_datetime(events["arrived_at"], unit="ms", utc=True).dt.tz_convert(IST)
+    events["departed_dt"] = pd.to_datetime(events["departed_at"], unit="ms", utc=True).dt.tz_convert(IST)
+    events["service_date"] = events["departed_dt"].fillna(events["arrived_dt"]).dt.date
     return events
 
 
@@ -285,33 +357,70 @@ def build_dataset(
                     fallback_counts=fallback_counts)
 
 
-def traversal_durations(events: pd.DataFrame, segments: dict[tuple[str, int], SegmentInfo]) -> pd.DataFrame:
+def traversal_durations(
+    events: pd.DataFrame, segments: dict[tuple[str, int], SegmentInfo]
+) -> pd.DataFrame:
     """One row per completed segment traversal in `events` — real (direction_id,
     sequence, hour, service_date, duration_sec, speed_mps) ground truth. Used by
     build_dataset (below, over the training-window slice only, to build frozen
     historical-stats tables in pass 1 — never as feature rows themselves) and by
-    train/refresh_stats.py (over the whole corpus, to populate segment_travel_stats)."""
+    train/refresh_stats.py (over the whole corpus, to populate segment_travel_stats).
+
+    Segment identity comes from each row's actual `sequence` value, and a pair is
+    only used if the next row's sequence is EXACTLY one more than the current
+    row's — not from positional (0, 1, 2, ...) enumeration within the trip. The
+    simulator's backfill corpus never has gaps (every stop always gets an event),
+    so positional and real sequence agree there, but real live data
+    (stream-processor's pgPersist.ts) can have gaps: if map-matching's nextStopId
+    jumps two stops between pings, the middle stop's event is never recorded, and
+    attributing "sequence i" to the i-th row seen would silently assign a
+    multi-segment span to the wrong single segment. Gapped/out-of-order pairs are
+    skipped, not guessed at.
+
+    Duration AND hour both prefer `departed_at[i]`/`departed_dt[i]` (offline
+    backfill: a real, separately observed departure instant) but fall back to
+    `arrived_at[i]`/`arrived_dt[i]` when NULL (live data: pgPersist.ts only
+    records one coarse "confirmed passed" instant per stop — see its module
+    docstring — so there's no separate departure). This isn't just about this
+    function: build_dataset()'s pass 2 looks up the SAME historical tables this
+    function builds using its own departed_dt-based hour — if this function
+    silently used a different reference point, the two would disagree on which
+    hour bucket a segment belongs to, always slightly and rarely obviously.
+    Preferring departed_at keeps offline/training behavior byte-for-byte
+    unchanged (it's always present there) while still working for live data.
+    """
     out = []
+    skipped_gaps = 0
     for trip_id, grp in events.groupby("trip_id", sort=False):
         grp = grp.sort_values("sequence")
         recs = grp.to_dict("records")
         direction_id = recs[0]["direction_id"] if recs else None
         for i in range(len(recs) - 1):
-            seg = segments.get((direction_id, i))
+            seq_i = recs[i]["sequence"]
+            seq_i1 = recs[i + 1]["sequence"]
+            if seq_i1 != seq_i + 1:
+                skipped_gaps += 1
+                continue
+            seg = segments.get((direction_id, seq_i))
             if seg is None:
                 continue
             dep_i = recs[i]["departed_at"]
+            arr_i = recs[i]["arrived_at"]
             arr_i1 = recs[i + 1]["arrived_at"]
-            duration = (arr_i1 - dep_i) / 1000.0
+            has_departure = pd.notna(dep_i)
+            start = dep_i if has_departure else arr_i
+            duration = (arr_i1 - start) / 1000.0
             if duration <= 0:
                 continue
             out.append({
                 "direction_id": direction_id,
-                "sequence": i,
+                "sequence": seq_i,
                 "route_id": seg.route_id,
-                "hour": recs[i]["departed_dt"].hour,
+                "hour": (recs[i]["departed_dt"] if has_departure else recs[i]["arrived_dt"]).hour,
                 "service_date": recs[i]["service_date"],
                 "duration_sec": duration,
                 "speed_mps": seg.length_m / duration,
             })
+    if skipped_gaps:
+        logger.warning("traversal_durations: skipped %d non-adjacent-sequence stop_events pair(s)", skipped_gaps)
     return pd.DataFrame(out)

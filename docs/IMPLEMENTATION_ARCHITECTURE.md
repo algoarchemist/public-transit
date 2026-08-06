@@ -192,13 +192,19 @@ in full in `0003_derived_stats.sql`'s header comment:
   avoids a fragile join between two separate id systems in a 1-second-tick hot loop.
   `route_id` is carried as plain text for readability/filtering only, not a FK.
 - **Not a live TimescaleDB continuous aggregate — a batch script**
-  (`services/ml-service/train/refresh_stats.py`), re-run against the simulator's
-  backfill corpus. `consumer.ts` *does* now persist real-time `gps_pings`/
-  `stop_events` to Postgres (§7.3's "Real-time persistence" — a separate piece of
-  work from this table), but `refresh_stats.py` itself still reads the offline
-  backfill CSVs, not those live rows — switching its source is a natural follow-up,
-  not yet done. TimescaleDB stayed out of scope regardless, for MVP-simplicity
-  reasons (§2), not because `agg_window`/`hour_bucket` bucketing is unimportant.
+  (`services/ml-service/train/refresh_stats.py`), re-run on demand against either
+  the simulator's offline backfill corpus (`--source backfill`, default) or real
+  Postgres traffic (`--source live`, reading what `consumer.ts`'s real-time
+  persistence — §7.3 — has actually written). Both write through the same
+  upsert, which only touches the `(direction_id, sequence, hour, agg_window)`
+  cells it actually computed — running `--source live` early, before much real
+  traffic exists, only refines a handful of cells and leaves the 90-day-corpus-
+  derived rest untouched, never blanks the table. TimescaleDB stayed out of scope
+  regardless, for MVP-simplicity reasons (§2), not because `agg_window`/
+  `hour_bucket` bucketing is unimportant.
+  `--source live` only ever populates `segment_travel_stats`, never
+  `stop_dwell_stats` — see §7.3's "Real-time persistence" for why real dwell
+  isn't observable from live pings yet.
 - **`dow` is schema-complete but populated as `-1`** ("any day") for every row: at
   the simulator's ~4 trips/route/day, a (segment, dow, hour) cell over even a 30-day
   window gets roughly 1-3 samples — too sparse to be a real per-weekday signal
@@ -485,21 +491,39 @@ fill from live traffic, not just the offline backfill corpus.
   their real end for the same reason.
 - **Stop events are inferred from map-matching, not a real arrival sensor**: when
   `mapMatch.ts`'s `nextStopId` changes from A to B, the bus passed A sometime
-  between the previous ping and this one. `arrived_at` uses the previous ping's
-  timestamp (a lower-bound proxy — the real instant is unknowable at ping
-  granularity); `departed_at` uses this ping's; `dwell_sec` is that span, and
-  correctly spans a real dwell too since `nextStopId` holds constant across every
-  ping taken while parked. `boarding_count`/`alighting_count` come from the real
-  occupancy delta between those same two pings — a real signal, but a net delta,
-  not an actual tally.
+  between the previous ping and this one, so `arrived_at` is recorded as this
+  ping's timestamp — a best-available confirmation instant, not the true arrival
+  moment. `departed_at`/`dwell_sec` are left `NULL` rather than fabricated:
+  map-matching gives exactly one coarse "passed" signal per stop, not separate
+  arrival/departure instants, so real dwell isn't observable this way — it would
+  need a speed-based approaching/stationary/departed state machine, which isn't
+  built. `boarding_count`/`alighting_count` come from the real occupancy delta
+  between consecutive confirmations — a real signal, but a net delta, not an
+  actual tally.
+
+  **Bug found and fixed via this same live-data path being put to real use**: an
+  earlier version reused the confirmation instant as *both* "departed the
+  previous stop" and "arrived this stop" (fabricating `departed_at`/`dwell_sec`
+  instead of leaving them `NULL`). That made every derived segment duration
+  compute to exactly zero — invisible until `train/refresh_stats.py --source
+  live` (§3.3) was pointed at real data and returned zero traversals against 8
+  genuine `stop_events` rows. Root-caused by comparing `departed_at`/`arrived_at`
+  values directly in Postgres: consecutive rows were byte-identical by
+  construction. Fixed by only recording the one real signal (arrival
+  confirmation) and having `train/dataset.py`'s `traversal_durations()` fall back
+  to consecutive-arrival deltas when `departed_at` is `NULL` — verified against
+  fresh live data afterward: real, plausible per-segment speeds (2.5–77 km/h)
+  computed from genuine map-matched traversals.
 - **One real, unclosed gap**: a route's *final* stop never gets a `stop_event`
   here — `nextStopId` simply stops changing once the bus reaches it, so the
   transition this module watches for never fires. Closing that needs a real
   trip-end signal this system doesn't have yet.
 
-Verified live: 3 simulated buses produced real `gps_pings` rows (correct geometry,
-speed, trip/bus FKs) and real `stop_events` rows (dwell 60-73s, boarding 5-9,
-alighting 0 — all plausible for the simulated occupancy at that point in the trip).
+Verified live: simulated buses produced real `gps_pings` rows (correct geometry,
+speed, trip/bus FKs) and real `stop_events` rows fed straight into
+`refresh_stats.py --source live` (§3.3), which computed genuine
+`segment_travel_stats` rows from them and correctly skipped `stop_dwell_stats`
+(dwell isn't observable yet, see above) rather than writing fabricated zeros.
 
 ### 7.4 Degradation ladder — built
 
@@ -592,7 +616,7 @@ Ordered by dependency; each phase ends with something demonstrable.
 | **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. `db/migrations/` (plain PostGIS, no TimescaleDB — MVP scale doesn't need hypertables) creates the full §3 schema; `persist.py` now does real route/stop/segment upserts against it (idempotent by `osm_relation_id`/`osm_node_id`, §4.2), verified against a synthetic fixture exercising every write path including the `ST_LineLocatePoint` stop-projection. Not yet re-verified against a full live 100-route Overpass run — that's the next thing to actually do, not a design gap. | 0 |
 | **2. Safety-net MVP** | ✅ Live end-to-end wiring verified: `simulator --mode=live` → EMQX → `consumer.ts` (real map-match + naive-baseline ETA from `ml-service` + Redis) → Redpanda → `gateway.ts` (consumer group lag 0) → Socket.IO. `apps/admin-dashboard`'s `LiveFleetMap.tsx` now subscribes for real (`useFleetSocket` + `FleetMap`, MapLibre, a new `admin:fleet` broadcast room in `gateway.ts`) — backend confirmed serving it live traffic (Kafka lag 0, Redis position keys populated) while the page was up. The rendered "dot on the map" hasn't been eyeballed by a human yet (no browser automation available in this environment) — everything server-side of the browser is verified live; the pixels aren't. | 1 |
 | **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
-| **4. ETA model** | ✅ Trained and live. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, ONNX export) trained on the full 90-day/103-route corpus: per-segment MAE 5.8s vs naive baseline 49.4s (88.3% improvement), horizon-bucketed MAE well under the §6.2 target (<2min within a 10-min horizon) at every bucket including 10min+ (21.2s) — see `artifacts/metrics.json`. `/eta/predict-batch` is live and wired into `stream-processor` (§7.3 item 3) — `etaScoringLoop.ts` scores every live bus once a second. §3.3's `segment_travel_stats`/`stop_dwell_stats` are now built and wired in too (`refresh_stats.py`, `statsStore.ts`) — live features are real rolling stats where a bucket exists, OSRM-baseline fallback where it doesn't, not placeholders. `consumer.ts` now persists real-time `gps_pings`/`stop_events` to Postgres too (§7.3's "Real-time persistence"). Remaining gap, honestly: `refresh_stats.py` still reads the offline backfill corpus, not those live rows — pointing it at live data instead is the natural next step, not yet done. | 3 |
+| **4. ETA model** | ✅ Trained and live. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, ONNX export) trained on the full 90-day/103-route corpus: per-segment MAE 5.8s vs naive baseline 49.4s (88.3% improvement), horizon-bucketed MAE well under the §6.2 target (<2min within a 10-min horizon) at every bucket including 10min+ (21.2s) — see `artifacts/metrics.json`. `/eta/predict-batch` is live and wired into `stream-processor` (§7.3 item 3) — `etaScoringLoop.ts` scores every live bus once a second. §3.3's `segment_travel_stats`/`stop_dwell_stats` are now built and wired in too (`refresh_stats.py`, `statsStore.ts`), and `refresh_stats.py --source live` can now refresh them from real Postgres traffic (`consumer.ts`'s real-time persistence, §7.3) instead of only the offline backfill corpus — upserts are additive, so a handful of real trips only refines the buckets they actually cover, never blanks out the 90-day-corpus-derived rest. Remaining gap, honestly: real dwell isn't observable from live data yet (map-matching gives one coarse "passed" instant per stop, not a real arrival/departure pair — see §7.3), so `--source live` only ever refreshes `segment_travel_stats`, never `stop_dwell_stats`. | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |
 | **6. Passenger app** | Live map, ETA, occupancy badge, degraded text mode | 2, 4 |
 | **7. Ticketing** | Fare calc, UPI sandbox, Ed25519 QR, offline validation + replay sync | 5, 6 |
