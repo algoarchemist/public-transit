@@ -19,4 +19,11 @@ export const config = {
   // How often etaScoringLoop.ts scores every live bus in one /eta/predict-batch
   // call (docs §6.4/§7.3 item 3 — replaces the old per-ping /eta/predict call).
   etaBatchIntervalMs: Number(process.env.ETA_BATCH_INTERVAL_MS ?? 1000),
+  // Route-deviation detection (pgPersist.ts's maybeRecordDeviation): how far off
+  // the selected route's line, and for how long continuously, before a driver on
+  // the wrong route (or a genuinely diverted one) gets flagged. GPS jitter and
+  // brief lane changes routinely exceed the distance threshold for a few seconds,
+  // which is what the sustained-duration requirement filters out.
+  routeDeviationThresholdM: Number(process.env.ROUTE_DEVIATION_THRESHOLD_M ?? 400),
+  routeDeviationSustainedMs: Number(process.env.ROUTE_DEVIATION_SUSTAINED_MS ?? 90_000),
 };

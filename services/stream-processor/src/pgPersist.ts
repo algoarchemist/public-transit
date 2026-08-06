@@ -77,6 +77,13 @@ interface TripState {
   lastNextStopOsmNodeId: number | null;
   lastStopChangeAtMs: number;
   lastOccupancy: number;
+  /** When this trip's offset from the route line first went over
+   * config.routeDeviationThresholdM, or null while it's within tolerance — see
+   * maybeRecordDeviation. */
+  deviationSinceMs: number | null;
+  /** Whether the current deviation episode has already raised an alert, so a bus
+   * stuck off-route doesn't get a fresh 'route_deviation' row on every ping. */
+  deviationAlerted: boolean;
 }
 
 let cityId: number | null = null;
@@ -171,6 +178,8 @@ async function ensureTrip(ping: RawGpsPing): Promise<TripState | null> {
     lastNextStopOsmNodeId: null,
     lastStopChangeAtMs: ping.timestamp,
     lastOccupancy: ping.occupancy,
+    deviationSinceMs: null,
+    deviationAlerted: false,
   };
   tripStateByBusId.set(ping.busId, state);
   return state;
@@ -241,6 +250,56 @@ async function maybeRecordStopEvent(
   state.lastOccupancy = ping.occupancy;
 }
 
+/**
+ * Flags a bus whose GPS trace has drifted off its selected route's line —
+ * `matched.offsetM` (mapMatch.ts) is the perpendicular distance from the raw fix
+ * to the route geometry, already computed for every ping regardless of this
+ * feature. A wrong-route selection (docs' driver-flow risk: nothing today stops a
+ * driver picking any route) or a genuine forced diversion both look the same
+ * here — sustained distance from the line — so this can't tell them apart, only
+ * surface that *something* needs a human look.
+ *
+ * `offsetM < 0` means mapMatch.ts couldn't match the direction at all (unknown
+ * route in the snapshot) — a data problem, not a driving one, so it's ignored
+ * rather than treated as a deviation.
+ *
+ * One alert per continuous episode: the state resets the moment the bus is back
+ * within tolerance, so returning to the correct route (or a route being
+ * re-selected correctly) silently clears it rather than needing a manual resolve
+ * for every jitter-triggered episode.
+ */
+async function maybeRecordDeviation(state: TripState, ping: RawGpsPing, matched: MapMatchedPosition): Promise<void> {
+  if (matched.offsetM < 0) return;
+
+  if (matched.offsetM <= config.routeDeviationThresholdM) {
+    state.deviationSinceMs = null;
+    state.deviationAlerted = false;
+    return;
+  }
+
+  if (state.deviationSinceMs === null) {
+    state.deviationSinceMs = ping.timestamp;
+    return;
+  }
+
+  if (state.deviationAlerted) return;
+  if (ping.timestamp - state.deviationSinceMs < config.routeDeviationSustainedMs) return;
+
+  state.deviationAlerted = true;
+  const sustainedSec = Math.round((ping.timestamp - state.deviationSinceMs) / 1000);
+  await getPgPool().query(
+    `INSERT INTO alerts (type, trip_id, bus_id, geom, notes, source)
+     VALUES ('route_deviation', $1, $2, ST_SetSRID(ST_MakePoint($3, $4), 4326), $5, 'system')`,
+    [
+      state.pgTripId,
+      state.pgBusId,
+      ping.lon,
+      ping.lat,
+      `${Math.round(matched.offsetM)}m off the selected route for over ${sustainedSec}s`,
+    ],
+  );
+}
+
 /** Best-effort, fire-and-forget from consumer.ts's handlePing — a slow or down
  * Postgres must never add latency to (or break) the live Redis/Kafka path that
  * actually drives the map. Errors are logged, not thrown. */
@@ -252,6 +311,7 @@ export function persistPingAsync(ping: RawGpsPing, matched: MapMatchedPosition):
       if (!state) return;
       await insertGpsPing(state, ping);
       await maybeRecordStopEvent(state, ping, matched);
+      await maybeRecordDeviation(state, ping, matched);
     })
     .catch((err) => console.error('[pgPersist] failed to persist ping', err));
 }
@@ -346,6 +406,8 @@ export async function handleTripStatus(message: TripStatusMessage): Promise<void
     lastNextStopOsmNodeId: null,
     lastStopChangeAtMs: message.timestamp,
     lastOccupancy: 0,
+    deviationSinceMs: null,
+    deviationAlerted: false,
   });
   console.log(`[pgPersist] adopted real trip ${message.tripId} for bus ${message.busId} (${message.directionId})`);
 }
