@@ -1,4 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- debug/AndroidManifest.xml grants INTERNET for the Flutter tool's own use
+         (hot reload, VM service), which masks that release builds need it too —
+         every api-gateway/socket.io/MQTT call in this app requires it. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- LocationService (passenger nearby-stops) and LocationTransmitter (driver
+         GPS ping publishing, location_transmitter.dart) both need these; without
+         them Geolocator denies every permission request unconditionally. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:label="setutrack_mobile"
         android:name="${applicationName}"
