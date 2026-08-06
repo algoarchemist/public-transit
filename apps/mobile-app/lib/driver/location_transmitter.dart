@@ -55,6 +55,12 @@ class LocationTransmitter {
   int get bufferedCount => _bufferedCount;
   bool get isConnected => _connected;
 
+  /// Last fix this transmitter actually sent — good enough to attach to a
+  /// driver-raised alert (location_transmitter.dart doesn't otherwise expose
+  /// per-position state to the UI).
+  double? get lastLat => _lastTransmitted?.lat;
+  double? get lastLon => _lastTransmitted?.lon;
+
   LocationTransmitter({required this.busId, required this.routeId, required this.directionId});
 
   Future<void> start() async {

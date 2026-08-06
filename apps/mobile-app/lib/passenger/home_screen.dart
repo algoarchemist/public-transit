@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           SoftTextField(
             controller: _searchController,
-            hint: 'Search nearby stops',
+            hint: 'Search stops, route number, or destination',
             icon: Icons.search_rounded,
             onChanged: (v) => setState(() => _query = v),
           ),
@@ -100,8 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: StateCard.error(message: snapshot.error.toString(), onRetry: _load),
                   );
                 }
+                final query = _query.trim().toLowerCase();
                 final stops = (snapshot.data ?? const [])
-                    .where((s) => _query.trim().isEmpty || s.displayName.toLowerCase().contains(_query.trim().toLowerCase()))
+                    .where((s) =>
+                        query.isEmpty ||
+                        s.displayName.toLowerCase().contains(query) ||
+                        s.routes.any((r) =>
+                            (r.routeId?.toLowerCase().contains(query) ?? false) ||
+                            (r.routeName?.toLowerCase().contains(query) ?? false)))
                     .toList();
                 if (stops.isEmpty) {
                   return Center(

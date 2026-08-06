@@ -43,6 +43,7 @@ class _OnTripScreenState extends State<OnTripScreen> {
   LocationTransmitter? _transmitter;
   Timer? _statusTimer;
   int _occupancy = 0;
+  String? _sendingAlertType;
 
   @override
   void didChangeDependencies() {
@@ -123,6 +124,35 @@ class _OnTripScreenState extends State<OnTripScreen> {
       // GPS ping via the transmitter above; a failed POST here costs history, not
       // the live view.
       unawaited(_api.tally(trip.tripId, occupancy).catchError((Object _) {}));
+    }
+  }
+
+  static const _alertTypes = {
+    'traffic': ('Traffic', Icons.traffic_rounded),
+    'road_diversion': ('Diversion', Icons.turn_slight_right_rounded),
+    'accident': ('Accident', Icons.report_problem_rounded),
+    'breakdown': ('Breakdown', Icons.build_rounded),
+  };
+
+  Future<void> _raiseAlert(String type, String label) async {
+    final trip = _trip;
+    setState(() => _sendingAlertType = type);
+    try {
+      await _api.raiseAlert(
+        type: type,
+        busId: _busId,
+        tripId: trip?.tripId,
+        lat: _transmitter?.lastLat,
+        lon: _transmitter?.lastLon,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$label alert sent')));
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Could not send $label alert: ${e.message}')));
+    } finally {
+      if (mounted) setState(() => _sendingAlertType = null);
     }
   }
 
@@ -216,11 +246,26 @@ class _OnTripScreenState extends State<OnTripScreen> {
             ),
           ),
           const SizedBox(height: AppTheme.gap),
-          NestedCard(
-            child: Text(
-              'Delay-reason quick-tags — TODO',
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
+          SoftCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Report an issue', style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: _alertTypes.entries.map((entry) {
+                    final (label, icon) = entry.value;
+                    return _AlertTag(
+                      label: label,
+                      icon: icon,
+                      sending: _sendingAlertType == entry.key,
+                      onTap: _sendingAlertType == null ? () => _raiseAlert(entry.key, label) : null,
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: AppTheme.gapSection),
@@ -233,6 +278,56 @@ class _OnTripScreenState extends State<OnTripScreen> {
           ),
           const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+}
+
+/// One tappable "report an issue" tag. A quieter, smaller cousin of
+/// [SecondaryPillButton] — four of these need to sit in one row.
+class _AlertTag extends StatelessWidget {
+  const _AlertTag({required this.label, required this.icon, required this.sending, this.onTap});
+
+  final String label;
+  final IconData icon;
+  final bool sending;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scheme = Theme.of(context).colorScheme;
+
+    return Material(
+      color: isDark ? AppTheme.cardNestedDark : AppTheme.cardNestedLight,
+      borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+        child: Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+            border: Border.all(color: isDark ? AppTheme.borderDark : AppTheme.borderLight),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (sending)
+                SizedBox(
+                  width: 15,
+                  height: 15,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: scheme.onSurfaceVariant),
+                )
+              else
+                Icon(icon, size: 16, color: scheme.onSurfaceVariant),
+              const SizedBox(width: 7),
+              Text(label,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: scheme.onSurface)),
+            ],
+          ),
+        ),
       ),
     );
   }

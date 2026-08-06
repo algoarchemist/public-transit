@@ -167,5 +167,42 @@ class ApiClient {
     await _send('POST', '/trips/$tripId/tally', {'occupancy': occupancy});
   }
 
+  // --- Driver auth (demo-mode OTP, auth.controller.ts) -----------------------
+
+  /// No SMS gateway is wired up server-side, so the response carries the code
+  /// itself (`demoMode: true`) instead of it being delivered anywhere — see
+  /// auth.service.ts's docstring. The UI shows it rather than pretending a text
+  /// was sent.
+  Future<Map<String, dynamic>> requestDriverOtp(String driverId) async {
+    return await _send('POST', '/auth/otp/request', {'driverId': driverId}) as Map<String, dynamic>;
+  }
+
+  /// Throws [ApiException] (expired/incorrect/too-many-attempts) rather than
+  /// returning false — the message is already phrased for the driver to read.
+  Future<void> verifyDriverOtp(String driverId, String code) async {
+    await _send('POST', '/auth/otp/verify', {'driverId': driverId, 'code': code});
+  }
+
+  /// Driver-raised incident (`alerts.controller.ts`'s `POST /alerts`) — traffic,
+  /// road diversion, accident, breakdown, or SOS. `lat`/`lon` are best-effort: the
+  /// backend records the alert either way rather than rejecting it.
+  Future<void> raiseAlert({
+    required String type,
+    String? busId,
+    int? tripId,
+    double? lat,
+    double? lon,
+    String? notes,
+  }) async {
+    await _send('POST', '/alerts', {
+      'type': type,
+      if (busId != null) 'busId': busId,
+      if (tripId != null) 'tripId': tripId,
+      if (lat != null) 'lat': lat,
+      if (lon != null) 'lon': lon,
+      if (notes != null) 'notes': notes,
+    });
+  }
+
   void dispose() => _client.close();
 }
