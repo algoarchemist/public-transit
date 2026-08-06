@@ -14,8 +14,7 @@
  * be a real signal). This fallback means real per-dow data can slot in later with
  * no caller-side change.
  */
-import { Pool } from 'pg';
-import { config } from './config';
+import { getPgPool } from './pgPool';
 
 const RELOAD_INTERVAL_MS = 5 * 60 * 1000;
 const ANY_DOW = -1;
@@ -34,7 +33,6 @@ export interface DwellStat {
   sampleCount: number;
 }
 
-let pool: Pool | null = null;
 let segmentStats = new Map<string, SegmentStat>(); // key: `${directionId}:${sequence}:${hour}:${dow}:${window}`
 let dwellStats = new Map<string, DwellStat>(); // key: `${stopOsmNodeId}:${hour}:${dow}`
 
@@ -51,7 +49,7 @@ function dwellKey(stopOsmNodeId: string, hour: number, dow: number): string {
 }
 
 async function reload(): Promise<void> {
-  if (!pool) return;
+  const pool = getPgPool();
   const [segRes, dwellRes] = await Promise.all([
     pool.query(
       'SELECT direction_id, sequence, dow, hour_bucket, agg_window, avg_speed_kmh, p50_duration_sec, p85_duration_sec, sample_count FROM segment_travel_stats',
@@ -92,7 +90,6 @@ async function reload(): Promise<void> {
 }
 
 export async function startStatsStore(): Promise<void> {
-  pool = new Pool({ connectionString: config.databaseUrl });
   try {
     await reload();
   } catch (err) {

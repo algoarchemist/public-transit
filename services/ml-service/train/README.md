@@ -92,11 +92,12 @@ trips/route/day — a same-weekday 7-day window has only ~1 matching day).
   `weather_bucket` stays `0` (nothing simulates or observes weather).
 
 What's still a real gap, and the honest reason this is "mostly" rather than fully
-closed: `segment_travel_stats`/`stop_dwell_stats` are populated from the *offline
-backfill corpus*, not live traffic. `consumer.ts` doesn't persist real-time
-`gps_pings`/`stop_events` to Postgres, so there's no live signal to aggregate from —
-re-running `refresh_stats.py` after a fresh backfill is currently the only way
-these tables update. That's the next real blocker, not a nice-to-have.
+closed: `segment_travel_stats`/`stop_dwell_stats` are still populated from the
+*offline backfill corpus*, not live traffic — even though `consumer.ts` now
+persists real-time `gps_pings`/`stop_events` to Postgres (`pgPersist.ts`, docs
+§7.3), `refresh_stats.py` hasn't been pointed at those live rows yet. Re-running
+it after a fresh backfill is currently the only way these tables update. Wiring
+it to read live data instead is the natural next step, not yet done.
 
 ## Weather
 

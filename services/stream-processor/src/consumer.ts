@@ -5,6 +5,7 @@ import { mapMatch, type RawGpsPing } from './mapMatch';
 import { redis, busPositionKey, busOccupancyKey, ACTIVE_BUSES_KEY } from './redisClient';
 import { startEtaScoringLoop, latestEtaCache } from './etaScoringLoop';
 import { startStatsStore } from './statsStore';
+import { startPgPersist, persistPingAsync } from './pgPersist';
 
 // In a production AIS-140/EMQX deployment, raw GPS pings are bridged from MQTT into the
 // "raw-gps-pings" Kafka topic by EMQX's rule engine, and this process would be a pure Kafka
@@ -36,6 +37,11 @@ async function handlePing(ping: RawGpsPing) {
     .set(busOccupancyKey(ping.busId), ping.occupancy)
     .sadd(ACTIVE_BUSES_KEY, ping.busId)
     .exec();
+
+  // Fire-and-forget: gps_pings/stop_events persistence (docs §3.2) must never add
+  // latency to, or break, the live Redis/Kafka path below that actually drives
+  // the map — see pgPersist.ts's module docstring for the full design.
+  persistPingAsync(ping, matched);
 
   // ETA is no longer scored per-ping (docs §7.3 item 3 — a per-ping HTTP call to
   // ml-service doesn't hold up at fleet scale). etaScoringLoop.ts batches every
@@ -73,6 +79,7 @@ async function handlePing(ping: RawGpsPing) {
 async function main() {
   await producer.connect();
   await startStatsStore();
+  await startPgPersist();
   startEtaScoringLoop(redis, producer);
 
   const client = mqtt.connect(config.mqttBrokerUrl);
