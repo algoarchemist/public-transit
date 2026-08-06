@@ -506,9 +506,12 @@ is always something to show, and every later phase is additive.
 3. **Keycloak vs. Firebase Auth** — doc says Keycloak for data sovereignty, Firebase for
    hackathon speed. Firebase now + Keycloak as stated production path is the pragmatic
    split, but it must be *said*, not hidden.
-4. **`react-router` 7.12.0** carries a high-severity CSRF advisory; the fix is a
-   downgrade to 7.11.0. Low real exposure for an authenticated dashboard, but it will
-   surface in any audit run during judging.
+4. **`react-router` 7.18.2** (the version actually pinned in `apps/admin-dashboard`)
+   falls inside the `>=7.12.0 <8.3.0` range carrying a high-severity CSRF advisory
+   ([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2),
+   confirmed via `npm audit`); the only fix available is a downgrade to 7.11.0. Low
+   real exposure for an authenticated dashboard, but it will surface in any audit run
+   during judging.
 
 ---
 

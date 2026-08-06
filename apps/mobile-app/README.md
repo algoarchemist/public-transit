@@ -47,27 +47,27 @@ the server's decides *what to show the passenger* when nothing arrives. They can
 differ freely without desyncing.
 
 **Known gaps**, both flagged inline in the code:
-- No real foreground service yet — surviving screen-off needs native Android/iOS
-  config that can't exist until `flutter create .` generates `android/`/`ios/`.
+- No real foreground service yet — `android/`/`ios/` platform folders now exist
+  (`flutter create .` has been run), but the native config for surviving
+  screen-off (Android foreground service, iOS background modes) hasn't been added
+  to them.
 - Wire format is still JSON, not the protobuf the solution doc calls for (~20-40
   bytes/ping on the wire vs 200+ for JSON) — `stream-processor`'s consumer has the
   matching TODO on the decode side.
 
 ## Setup
 
-`pubspec.yaml` and `lib/` are hand-written, but the generated platform folders
-(`android/`, `ios/`, `web/`) aren't — those need the Flutter SDK, which wasn't
-available in the environment this was scaffolded in. Once Flutter is installed, run
-once from this directory:
+`pubspec.yaml`, `lib/`, and the generated platform folders (`android/`, `ios/`,
+`web/`) are all present — `flutter create .` has already been run. From this
+directory:
 
 ```
-flutter create .
 flutter pub get
 flutter run
 ```
 
-`flutter create .` fills in the platform folders without touching the existing
-`lib/` and `pubspec.yaml`.
+If the platform folders are ever wiped or need regenerating, `flutter create .`
+fills them back in without touching the existing `lib/` and `pubspec.yaml`.
 
 To point the driver flow's GPS transmitter at a real EMQX broker instead of the
 Android-emulator-only default (`config.dart`):
