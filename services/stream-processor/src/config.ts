@@ -16,4 +16,7 @@ export const config = {
   // and docs/IMPLEMENTATION_ARCHITECTURE.md §7.4).
   liveMaxAgeSec: Number(process.env.LIVE_MAX_AGE_SEC ?? 60),
   estimatedMaxAgeSec: Number(process.env.ESTIMATED_MAX_AGE_SEC ?? 180),
+  // How often etaScoringLoop.ts scores every live bus in one /eta/predict-batch
+  // call (docs §6.4/§7.3 item 3 — replaces the old per-ping /eta/predict call).
+  etaBatchIntervalMs: Number(process.env.ETA_BATCH_INTERVAL_MS ?? 1000),
 };

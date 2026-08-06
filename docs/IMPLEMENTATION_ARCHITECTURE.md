@@ -22,7 +22,7 @@ matters and is defended in §5.4.
 | `apps/mobile-app` | One Flutter app, both roles — startup screen picks Passenger vs Driver/Conductor, persisted via `shared_preferences`. Driver flow has a real, tested divergence-triggered GPS transmitter + SQLite offline buffer (§7.4); passenger flow is still screen stubs. **No platform folders** — needs `flutter create .` |
 | `services/api-gateway` | NestJS, 4 modules (routes/buses/tickets/auth) with stub returns. Builds. |
 | `services/ml-service` | FastAPI, `/eta/predict` + `/crowd/predict`, naive baselines. Runs. |
-| `services/stream-processor` | Real map-matching + route-aware degradation-ladder dead reckoning against the geo-ingest snapshot (`routeStore.ts`, `geo.ts`, `deadReckoning.ts`), both verified against real Mohali-tricity data (§7.3–7.4). `consumer.ts` (MQTT→Redis→Kafka) + `gateway.ts` (Kafka→Socket.IO + watchdog). Still per-ping, not batched (§7.3). Typechecks. |
+| `services/stream-processor` | Real map-matching + route-aware degradation-ladder dead reckoning against the geo-ingest snapshot (`routeStore.ts`, `geo.ts`, `deadReckoning.ts`), both verified against real Mohali-tricity data (§7.3–7.4). `consumer.ts` (MQTT→Redis→Kafka) + `gateway.ts` (Kafka→Socket.IO + watchdog). ETA scoring is now batched once/sec across all live buses (`etaScoringLoop.ts`, §7.3 item 3); map-matching itself is still per-ping, in-process (§7.3 item 2). Typechecks. |
 | `services/geo-ingest` | Python. Real OSM/OSRM route+stop ingestion — 103 real CTU route directions reconciled and enriched with real OSRM segment baselines, committed as a GeoJSON/GTFS snapshot (see its own README and §4, §11.1). Stop discovery queries nodes **and** ways; the earlier node-only query silently dropped way-mapped platforms/stations (38→56 features, 540→620 stop rows, +3 routes). |
 | `services/simulator` | Python. GPS simulator (Phase 2/3, §10) — walks real routes with congestion/crowd models calibrated against real OSRM baselines; `--mode=live` (divergence-triggered MQTT publish, mirrors the mobile-app transmitter) and `--mode=backfill` (training corpus CSV). Verified against all 100 real routes; caught and fixed 3 real bugs along the way, one of which (a flawed "first stop = distance 0" assumption) also existed in `stream-processor/routeStore.ts` and is now fixed in both — see its own README. |
 | `packages/shared-types` | GPS/bus-state/ML request-response types. Builds. |
@@ -376,9 +376,9 @@ JSON — this is the headline low-bandwidth claim and it needs to be true.
 
 ### 7.3 Processing loop (corrects the current scaffold)
 
-`consumer.ts` still map-matches and calls the ML service **per ping** rather than
-batching into a 1-second window across all active buses — that batching (item 2/4
-below) is not yet built. What IS built, replacing the earlier `mapMatch.ts` stub:
+`consumer.ts` still map-matches per ping rather than batching into a 1-second window
+across all active buses (item 2 below) — but ETA scoring (item 3) is no longer part
+of that per-ping path. What IS built, replacing the earlier `mapMatch.ts` stub:
 
 1. **Real map-matching** (`routeStore.ts` + `geo.ts` + `mapMatch.ts`) — loads the
    geo-ingest snapshot (`data/snapshots/<label>/{routes,stops,segments}.geojson`,
@@ -389,13 +389,38 @@ below) is not yet built. What IS built, replacing the earlier `mapMatch.ts` stub
    to a computed offset of 20.8m.
 2. Batch map-match via PostGIS, once Postgres/PostGIS is actually running — not yet
    built; today's version calls `mapMatch()` per ping, in-process, no DB round-trip.
-3. One batched call to `/eta/predict-batch` — not yet built; `scoreEta()` is still
-   called per ping against `/eta/predict`.
+3. **One batched call to `/eta/predict-batch` per second, scoring every live bus —
+   built** (`etaScoringLoop.ts`, started from `consumer.ts`'s `main()`). Verified live
+   against the real simulator: 3 concurrent buses, one `POST /eta/predict-batch` per
+   second returning 200, cumulative per-stop ETAs increasing monotonically, real stop
+   names resolved where OSM has them. `etaClient.ts`'s old per-ping `/eta/predict`
+   call (and its placeholder features) is deleted, not just unused.
+
+   Feature quality is real but still bounded by what §3.3's aggregate tables would
+   provide once built: `segment_avg_speed_7d/30d` both read the segment's OSRM
+   free-flow baseline (`routeStore`'s `avgSpeedMps`) rather than a genuine rolling
+   historical average — `segment_travel_stats`/`stop_dwell_stats` don't exist yet
+   (§2's MVP cut), so there's no rolling window to read one from. `live_traffic_factor`
+   IS a real live signal now (this tick's observed speed ÷ the current segment's
+   baseline, clamped to [0.2, 3.0]) rather than the old flat `1`.
+   `upcoming_stop_dwell_prior_sec` stays a flat constant, and `current_delay_sec`
+   stays `0` — there's no per-trip schedule to measure delay against (buses run on
+   randomized headways, not a fixed timetable) — see `etaScoringLoop.ts`'s module
+   docstring for the full honesty accounting. Net effect: the model trained in Phase
+   4 against genuine historical aggregates will predict less sharply live than
+   `metrics.json` suggests, until `segment_travel_stats`/`stop_dwell_stats` exist for
+   real.
 4. Pipelined Redis writes (`bus:{id}:position` now also carries `directionId`,
    `distAlongRouteM`, `speedMps`, `nextStopId/Name` — the state the degradation
    ladder below needs) plus an `active-buses` Set the ladder's watchdog scans.
 5. One Kafka produce per ping (not yet batched) to `bus-state-updates`, tagged
-   `confidenceTier: 'live'`.
+   `confidenceTier: 'live'`, now carrying whatever `upcomingStops` the batch scorer
+   last computed (best-effort, up to one tick stale between real pings) — plus a
+   second produce per bus from the batch loop itself once a second, so the passenger
+   UI's per-stop ETAs refresh even between GPS pings (docs §6.4: "the passenger UI
+   shows the next three stops"). Both paths preserve the REAL last-ping `updatedAt`,
+   never the scoring tick's own clock, so the degradation ladder's staleness math
+   (§7.4) stays honest regardless of which path produced a given message.
 
 Ordering guarantee: Kafka key = `busId`, so a single bus's updates stay ordered on one
 partition.
@@ -491,7 +516,7 @@ Ordered by dependency; each phase ends with something demonstrable.
 | **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. `db/migrations/` (plain PostGIS, no TimescaleDB — MVP scale doesn't need hypertables) creates the full §3 schema; `persist.py` now does real route/stop/segment upserts against it (idempotent by `osm_relation_id`/`osm_node_id`, §4.2), verified against a synthetic fixture exercising every write path including the `ST_LineLocatePoint` stop-projection. Not yet re-verified against a full live 100-route Overpass run — that's the next thing to actually do, not a design gap. | 0 |
 | **2. Safety-net MVP** | ✅ Live end-to-end wiring verified: `simulator --mode=live` → EMQX → `consumer.ts` (real map-match + naive-baseline ETA from `ml-service` + Redis) → Redpanda → `gateway.ts` (consumer group lag 0) → Socket.IO. `apps/admin-dashboard`'s `LiveFleetMap.tsx` now subscribes for real (`useFleetSocket` + `FleetMap`, MapLibre, a new `admin:fleet` broadcast room in `gateway.ts`) — backend confirmed serving it live traffic (Kafka lag 0, Redis position keys populated) while the page was up. The rendered "dot on the map" hasn't been eyeballed by a human yet (no browser automation available in this environment) — everything server-side of the browser is verified live; the pixels aren't. | 1 |
 | **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
-| **4. ETA model** | 🔶 In progress. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, horizon-bucketed MAE vs naive baseline, ONNX export), `/eta/predict-batch` all built and verified end-to-end (smoke-trained on a 5-day partial corpus — see train/README.md for why that run's numbers don't count). Blocked on the full 90-day backfill finishing to produce the real metrics.json. **Not done even once that lands**: `services/stream-processor/src/etaClient.ts` still sends placeholder features (own speed as both 7d/30d avg, `current_delay_sec=0`, flat dwell prior, neutral traffic factor) and still calls `/eta/predict` per-ping, not `/eta/predict-batch` — the model can't show real accuracy in production, or actually retire the naive baseline, until that's rewired. That's the real remaining blocker, not a footnote. | 3 |
+| **4. ETA model** | ✅ Trained and live. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, ONNX export) trained on the full 90-day/103-route corpus: per-segment MAE 5.8s vs naive baseline 49.4s (88.3% improvement), horizon-bucketed MAE well under the §6.2 target (<2min within a 10-min horizon) at every bucket including 10min+ (21.2s) — see `artifacts/metrics.json`. `/eta/predict-batch` is live and wired into `stream-processor` (§7.3 item 3) — `etaScoringLoop.ts` scores every live bus once a second, verified end-to-end against the real simulator. Remaining gap, honestly: the live features it's scored against are real but not as rich as what it was trained on (`segment_avg_speed_7d/30d` read the OSRM baseline, not a rolling historical average — §3.3's aggregate tables still don't exist) — see §7.3 for the full accounting. | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |
 | **6. Passenger app** | Live map, ETA, occupancy badge, degraded text mode | 2, 4 |
 | **7. Ticketing** | Fare calc, UPI sandbox, Ed25519 QR, offline validation + replay sync | 5, 6 |

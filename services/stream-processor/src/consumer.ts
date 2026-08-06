@@ -2,8 +2,8 @@ import mqtt from 'mqtt';
 import { Kafka } from 'kafkajs';
 import { config } from './config';
 import { mapMatch, type RawGpsPing } from './mapMatch';
-import { scoreEta } from './etaClient';
 import { redis, busPositionKey, busOccupancyKey, ACTIVE_BUSES_KEY } from './redisClient';
+import { startEtaScoringLoop, latestEtaCache } from './etaScoringLoop';
 
 // In a production AIS-140/EMQX deployment, raw GPS pings are bridged from MQTT into the
 // "raw-gps-pings" Kafka topic by EMQX's rule engine, and this process would be a pure Kafka
@@ -17,7 +17,6 @@ const BUS_STATE_TOPIC = 'bus-state-updates';
 
 async function handlePing(ping: RawGpsPing) {
   const matched = await mapMatch(ping);
-  const eta = await scoreEta(ping, matched);
   const speedMps = ping.speedKmh / 3.6;
 
   await redis
@@ -37,6 +36,13 @@ async function handlePing(ping: RawGpsPing) {
     .sadd(ACTIVE_BUSES_KEY, ping.busId)
     .exec();
 
+  // ETA is no longer scored per-ping (docs §7.3 item 3 — a per-ping HTTP call to
+  // ml-service doesn't hold up at fleet scale). etaScoringLoop.ts batches every
+  // live bus into one /eta/predict-batch call on a fixed interval instead; this
+  // just attaches whatever it last computed, so the position update this ping
+  // triggers isn't shipped with no ETA at all between batch ticks.
+  const upcomingStops = latestEtaCache.get(ping.busId);
+
   await producer.send({
     topic: BUS_STATE_TOPIC,
     messages: [
@@ -49,7 +55,8 @@ async function handlePing(ping: RawGpsPing) {
           lat: ping.lat,
           lon: ping.lon,
           occupancy: ping.occupancy,
-          etaSeconds: eta.etaSeconds,
+          etaSeconds: upcomingStops?.[0]?.etaSeconds,
+          upcomingStops,
           nextStopId: matched.nextStopId,
           nextStopName: matched.nextStopName,
           distanceToNextStopM: matched.distanceToNextStopM,
@@ -64,6 +71,7 @@ async function handlePing(ping: RawGpsPing) {
 
 async function main() {
   await producer.connect();
+  startEtaScoringLoop(redis, producer);
 
   const client = mqtt.connect(config.mqttBrokerUrl);
 

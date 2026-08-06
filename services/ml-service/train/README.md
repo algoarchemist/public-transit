@@ -52,20 +52,28 @@ to keep test rows genuinely free of future leakage under the time-based split.
 bucket by hour-of-day but deliberately not by day-of-week (too sparse at 4
 trips/route/day — a same-weekday 7-day window has only ~1 matching day).
 
-## Known gap this does NOT fix
+## Serving-side gap: partially closed
 
-`services/stream-processor/src/etaClient.ts` — the only real caller of `/eta/predict`
-today — does not compute real values for most of these features. It sends the live
-ping's own instantaneous speed as **both** `segment_avg_speed_7d` and
-`segment_avg_speed_30d`, `current_delay_sec=0`, `weather_bucket=0`,
-`upcoming_stop_dwell_prior_sec=30` (flat constant), `live_traffic_factor=1` (neutral)
-— see docs §7.3 items 2–3, both marked "not yet built" (batched PostGIS map-matching,
-batched `/eta/predict-batch` call). The model here is trained on real historical
-aggregates and is correct to be; it will not show its real accuracy in production
-until stream-processor computes features that actually match what it was trained
-on. Wiring that is out of Phase 4's scope as literally defined in docs §10's build
-table, but it is the thing that determines whether Phase 4 is real or theoretical in
-the running system — treat it as the next real blocker, not a nice-to-have.
+`services/stream-processor/src/etaScoringLoop.ts` (docs §7.3 item 3) now calls
+`/eta/predict-batch` once a second for every live bus, replacing the old
+`etaClient.ts` per-ping `/eta/predict` call — that file is deleted. Feature quality
+improved but is still bounded by what §3.3's aggregate tables would provide once
+built:
+
+- `live_traffic_factor` is now a real live signal (this tick's observed speed ÷ the
+  current segment's OSRM baseline, clamped [0.2, 3.0]) instead of the old flat `1`.
+- `segment_avg_speed_7d` and `segment_avg_speed_30d` both still read the segment's
+  OSRM free-flow baseline (`routeStore`'s `avgSpeedMps`), not a genuine rolling
+  historical average — `segment_travel_stats` doesn't exist yet (§3.3, MVP cut).
+- `current_delay_sec` stays `0` (no per-trip schedule to measure delay against) and
+  `upcoming_stop_dwell_prior_sec` stays a flat constant (no `stop_dwell_stats`
+  table). `weather_bucket` stays `0` (nothing simulates or observes weather).
+
+Net effect: this model is trained on genuine historical rolling aggregates and is
+correct to be, but it will predict less sharply live than `metrics.json` suggests
+until `segment_travel_stats`/`stop_dwell_stats` exist for real and `etaScoringLoop.ts`
+reads from them instead of the OSRM baseline. That table is the next real blocker on
+this specific gap, not a nice-to-have.
 
 ## Weather
 
