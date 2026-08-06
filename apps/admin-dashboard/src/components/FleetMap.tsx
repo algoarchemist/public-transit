@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { MapLibreMap, Marker, Popup } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import type { BusState } from '@setutrack/shared-types'
+import { api } from '../lib/api'
 
 // Matches the mohali-tricity snapshot geo-ingest/simulator/stream-processor all load.
 const TRICITY_CENTER: [number, number] = [76.7179, 30.7046]
@@ -29,6 +30,40 @@ export function FleetMap({ buses }: { buses: Map<string, BusState> }) {
     })
     mapRef.current = map
     return () => map.remove()
+  }, [])
+
+  // Real route geometry (data/snapshots/mohali-tricity/routes.geojson via
+  // GET /routes/geometry) drawn under the live bus markers — one LineString per
+  // route direction, so the dots have real roads to move along.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    let cancelled = false
+
+    async function addRouteLayer() {
+      let data: GeoJSON.FeatureCollection
+      try {
+        data = (await api.get<GeoJSON.FeatureCollection>('/routes/geometry')).data
+      } catch (err) {
+        console.error('Failed to load route geometry', err)
+        return
+      }
+      if (cancelled || map!.getSource('routes')) return
+      map!.addSource('routes', { type: 'geojson', data })
+      map!.addLayer({
+        id: 'routes-line',
+        type: 'line',
+        source: 'routes',
+        paint: { 'line-color': '#2563eb', 'line-width': 1.5, 'line-opacity': 0.5 },
+      })
+    }
+
+    if (map.isStyleLoaded()) addRouteLayer()
+    else map.once('load', addRouteLayer)
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {

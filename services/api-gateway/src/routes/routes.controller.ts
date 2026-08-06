@@ -10,6 +10,11 @@ export class RoutesController {
     return this.routesService.findAll();
   }
 
+  @Get('geometry')
+  geometry() {
+    return this.routesService.geometry();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.routesService.findOne(id);
