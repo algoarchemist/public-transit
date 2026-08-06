@@ -5,7 +5,7 @@ import { mapMatch, type RawGpsPing } from './mapMatch';
 import { redis, busPositionKey, busOccupancyKey, ACTIVE_BUSES_KEY } from './redisClient';
 import { startEtaScoringLoop, latestEtaCache } from './etaScoringLoop';
 import { startStatsStore } from './statsStore';
-import { startPgPersist, persistPingAsync } from './pgPersist';
+import { startPgPersist, persistPingAsync, handleTripStatus, type TripStatusMessage } from './pgPersist';
 
 // In a production AIS-140/EMQX deployment, raw GPS pings are bridged from MQTT into the
 // "raw-gps-pings" Kafka topic by EMQX's rule engine, and this process would be a pure Kafka
@@ -15,6 +15,7 @@ const kafka = new Kafka({ clientId: config.kafkaClientId, brokers: config.kafkaB
 const producer = kafka.producer();
 
 const GPS_TOPIC = 'gps/+/ping';
+const TRIP_STATUS_TOPIC = 'bus/+/status';
 const BUS_STATE_TOPIC = 'bus-state-updates';
 
 async function handlePing(ping: RawGpsPing) {
@@ -89,11 +90,23 @@ async function main() {
       if (err) throw err;
       console.log(`[consumer] subscribed to ${GPS_TOPIC}`);
     });
+    // api-gateway's mqtt.service.ts publishes real trip_start/trip_end here (docs
+    // §7.2/§7.3) — retained, so subscribing also replays each bus's last status,
+    // letting pgPersist.ts re-adopt running trips across a restart.
+    client.subscribe(TRIP_STATUS_TOPIC, (err) => {
+      if (err) throw err;
+      console.log(`[consumer] subscribed to ${TRIP_STATUS_TOPIC}`);
+    });
   });
 
-  client.on('message', (_topic, payload) => {
+  client.on('message', (topic, payload) => {
     // TODO: swap JSON.parse for a compact protobuf decode (see solution doc section 1.3 —
     // ~20-40 bytes/ping on the wire vs 200+ bytes JSON).
+    if (topic.startsWith('bus/') && topic.endsWith('/status')) {
+      const message = JSON.parse(payload.toString()) as TripStatusMessage;
+      handleTripStatus(message).catch((err) => console.error('[consumer] failed to process trip status', err));
+      return;
+    }
     const ping = JSON.parse(payload.toString()) as RawGpsPing;
     handlePing(ping).catch((err) => console.error('[consumer] failed to process ping', err));
   });

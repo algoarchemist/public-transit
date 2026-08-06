@@ -20,6 +20,13 @@ export class RoutesController {
     return this.routesService.findOne(id);
   }
 
+  /** One route's polyline. The passenger app draws a single route at a time and must
+   * not pull the whole multi-MB collection to do it — see RoutesService.routeGeometry. */
+  @Get(':id/geometry')
+  routeGeometry(@Param('id') id: string) {
+    return this.routesService.routeGeometry(id);
+  }
+
   @Get(':id/stops')
   stops(@Param('id') id: string) {
     return this.routesService.stops(id);

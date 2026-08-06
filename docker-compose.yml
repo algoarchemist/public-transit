@@ -46,6 +46,10 @@ services:
     image: emqx/emqx:5.8
     ports:
       - "1883:1883" # MQTT
+      # MQTT-over-WebSocket. The driver app's transmitter runs on Flutter web during
+      # development (`flutter run -d chrome` is the fast preview loop), and a browser
+      # cannot open a raw TCP socket — mqtt_client's MqttBrowserClient needs this.
+      - "8083:8083" # MQTT over WebSocket (ws://host:8083/mqtt)
       - "18083:18083" # dashboard (admin/public by default)
     volumes:
       - emqx-data:/opt/emqx/data

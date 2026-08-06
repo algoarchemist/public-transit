@@ -1,75 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import fs from 'node:fs';
-import path from 'node:path';
-
-// TODO: back with PostGIS-backed Route/Stop entities (geometry columns,
-// ST_LineLocatePoint for map-matching) instead of in-memory stubs.
-
-export interface GeoJsonFeature {
-  type: 'Feature';
-  geometry: { type: string; coordinates: unknown };
-  properties: Record<string, any>;
-}
-
-export interface GeoJsonCollection {
-  type: 'FeatureCollection';
-  features: GeoJsonFeature[];
-}
-
-function repoRoot(): string {
-  // src/routes/routes.service.ts and dist/routes/routes.service.js are both
-  // four levels inside the repo root, so this resolves correctly either way.
-  return path.resolve(__dirname, '..', '..', '..', '..');
-}
-
-let routesSnapshotCache: GeoJsonCollection | null = null;
-
-/** Reads the geo-ingest snapshot's real route polylines once per process; see
- * services/stream-processor/src/routeStore.ts for the same pattern used against
- * the live pipeline. */
-function loadRoutesSnapshot(): GeoJsonCollection {
-  if (routesSnapshotCache) return routesSnapshotCache;
-  const label = process.env.SNAPSHOT_LABEL ?? 'mohali-tricity';
-  const file = path.join(repoRoot(), 'data', 'snapshots', label, 'routes.geojson');
-  routesSnapshotCache = JSON.parse(fs.readFileSync(file, 'utf-8'));
-  return routesSnapshotCache!;
-}
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  SnapshotService,
+  type GeoJsonCollection,
+  type GeoJsonFeature,
+  type RouteSummary,
+  type StopSummary,
+} from '../snapshot/snapshot.service';
 
 @Injectable()
 export class RoutesService {
-  findAll() {
-    return [];
+  constructor(private readonly snapshot: SnapshotService) {}
+
+  /** Every real ingested route direction. This is what the driver app's route
+   * selection screen lists — see apps/mobile-app/lib/driver/route_selection_screen.dart. */
+  findAll(): RouteSummary[] {
+    return this.snapshot.listRoutes();
   }
 
-  findOne(id: string) {
-    return { id, name: null, stops: [] };
+  /** `id` is a `direction_id` ("r" + OSM relation id) — the identifier the whole
+   * live pipeline speaks, not a Postgres `routes.id`. See SnapshotService's docstring. */
+  findOne(id: string): RouteSummary & { stops: StopSummary[] } {
+    const route = this.snapshot.getRoute(id);
+    if (!route) throw new NotFoundException(`unknown route direction '${id}'`);
+    return { ...route, stops: this.snapshot.stopsFor(id) };
   }
 
-  stops(id: string) {
-    return { routeId: id, stops: [] };
+  stops(id: string): { directionId: string; stops: StopSummary[] } {
+    if (!this.snapshot.getRoute(id)) throw new NotFoundException(`unknown route direction '${id}'`);
+    return { directionId: id, stops: this.snapshot.stopsFor(id) };
   }
 
+  // TODO: real on-time/delay aggregates off segment_travel_stats + stop_events
+  // (docs §3.3). Left a stub deliberately — the admin analytics pages it feeds are
+  // still stubs themselves, and inventing numbers here would be worse than nothing.
   performance(id: string) {
     return { routeId: id, onTimePercent: null, avgDelaySec: null, problemSegments: [] };
   }
 
   /** GeoJSON FeatureCollection of every route direction's real polyline (one
-   * LineString per direction, 206 features for the mohali-tricity snapshot) — for
-   * the admin dashboard's live fleet map overlay. Properties trimmed to what the
-   * map actually uses. */
+   * LineString per direction) — for the admin dashboard's live fleet map overlay. */
   geometry(): GeoJsonCollection {
-    const snapshot = loadRoutesSnapshot();
-    return {
-      type: 'FeatureCollection',
-      features: snapshot.features.map((f) => ({
-        type: 'Feature',
-        geometry: f.geometry,
-        properties: {
-          direction_id: f.properties.direction_id,
-          route_id: f.properties.route_id ?? f.properties.ref ?? null,
-          name: f.properties.name ?? null,
-        },
-      })),
-    };
+    return this.snapshot.geometry();
+  }
+
+  /** One direction's polyline, for the passenger app's single-route map. */
+  routeGeometry(id: string): GeoJsonFeature {
+    const feature = this.snapshot.routeGeometry(id);
+    if (!feature) throw new NotFoundException(`unknown route direction '${id}'`);
+    return feature;
   }
 }

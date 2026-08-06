@@ -35,9 +35,9 @@ Socket.IO chain has been run end-to-end against simulated buses (§10 Phase 2) �
 map-matching, real (naive-baseline) ETA scoring, Kafka consumer lag 0, and now the
 admin dashboard's Live Fleet Map actually subscribed and rendering (server-side
 confirmed live; not yet human-eyeballed in a browser as of this writing). What's
-still wiring-with-`TODO`: the protobuf wire format, batched (rather than per-ping)
-map-matching/ETA scoring, and route-polyline overlay on the fleet map (no GeoJSON
-endpoint reachable by the browser yet). `db/migrations/` now
+still wiring-with-`TODO`: the protobuf wire format, and batched (rather than per-ping)
+map-matching. (Route-polyline overlay on the fleet map is now built — `routes.service.ts`
+serves real GeoJSON and `FleetMap.tsx` renders it.) `db/migrations/` now
 creates the full §3 schema (plain PostGIS — TimescaleDB was dropped from the MVP
 scope for speed, see §2) and `persist.py` does real route/stop/segment upserts
 against it, not just `cities`.
@@ -581,7 +581,7 @@ GET    /api/stops/nearby?lat&lon&radius_m
 GET    /api/buses | /buses/:id | /buses/:id/eta          # REST polling fallback
 POST   /api/trips | PATCH /api/trips/:id/end             # driver
 POST   /api/trips/:id/tally                              # conductor +/- occupancy
-POST   /api/tickets/fare | /api/tickets | /api/tickets/:id/validate
+# POST /api/tickets/*                                    # DESCOPED with phase 7 (§10)
 POST   /api/alerts/sos | /api/alerts/breakdown
 GET    /api/admin/analytics/ridership | /demand-supply | /model-health
 ```
@@ -590,7 +590,12 @@ low-bandwidth polling fallback, not the primary path.
 
 ---
 
-## 9. Offline-verifiable ticketing
+## 9. Offline-verifiable ticketing — DESIGN ONLY, NOT BUILT
+
+> **Descoped from the preliminary round (§10).** Nothing below is implemented. It is
+> kept because it is the right answer to "how would you validate a ticket offline",
+> and that question is worth being able to answer even when the code doesn't exist.
+> Do not present this as working.
 
 The conductor must validate a QR **with no connectivity on either device**. Design:
 
@@ -615,17 +620,41 @@ Ordered by dependency; each phase ends with something demonstrable.
 | **0. Unblock** | ✅ Docker Desktop + Flutter SDK installed; `docker compose up` green (postgres/redis/redpanda/emqx/osrm all healthy); self-hosted OSRM serving the tricity bbox | — |
 | **1. Real data** | ✅ `geo-ingest` run end-to-end → 100 real CTU route directions with stops/segments/OSRM baselines, GeoJSON/GTFS snapshot committed. `db/migrations/` (plain PostGIS, no TimescaleDB — MVP scale doesn't need hypertables) creates the full §3 schema; `persist.py` now does real route/stop/segment upserts against it (idempotent by `osm_relation_id`/`osm_node_id`, §4.2), verified against a synthetic fixture exercising every write path including the `ST_LineLocatePoint` stop-projection. Not yet re-verified against a full live 100-route Overpass run — that's the next thing to actually do, not a design gap. | 0 |
 | **2. Safety-net MVP** | ✅ Live end-to-end wiring verified: `simulator --mode=live` → EMQX → `consumer.ts` (real map-match + naive-baseline ETA from `ml-service` + Redis) → Redpanda → `gateway.ts` (consumer group lag 0) → Socket.IO. `apps/admin-dashboard`'s `LiveFleetMap.tsx` now subscribes for real (`useFleetSocket` + `FleetMap`, MapLibre, a new `admin:fleet` broadcast room in `gateway.ts`) — backend confirmed serving it live traffic (Kafka lag 0, Redis position keys populated) while the page was up. The rendered "dot on the map" hasn't been eyeballed by a human yet (no browser automation available in this environment) — everything server-side of the browser is verified live; the pixels aren't. | 1 |
-| **3. Training corpus** | `simulator --mode=backfill` built and verified (CSV output, correct schema) — small trial runs only so far (days=2, a few routes); the full `--days=90` across all 100 routes hasn't been run (compute time, and calibration fit vs published timetables per §5.4 still needs real timetable data to compare against). | 1 |
+| **3. Training corpus** | ✅ `simulator --mode=backfill --days=90` run across the full 103-route snapshot → `data/backfill/mohali-tricity/{gps_pings,stop_events}.csv`, 186,120 labelled segment traversals on a 60/15/15-**day** train/val/test split (§5.4 item 2). `artifacts/metrics.json` records `smoke_run: false` against git SHA `3f4b7dc`. **Deliberately not done:** calibrating congestion multipliers against real published PRTC/PUNBUS timetables (§5.4 item 1) — that needs timetable data we do not have, and the headline metric we actually report is improvement-over-naive-baseline (§5.4 item 3), which is unaffected by it. Say this out loud rather than implying the multipliers are fitted. | 1 |
 | **4. ETA model** | ✅ Trained and live. `app/features.py` (shared train/serve contract), `train/dataset.py` + `train/train_eta.py` (LightGBM, §5.4 time-based split, ONNX export) trained on the full 90-day/103-route corpus: per-segment MAE 5.8s vs naive baseline 49.4s (88.3% improvement), horizon-bucketed MAE well under the §6.2 target (<2min within a 10-min horizon) at every bucket including 10min+ (21.2s) — see `artifacts/metrics.json`. `/eta/predict-batch` is live and wired into `stream-processor` (§7.3 item 3) — `etaScoringLoop.ts` scores every live bus once a second. §3.3's `segment_travel_stats`/`stop_dwell_stats` are now built and wired in too (`refresh_stats.py`, `statsStore.ts`), and `refresh_stats.py --source live` can now refresh them from real Postgres traffic (`consumer.ts`'s real-time persistence, §7.3) instead of only the offline backfill corpus — upserts are additive, so a handful of real trips only refines the buckets they actually cover, never blanks out the 90-day-corpus-derived rest. Remaining gap, honestly: real dwell isn't observable from live data yet (map-matching gives one coarse "passed" instant per stop, not a real arrival/departure pair — see §7.3), so `--source live` only ever refreshes `segment_travel_stats`, never `stop_dwell_stats`. | 3 |
 | **5. Driver app** | Trip start/end, foreground GPS → MQTT, offline SQLite queue, tally buttons | 0, 2 |
 | **6. Passenger app** | Live map, ETA, occupancy badge, degraded text mode | 2, 4 |
-| **7. Ticketing** | Fare calc, UPI sandbox, Ed25519 QR, offline validation + replay sync | 5, 6 |
+| ~~**7. Ticketing**~~ | ❌ **Descoped** — see "Descoped for the preliminary round" below. The §9 design stands as a design; no code. | — |
 | **8. Crowd + planning** | Crowd model; admin demand-supply view (the highest-scoring admin feature) | 4 |
-| **9. Voice + i18n** | Punjabi/Hindi/English strings; Bhashini/Whisper → intent → booking API function-calling | 7 |
+| **9. Voice + i18n** | Punjabi/Hindi/English strings; Bhashini/Whisper → intent → booking API function-calling | 6 |
 | **10. Hardening** | SOS/alerts, signal-loss paths, model-health page, load test, **recorded backup demo video** | all |
 
 Phase 2 is the safety net: once a dot moves on the map through the real pipeline, there
 is always something to show, and every later phase is additive.
+
+### Descoped for the preliminary round
+
+This round evaluates technical skill, not feature count. The backend is deliberately
+being held where it is; effort goes to the app surface instead. Specifically:
+
+- **Phase 7 (ticketing) is cut entirely.** Fare calc, UPI sandbox, Ed25519 QR, and
+  offline validation are not being built. §9's design is retained as a *design* —
+  it is a good answer to "how would you do offline validation", and answering that
+  verbally costs nothing while building it costs the whole remaining budget.
+  §8's `/api/tickets/*` endpoints are descoped with it.
+- **No further ML depth.** Phase 4 is done and measured; phase 8's crowd model stays
+  at its naive baseline. We are not adding models we would then have to defend.
+
+**What the remaining effort is actually for**, in priority order, driven by the
+problem statement:
+
+1. **Low-bandwidth / intermittent-connectivity driver location updates** — the
+   problem statement calls this out explicitly. §7.4's divergence-triggered
+   transmitter and SQLite buffer are the answer and are already built; phase 5
+   finishes wiring them into a real trip lifecycle.
+2. **The ETA engine** — built (phase 4), needs to be *visible* in the apps.
+3. **Routes** — real ingested geometry (phase 1) surfaced through the API and rendered.
+4. **The admin dashboard** — the live fleet map is real; the remaining pages are stubs.
 
 ---
 

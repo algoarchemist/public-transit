@@ -1,41 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/api_client.dart';
+import 'core/app_scope.dart';
+import 'core/fleet_socket.dart';
 import 'driver/login_screen.dart';
 import 'driver/on_trip_screen.dart';
 import 'driver/route_selection_screen.dart';
-import 'driver/ticket_validation_screen.dart';
+import 'driver/trip_history_screen.dart';
+import 'driver/trip_updated_screen.dart';
+import 'core/models.dart';
 import 'passenger/home_screen.dart';
 import 'passenger/live_map_screen.dart';
-import 'passenger/ticketing_screen.dart';
-import 'passenger/voice_assistant_screen.dart';
 import 'role_selection_screen.dart';
+import 'theme/app_theme.dart';
+import 'theme/theme_controller.dart';
 
-void main() {
-  runApp(const SetuTrackApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final theme = ThemeController();
+  await theme.load();
+  runApp(SetuTrackApp(themeController: theme));
 }
 
-class SetuTrackApp extends StatelessWidget {
-  const SetuTrackApp({super.key});
+class SetuTrackApp extends StatefulWidget {
+  const SetuTrackApp({super.key, required this.themeController});
+
+  final ThemeController themeController;
+
+  @override
+  State<SetuTrackApp> createState() => _SetuTrackAppState();
+}
+
+class _SetuTrackAppState extends State<SetuTrackApp> {
+  late final ApiClient _api = ApiClient();
+
+  /// One socket for the whole app, connected at startup. The passenger screens all
+  /// read the same live fleet, so a per-screen connection would multiply server
+  /// fan-out for identical data. The driver flow does not use it (it publishes over
+  /// MQTT instead), but an idle socket costs nothing.
+  late final FleetSocket _fleet = FleetSocket()..connect();
+
+  @override
+  void dispose() {
+    _fleet.dispose();
+    _api.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SetuTrack',
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const _StartupGate(),
-        '/role-selection': (context) => const RoleSelectionScreen(),
-        '/passenger/home': (context) => const HomeScreen(),
-        '/passenger/live-map': (context) => const LiveMapScreen(),
-        '/passenger/ticketing': (context) => const TicketingScreen(),
-        '/passenger/voice-assistant': (context) => const VoiceAssistantScreen(),
-        '/driver/login': (context) => const LoginScreen(),
-        '/driver/route-selection': (context) => const RouteSelectionScreen(),
-        '/driver/on-trip': (context) => const OnTripScreen(),
-        '/driver/ticket-validation': (context) => const TicketValidationScreen(),
-      },
+    return ThemeScope(
+      notifier: widget.themeController,
+      child: ApiScope(
+        client: _api,
+        child: FleetScope(
+          notifier: _fleet,
+          child: AnimatedBuilder(
+            animation: widget.themeController,
+            builder: (context, _) => MaterialApp(
+              title: 'SetuTrack',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light(),
+              darkTheme: AppTheme.dark(),
+              themeMode: widget.themeController.mode,
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const _StartupGate(),
+                '/role-selection': (context) => const RoleSelectionScreen(),
+                '/passenger/home': (context) => const HomeScreen(),
+                '/passenger/live-map': (context) => const LiveMapScreen(),
+                '/driver/login': (context) => const LoginScreen(),
+                '/driver/route-selection': (context) => const RouteSelectionScreen(),
+                '/driver/on-trip': (context) => const OnTripScreen(),
+                '/driver/trip-updated': (context) {
+                  final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+                  return TripUpdatedScreen(trip: args['trip'] as TripSession, route: args['route'] as BusRoute?);
+                },
+                '/driver/trip-history': (context) => const TripHistoryScreen(),
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -17,13 +17,21 @@
  * this system provisions a fleet roster yet (api-gateway's buses/trips endpoints
  * are still stubs).
  *
- * Trip lifecycle is inferred, not signaled: there is no MQTT "trip start/end"
- * message today (docs §7.2's `bus/{busId}/status` topic is unpublished/
- * unsubscribed) — a trip is created the first time a busId is seen, and closed
- * only if that busId's directionId later changes (defensive; the simulator's
- * live mode runs exactly one trip per bus per process, so this doesn't fire in
- * practice today). A trip is never marked 'completed' at its real end for the
- * same reason — this is a known, honest gap, not silently pretended away.
+ * Trip lifecycle: api-gateway's trips.service.ts now mints the real trips.id and
+ * publishes it on `bus/{busId}/status` (QoS 1, retained — see its mqtt.service.ts)
+ * on `POST /api/trips` / `PATCH /api/trips/:id/end`. `handleTripStatus` below,
+ * wired from consumer.ts's `bus/+/status` subscription, adopts that real tripId
+ * into `tripStateByBusId` on `trip_start` and retires it on `trip_end` — closing
+ * the gap this comment used to describe. The retained flag means a
+ * stream-processor that restarts mid-trip re-receives the last status per bus and
+ * re-adopts the running trip rather than starting cold.
+ *
+ * `ensureTrip`'s lazy create-on-first-ping path stays as the fallback for buses
+ * whose trip_start message never arrived or was lost (broker down at start time,
+ * a real VLTD bus with no app-side trip lifecycle at all) — inferred trips are
+ * still never marked 'completed' at their real end, same as before, because there
+ * is by definition no end signal for one. That gap is now the exception rather
+ * than the default.
  *
  * Stop-event detection is inferred from map-matching, not a real arrival sensor:
  * mapMatch.ts's `nextStopId` is the stop the bus hasn't reached yet. When it
@@ -42,11 +50,19 @@
  * between consecutive confirmations (a real signal — the ping payload's own
  * `occupancy` field — but a net delta, not an actual boarding+alighting tally).
  *
- * One real, unclosed limitation: a route's FINAL stop never gets a stop_event
- * here. `nextStopId` simply stops changing once the bus reaches the last stop
- * (routeStore.nextStopFrom's own fallback), so the transition this module
- * watches for never fires for it. Closing that needs a real trip-end signal
- * this system doesn't have yet — flagged, not silently worked around.
+ * The FINAL stop's stop_event — previously an unclosed gap, because
+ * `nextStopId` simply stops changing once the bus reaches the last stop
+ * (routeStore.nextStopFrom's own fallback), so `maybeRecordStopEvent`'s
+ * change-detection never fires for it. Now that a real trip_end signal exists,
+ * `handleTripStatus` records it directly: whatever stop `lastNextStopOsmNodeId`
+ * was pointing at when the trip ended (the last stop the state machine was
+ * still "approaching") is recorded as reached, at the trip_end message's
+ * timestamp. `boarding_count`/`alighting_count` are left NULL rather than
+ * guessed — trip_end carries no occupancy figure to diff against, and the same
+ * no-fabrication rule applies here as everywhere else in this module. A trip
+ * that ends via the `ensureTrip` fallback path (inferred, no real trip_end)
+ * still doesn't get this — there's no signal to record it against, same as
+ * before.
  */
 import { getPgPool } from './pgPool';
 import { config } from './config';
@@ -238,4 +254,98 @@ export function persistPingAsync(ping: RawGpsPing, matched: MapMatchedPosition):
       await maybeRecordStopEvent(state, ping, matched);
     })
     .catch((err) => console.error('[pgPersist] failed to persist ping', err));
+}
+
+/** Mirrors api-gateway's mqtt.service.ts `TripStatusMessage` — the two services
+ * are separate deployables connected only by this wire contract, same as
+ * `RawGpsPing`/`MapMatchedPosition` above have no shared-package type either. */
+export interface TripStatusMessage {
+  event: 'trip_start' | 'trip_end';
+  tripId: number;
+  busId: string;
+  routeId: string | null;
+  directionId: string;
+  timestamp: number;
+}
+
+/** Records the trip's real final stop_event — see this module's docstring.
+ * `lastNextStopOsmNodeId` is whatever stop the state machine was still
+ * "approaching" when the trip ended; for a trip that reached the end of its
+ * route that's the real final stop, since nextStopId stops advancing there. */
+async function recordFinalStopEvent(state: TripState, endedAtMs: number): Promise<void> {
+  const reachedStopOsmNodeId = state.lastNextStopOsmNodeId;
+  if (reachedStopOsmNodeId === null) return; // no ping ever established an upcoming stop for this trip
+
+  const pgStopId = stopIdByOsmNodeId.get(reachedStopOsmNodeId);
+  const direction = getDirection(state.directionId);
+  const sequence = direction?.stops.find((s) => s.osmNodeId === reachedStopOsmNodeId)?.sequence ?? null;
+  if (pgStopId === undefined || sequence === null) return;
+
+  await getPgPool().query(
+    `INSERT INTO stop_events (trip_id, stop_id, sequence, arrived_at, departed_at, dwell_sec, boarding_count, alighting_count)
+     VALUES ($1, $2, $3, to_timestamp($4 / 1000.0), NULL, NULL, NULL, NULL)`,
+    [state.pgTripId, pgStopId, sequence, endedAtMs],
+  );
+}
+
+/**
+ * Handles a real `bus/{busId}/status` message (docs §7.2/§7.3), wired from
+ * consumer.ts's `bus/+/status` subscription. `trip_start` adopts the gateway's
+ * real `trips.id` into `tripStateByBusId` so every subsequent `gps_pings`/
+ * `stop_events` row for this bus attaches to the trip the driver actually
+ * started, not an inferred one. `trip_end` retires that cache entry and records
+ * the real final stop_event — api-gateway has already closed the `trips` row
+ * itself (trips.service.ts's `end()`), so this never touches `trips` directly.
+ */
+export async function handleTripStatus(message: TripStatusMessage): Promise<void> {
+  if (cityId === null) return; // startPgPersist() never resolved a city — same guard as persistPingAsync
+
+  if (message.event === 'trip_end') {
+    const existing = tripStateByBusId.get(message.busId);
+    if (existing?.pgTripId !== message.tripId) return; // stale/duplicate/unknown — nothing cached to retire
+    await recordFinalStopEvent(existing, message.timestamp).catch((err) =>
+      console.error('[pgPersist] failed to record final stop_event', err),
+    );
+    tripStateByBusId.delete(message.busId);
+    console.log(`[pgPersist] trip ${message.tripId} for bus ${message.busId} ended (real signal)`);
+    return;
+  }
+
+  // trip_start
+  const osmRelationId = parseOsmRelationId(message.directionId);
+  const pgRouteId = osmRelationId !== null ? routeIdByOsmRelationId.get(osmRelationId) : undefined;
+  if (pgRouteId === undefined) {
+    console.warn(
+      `[pgPersist] trip_start for bus ${message.busId}: direction ${message.directionId} not found in Postgres routes — ignoring, falling back to per-ping inference`,
+    );
+    return;
+  }
+
+  const existing = tripStateByBusId.get(message.busId);
+  if (existing && existing.pgTripId !== message.tripId) {
+    // A previous (real or inferred) trip was still cached for this bus. api-gateway's
+    // own start() already closes any 'running' trip for this bus before minting a new
+    // one, but an *inferred* trip (created by ensureTrip's fallback, never signaled to
+    // the gateway) wouldn't have gone through that path — close it here so it doesn't
+    // stay 'running' forever alongside the new real one.
+    try {
+      await getPgPool().query(`UPDATE trips SET ended_at = now(), status = 'completed' WHERE id = $1 AND status = 'running'`, [
+        existing.pgTripId,
+      ]);
+    } catch (err) {
+      console.error('[pgPersist] failed to close superseded trip', err);
+    }
+  }
+
+  const pgBusId = existing?.pgBusId ?? (await upsertBus(message.busId));
+  tripStateByBusId.set(message.busId, {
+    pgBusId,
+    pgTripId: message.tripId,
+    pgRouteId,
+    directionId: message.directionId,
+    lastNextStopOsmNodeId: null,
+    lastStopChangeAtMs: message.timestamp,
+    lastOccupancy: 0,
+  });
+  console.log(`[pgPersist] adopted real trip ${message.tripId} for bus ${message.busId} (${message.directionId})`);
 }

@@ -1,30 +1,40 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:setutrack_mobile/main.dart';
+import 'package:setutrack_mobile/theme/theme_controller.dart';
 
+/// Smoke test: the app boots, and a first-launch user (no persisted role) lands on
+/// the role picker rather than a blank screen or a crash.
+///
+/// Deliberately shallow. Every screen past this point talks to the api-gateway and
+/// the live socket, so testing them properly needs a fake transport layer — worth
+/// building when the demo is not the deadline.
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('first launch shows the role picker', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final theme = ThemeController();
+    await theme.load();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(SetuTrackApp(themeController: theme));
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    expect(find.text("I'm a Passenger"), findsOneWidget);
+    expect(find.text("I'm a Driver / Conductor"), findsOneWidget);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('theme mode persists through the controller', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final theme = ThemeController();
+    await theme.load();
+    expect(theme.mode, ThemeMode.system);
+
+    await theme.set(ThemeMode.dark);
+    expect(theme.mode, ThemeMode.dark);
+
+    final reloaded = ThemeController();
+    await reloaded.load();
+    expect(reloaded.mode, ThemeMode.dark, reason: 'theme choice must survive a restart');
   });
 }
