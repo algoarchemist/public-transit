@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/api_client.dart';
 import '../core/app_scope.dart';
+import '../core/location_service.dart';
 import '../core/models.dart';
 import '../theme/app_theme.dart';
 import '../ui/components.dart';
@@ -49,10 +50,65 @@ class _RouteSearchScreenState extends State<RouteSearchScreen> {
   String? _error;
   List<JourneyOption>? _results;
 
+  bool _originInitialized = false;
+  bool _originLoading = false;
+  bool _locationIsReal = true;
+  String? _originError;
+
   @override
   void initState() {
     super.initState();
     _loadRecent();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_originInitialized) return;
+    _originInitialized = true;
+    _loadOrigin();
+  }
+
+  /// Resolves the passenger's boarding stop from their GPS fix instead of
+  /// making them pick one — the reference design's "Where from?" field is
+  /// gone; this is what fills its role. Widens the search radius once before
+  /// giving up, since 1.5km can legitimately miss every stop on a fallback
+  /// fix (city centre, not necessarily near dense stop coverage).
+  Future<void> _loadOrigin() async {
+    if (_originLoading) return;
+    final api = ApiScope.of(context);
+    setState(() {
+      _originLoading = true;
+      _originError = null;
+    });
+    final fix = await LocationService.currentOrFallback();
+    if (!mounted) return;
+    _locationIsReal = fix.isReal;
+    try {
+      var nearby = await api.nearbyStops(lat: fix.point.latitude, lon: fix.point.longitude, radiusM: 1500, limit: 1);
+      if (nearby.isEmpty) {
+        nearby = await api.nearbyStops(lat: fix.point.latitude, lon: fix.point.longitude, radiusM: 5000, limit: 1);
+      }
+      if (!mounted) return;
+      if (nearby.isEmpty) {
+        setState(() {
+          _originLoading = false;
+          _originError = 'No stops found near you';
+        });
+        return;
+      }
+      final nearest = nearby.first;
+      setState(() {
+        _from = SearchStop(osmNodeId: nearest.osmNodeId, name: nearest.name, lat: nearest.lat, lon: nearest.lon, routes: nearest.routes);
+        _originLoading = false;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _originLoading = false;
+        _originError = e.message;
+      });
+    }
   }
 
   Future<void> _loadRecent() async {
@@ -106,32 +162,15 @@ class _RouteSearchScreenState extends State<RouteSearchScreen> {
     return '${diff.inDays} days ago';
   }
 
-  Future<void> _pickStop({required bool isFrom}) async {
+  Future<void> _pickDestination() async {
     final picked = await Navigator.push<SearchStop>(
       context,
       MaterialPageRoute(
-        builder: (_) => StopPickerScreen(
-          title: isFrom ? 'Where from?' : 'Where to?',
-          exclude: isFrom ? _to : _from,
-        ),
+        builder: (_) => StopPickerScreen(title: 'Where to?', exclude: _from),
       ),
     );
     if (picked == null) return;
-    setState(() {
-      if (isFrom) {
-        _from = picked;
-      } else {
-        _to = picked;
-      }
-    });
-  }
-
-  void _swap() {
-    setState(() {
-      final tmp = _from;
-      _from = _to;
-      _to = tmp;
-    });
+    setState(() => _to = picked);
   }
 
   Future<void> _pickDepartTime() async {
@@ -153,8 +192,12 @@ class _RouteSearchScreenState extends State<RouteSearchScreen> {
   Future<void> _findRoutes() async {
     final from = _from;
     final to = _to;
-    if (from == null || to == null) {
-      setState(() => _error = 'Pick a departure and an arrival stop');
+    if (from == null) {
+      setState(() => _error = _originError ?? 'Still finding your location — try again in a moment');
+      return;
+    }
+    if (to == null) {
+      setState(() => _error = 'Pick where you\'re headed');
       return;
     }
     if (from.osmNodeId == to.osmNodeId) {
@@ -209,33 +252,34 @@ class _RouteSearchScreenState extends State<RouteSearchScreen> {
             SoftCard(
               child: Column(
                 children: [
-                  Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      Column(
-                        children: [
-                          _StopField(
-                            icon: Icons.trip_origin_rounded,
-                            iconColor: AppTheme.liveGreen,
-                            label: _from?.displayName ?? 'Where from?',
-                            filled: _from != null,
-                            onTap: () => _pickStop(isFrom: true),
-                          ),
-                          const SizedBox(height: 10),
-                          _StopField(
-                            icon: Icons.location_on_rounded,
-                            iconColor: AppTheme.crowded,
-                            label: _to?.displayName ?? 'Where to?',
-                            filled: _to != null,
-                            onTap: () => _pickStop(isFrom: false),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: CircleIconButton(icon: Icons.swap_vert_rounded, filled: true, onPressed: _swap),
-                      ),
-                    ],
+                  // No "Where from?" field to tap — the boarding stop is resolved
+                  // from the passenger's GPS fix (_loadOrigin), same "ask, don't
+                  // demand" location handling as location_service.dart. Tapping
+                  // this row re-resolves it, which doubles as the retry action
+                  // when _originError is set.
+                  _StopField(
+                    icon: Icons.my_location_rounded,
+                    iconColor: AppTheme.liveGreen,
+                    label: _originLoading
+                        ? 'Finding your location…'
+                        : (_originError ?? _from?.displayName ?? 'Current location'),
+                    filled: _from != null,
+                    onTap: _loadOrigin,
+                  ),
+                  if (!_originLoading && _from != null && !_locationIsReal) ...[
+                    const SizedBox(height: 8),
+                    const MetaRow(
+                      icon: Icons.info_outline_rounded,
+                      text: "Using the city centre — enable location for a nearer boarding stop",
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  _StopField(
+                    icon: Icons.location_on_rounded,
+                    iconColor: AppTheme.crowded,
+                    label: _to?.displayName ?? 'Where to?',
+                    filled: _to != null,
+                    onTap: _pickDestination,
                   ),
                   const SizedBox(height: 12),
                   Row(
