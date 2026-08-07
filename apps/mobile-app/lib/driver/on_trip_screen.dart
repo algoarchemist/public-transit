@@ -39,6 +39,9 @@ class _OnTripScreenState extends State<OnTripScreen> {
   _Phase _phase = _Phase.starting;
   TripSession? _trip;
   String? _error;
+  DateTime? _scheduledStart;
+  TripSession? _existingTrip;
+  bool _gpsWasUnavailable = false;
 
   LocationTransmitter? _transmitter;
   Timer? _statusTimer;
@@ -58,6 +61,9 @@ class _OnTripScreenState extends State<OnTripScreen> {
     _routeId = args?['routeId'] as String?;
     _routeName = args?['routeName'] as String?;
     _route = args?['route'] as BusRoute?;
+    _scheduledStart = args?['scheduledStart'] as DateTime?;
+    _existingTrip = args?['existingTrip'] as TripSession?;
+    _gpsWasUnavailable = (args?['gpsWasUnavailable'] as bool?) ?? false;
     _startTrip();
   }
 
@@ -70,7 +76,16 @@ class _OnTripScreenState extends State<OnTripScreen> {
       return;
     }
     try {
-      final trip = await _api.startTrip(busId: _busId, directionId: _directionId, driverId: _driverId);
+      // schedule_start_screen.dart's GPS-unavailable path already called
+      // POST /api/trips itself (it had a manual startedAt to submit) — adopt that
+      // trip rather than creating a second one for the same shift.
+      final trip = _existingTrip ??
+          await _api.startTrip(
+            busId: _busId,
+            directionId: _directionId,
+            driverId: _driverId,
+            scheduledStart: _scheduledStart,
+          );
       if (!mounted) return;
 
       final transmitter = LocationTransmitter(
@@ -210,9 +225,21 @@ class _OnTripScreenState extends State<OnTripScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                StatusPill(
-                  label: transmitter.isConnected ? 'MQTT connected' : 'Offline — buffering',
-                  color: transmitter.isConnected ? AppTheme.liveGreen : AppTheme.estimatedAmber,
+                Row(
+                  children: [
+                    StatusPill(
+                      label: transmitter.isConnected ? 'MQTT connected' : 'Offline — buffering',
+                      color: transmitter.isConnected ? AppTheme.liveGreen : AppTheme.estimatedAmber,
+                    ),
+                    if (_gpsWasUnavailable) ...[
+                      const SizedBox(width: 8),
+                      const StatusPill(
+                        label: 'Started manually — GPS was unavailable',
+                        color: AppTheme.crowded,
+                        compact: true,
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 10),
                 MetaRow(

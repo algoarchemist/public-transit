@@ -68,9 +68,46 @@ export interface NearbyStop {
   routes: ServingRoute[];
 }
 
+/** Every real stop in the snapshot, with every direction that serves it — the
+ * passenger app's origin/destination picker (route_search_screen.dart) searches
+ * this by name rather than needing a location fix, unlike `stopsNear`. */
+export interface AllStop {
+  osmNodeId: number;
+  name: string | null;
+  lat: number;
+  lon: number;
+  routes: ServingRoute[];
+}
+
+interface SegmentSummary {
+  sequence: number;
+  lengthM: number;
+  baselineSec: number | null;
+}
+
+/** A single real direct route (no transfers) between two real stops that share a
+ * direction, with a real distance and — where every segment between them has a
+ * real OSRM baseline — a real duration. `durationSec` is null rather than guessed
+ * when a baseline is missing for any covered segment; callers must not fabricate
+ * a number to fill the gap (same rule as everywhere else real data is partial in
+ * this system — see docs/IMPLEMENTATION_ARCHITECTURE.md's honesty conventions).
+ * There is deliberately no fare here: ticketing was descoped (docs §10), so no
+ * real price exists to report. */
+export interface JourneyOption {
+  directionId: string;
+  routeId: string | null;
+  routeName: string | null;
+  fromStopId: number;
+  toStopId: number;
+  stopsBetween: number;
+  distanceM: number;
+  durationSec: number | null;
+}
+
 interface LoadedSnapshot {
   routesByDirection: Map<string, RouteSummary>;
   stopsByDirection: Map<string, StopSummary[]>;
+  segmentsByDirection: Map<string, SegmentSummary[]>;
   geometry: GeoJsonCollection;
 }
 
@@ -99,6 +136,9 @@ export class SnapshotService {
     );
     const stops: GeoJsonCollection = JSON.parse(
       fs.readFileSync(path.join(dir, 'stops.geojson'), 'utf-8'),
+    );
+    const segments: GeoJsonCollection = JSON.parse(
+      fs.readFileSync(path.join(dir, 'segments.geojson'), 'utf-8'),
     );
 
     const stopsByDirection = new Map<string, StopSummary[]>();
@@ -136,9 +176,28 @@ export class SnapshotService {
       });
     }
 
+    // Real per-segment length + OSRM baseline duration (stream-processor's
+    // routeStore.ts reads the identical file for the live pipeline — same
+    // property names, deliberately not re-derived a second way).
+    const segmentsByDirection = new Map<string, SegmentSummary[]>();
+    for (const f of segments.features) {
+      const directionId: string = f.properties.direction_id;
+      const list = segmentsByDirection.get(directionId) ?? [];
+      list.push({
+        sequence: f.properties.sequence,
+        lengthM: f.properties.length_m,
+        baselineSec: f.properties.baseline_sec ?? null,
+      });
+      segmentsByDirection.set(directionId, list);
+    }
+    for (const list of segmentsByDirection.values()) {
+      list.sort((a, b) => a.sequence - b.sequence);
+    }
+
     this.loaded = {
       routesByDirection,
       stopsByDirection,
+      segmentsByDirection,
       geometry: {
         type: 'FeatureCollection',
         features: routes.features.map((f) => ({
@@ -167,6 +226,74 @@ export class SnapshotService {
 
   stopsFor(directionId: string): StopSummary[] {
     return this.snapshot().stopsByDirection.get(directionId) ?? [];
+  }
+
+  /** Every real stop in the snapshot, name-sorted — the passenger app's
+   * origin/destination search (route_search_screen.dart) filters this client-side
+   * by name rather than needing a `GET /stops/nearby` location fix, since picking
+   * a departure/arrival stop by typing its name has nothing to do with where the
+   * phone currently is. Same one-row-per-physical-stop collapse as `stopsNear`. */
+  listAllStops(): AllStop[] {
+    const byNode = new Map<number, AllStop>();
+    for (const [directionId, stops] of this.snapshot().stopsByDirection) {
+      const route = this.snapshot().routesByDirection.get(directionId);
+      for (const stop of stops) {
+        const serving = { directionId, routeId: route?.routeId ?? null, routeName: route?.name ?? null, sequence: stop.sequence };
+        const existing = byNode.get(stop.osmNodeId);
+        if (existing) existing.routes.push(serving);
+        else byNode.set(stop.osmNodeId, { osmNodeId: stop.osmNodeId, name: stop.name, lat: stop.lat, lon: stop.lon, routes: [serving] });
+      }
+    }
+    return [...byNode.values()].sort((a, b) => (a.name ?? `Stop ${a.osmNodeId}`).localeCompare(b.name ?? `Stop ${b.osmNodeId}`));
+  }
+
+  /**
+   * Direct (single-route, no-transfer) journeys between two real stops — the
+   * passenger app's "Find Routes" search. Only considers directions that serve
+   * both stops with the origin strictly before the destination in sequence;
+   * multi-route transfers aren't attempted (no fare/transfer model exists to
+   * price one anyway, ticketing is descoped — docs §10).
+   *
+   * `distanceM` sums real `route_segments.length_m` between the two stops;
+   * `durationSec` sums real OSRM `baseline_sec` the same way, but only when every
+   * covered segment actually has one — a partial sum would understate the trip
+   * and look like a real number when it isn't, so the whole field is null instead
+   * (same rule etaScoringLoop.ts's fallback logging follows on the live-tracking
+   * side: an honest gap beats a plausible-looking guess).
+   */
+  findJourneys(fromOsmNodeId: number, toOsmNodeId: number): JourneyOption[] {
+    const results: JourneyOption[] = [];
+
+    for (const [directionId, stops] of this.snapshot().stopsByDirection) {
+      const fromStop = stops.find((s) => s.osmNodeId === fromOsmNodeId);
+      const toStop = stops.find((s) => s.osmNodeId === toOsmNodeId);
+      if (!fromStop || !toStop || fromStop.sequence >= toStop.sequence) continue;
+
+      const covered = (this.snapshot().segmentsByDirection.get(directionId) ?? []).filter(
+        (seg) => seg.sequence >= fromStop.sequence && seg.sequence < toStop.sequence,
+      );
+      if (covered.length === 0) continue;
+
+      const distanceM = covered.reduce((sum, s) => sum + s.lengthM, 0);
+      const allHaveBaseline = covered.every((s) => s.baselineSec !== null);
+      const durationSec = allHaveBaseline ? covered.reduce((sum, s) => sum + (s.baselineSec ?? 0), 0) : null;
+      const route = this.snapshot().routesByDirection.get(directionId);
+
+      results.push({
+        directionId,
+        routeId: route?.routeId ?? null,
+        routeName: route?.name ?? null,
+        fromStopId: fromStop.osmNodeId,
+        toStopId: toStop.osmNodeId,
+        stopsBetween: toStop.sequence - fromStop.sequence,
+        distanceM,
+        durationSec,
+      });
+    }
+
+    // Real duration first when known; unknown-duration matches sort after every
+    // known one rather than being (falsely) treated as instant.
+    return results.sort((a, b) => (a.durationSec ?? Infinity) - (b.durationSec ?? Infinity));
   }
 
   /** Every direction's real polyline, for the admin fleet map's route overlay. */

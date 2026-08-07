@@ -1,155 +1,273 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../config.dart';
-import '../core/api_client.dart';
 import '../core/app_scope.dart';
+import '../core/connectivity_service.dart';
 import '../core/fleet_socket.dart';
+import '../core/location_service.dart';
 import '../core/models.dart';
 import '../theme/app_theme.dart';
 import '../ui/components.dart';
+import 'degraded_eta_view.dart';
+import 'route_number_picker_screen.dart';
 
-/// Bus marker moving on the route polyline, ETA per upcoming stop, occupancy
-/// badge — docs §4.1's flagship passenger screen. Real route geometry from
-/// `GET /api/routes/:id/geometry` + `/stops` (ApiClient, cached), real live
-/// positions from [FleetSocket]'s `bus:update` feed (already applies the
-/// degradation ladder server-side — see [LiveBus.confidenceTier]).
+String _formatDistance(double m) => m < 1000 ? '${m.round()} m' : '${(m / 1000).toStringAsFixed(1)} km';
+
+/// Passenger dashboard's Tracking tab. Two real modes:
 ///
-/// Optionally receives `{'directionId': ...}` as route arguments (e.g. tapping a
-/// served route from home_screen.dart's nearby-stops list); otherwise opens on a
-/// route picker, since a passenger arriving from "Track my bus" hasn't chosen one
-/// yet.
+/// - **Nearby** (default): every live bus city-wide — the gateway auto-joins
+///   every socket to the `admin:fleet` room (gateway.ts), so [FleetSocket]
+///   already has the whole live fleet with no extra subscription — sorted by
+///   real distance from the device's own location (location_service.dart, with
+///   an honest fallback to the city centre when no fix is available).
+/// - **Route fleet**: every live bus running one route *number* (both
+///   directions — route_number_picker_screen.dart's [RouteNumber], not a single
+///   [BusRoute] direction), so searching "35A" shows the whole fleet running
+///   that number, not just whichever direction happened to be picked first.
 class LiveMapScreen extends StatefulWidget {
-  const LiveMapScreen({super.key});
+  const LiveMapScreen({super.key, this.bottomInset = 0});
+
+  /// Extra bottom padding so persistent cards don't sit under the floating
+  /// bottom nav this screen is embedded above (passenger_shell.dart's Tracking
+  /// tab) — 0 when pushed standalone.
+  final double bottomInset;
 
   @override
   State<LiveMapScreen> createState() => _LiveMapScreenState();
 }
 
 class _LiveMapScreenState extends State<LiveMapScreen> {
-  bool _argsRead = false;
-  String? _directionId;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_argsRead) return;
-    _argsRead = true;
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    _directionId = args?['directionId'] as String?;
-  }
+  RouteNumber? _routeNumber;
 
   @override
   Widget build(BuildContext context) {
-    final directionId = _directionId;
-    if (directionId == null) {
-      return _RoutePickerView(onSelected: (route) => setState(() => _directionId = route.directionId));
+    final routeNumber = _routeNumber;
+    if (routeNumber == null) {
+      return _NearbyBusesView(
+        bottomInset: widget.bottomInset,
+        onPickRoute: (rn) => setState(() => _routeNumber = rn),
+      );
     }
-    return _RouteLiveMapView(
-      key: ValueKey(directionId),
-      directionId: directionId,
-      onChangeRoute: () => setState(() => _directionId = null),
+    return _RouteFleetView(
+      key: ValueKey(routeNumber.routeId),
+      routeNumber: routeNumber,
+      bottomInset: widget.bottomInset,
+      onBack: () => setState(() => _routeNumber = null),
     );
   }
 }
 
-class _RoutePickerView extends StatefulWidget {
-  const _RoutePickerView({required this.onSelected});
-  final ValueChanged<BusRoute> onSelected;
+// ---------------------------------------------------------------------------
+// Nearby mode
+// ---------------------------------------------------------------------------
+
+class _NearbyBusesView extends StatefulWidget {
+  const _NearbyBusesView({required this.onPickRoute, this.bottomInset = 0});
+  final ValueChanged<RouteNumber> onPickRoute;
+  final double bottomInset;
 
   @override
-  State<_RoutePickerView> createState() => _RoutePickerViewState();
+  State<_NearbyBusesView> createState() => _NearbyBusesViewState();
 }
 
-class _RoutePickerViewState extends State<_RoutePickerView> {
-  bool _fetched = false;
-  Future<List<BusRoute>>? _routesFuture;
-  final _searchController = TextEditingController();
-  String _query = '';
+class _NearbyBusesViewState extends State<_NearbyBusesView> {
+  final _mapController = MapController();
+  bool _initialized = false;
+  LatLng _center = const LatLng(AppConfig.fallbackLat, AppConfig.fallbackLon);
+  bool _locationIsReal = false;
+  bool _locating = true;
+  bool _centeredOnce = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_fetched) return;
-    _fetched = true;
-    _routesFuture = ApiScope.of(context).routes();
+    if (_initialized) return;
+    _initialized = true;
+    _loadLocation();
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  Future<void> _loadLocation() async {
+    final result = await LocationService.currentOrFallback();
+    if (!mounted) return;
+    setState(() {
+      _center = result.point;
+      _locationIsReal = result.isReal;
+      _locating = false;
+    });
+  }
+
+  Future<void> _openRoutePicker() async {
+    final picked = await Navigator.push<RouteNumber>(
+      context,
+      MaterialPageRoute(builder: (_) => const RouteNumberPickerScreen()),
+    );
+    if (picked != null) widget.onPickRoute(picked);
+  }
+
+  void _showBusDetails(LiveBus bus) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _BusDetailsSheet(bus: bus),
+    );
+  }
+
+  List<({LiveBus bus, double distanceM})> _sortedByDistance(List<LiveBus> buses) {
+    final withDistance = buses
+        .map((b) => (bus: b, distanceM: Geolocator.distanceBetween(_center.latitude, _center.longitude, b.lat, b.lon)))
+        .toList()
+      ..sort((a, b) => a.distanceM.compareTo(b.distanceM));
+    return withDistance;
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      title: 'Live Map',
-      subtitle: 'Pick a route to track',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    final theme = Theme.of(context);
+    final connectivity = ConnectivityScope.of(context);
+
+    return Scaffold(
+      body: Stack(
         children: [
-          SoftTextField(
-            controller: _searchController,
-            hint: 'Search route number or name',
-            icon: Icons.search_rounded,
-            onChanged: (v) => setState(() => _query = v),
-          ),
-          const SizedBox(height: AppTheme.gap),
-          Expanded(
-            child: FutureBuilder<List<BusRoute>>(
-              future: _routesFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Center(child: StateCard.loading(title: 'Loading routes'));
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: StateCard.error(
-                      message: snapshot.error.toString(),
-                      onRetry: () => setState(() {
-                        _routesFuture = ApiScope.of(context).routes(forceRefresh: true);
-                      }),
-                    ),
+          AnimatedBuilder(
+            animation: connectivity,
+            builder: (context, _) => AnimatedBuilder(
+              animation: FleetScope.of(context),
+              builder: (context, _) {
+                final fleet = FleetScope.of(context);
+                final ranked = _sortedByDistance(fleet.busList);
+
+                if (connectivity.shouldShowTextOnly) {
+                  return TextOnlyRouteView(
+                    buses: ranked.map((r) => r.bus).toList(),
+                    emptyMessage: 'No buses are currently transmitting anywhere in the city.',
                   );
                 }
-                final routes = (snapshot.data ?? const []).where((r) => r.matches(_query)).toList()
-                  ..sort((a, b) => a.displayName.compareTo(b.displayName));
-                if (routes.isEmpty) {
-                  return Center(child: StateCard.empty(title: 'No routes match', icon: Icons.search_off_rounded));
+
+                if (!_centeredOnce && !_locating) {
+                  _centeredOnce = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) _mapController.move(_center, 14);
+                  });
                 }
-                return ListView.separated(
-                  itemCount: routes.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, i) {
-                    final route = routes[i];
-                    return SoftCard(
-                      onTap: () => widget.onSelected(route),
-                      child: Row(
-                        children: [
-                          RouteBadge(label: route.shortLabel),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(route.displayName,
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis),
-                                const SizedBox(height: 2),
-                                MetaRow(icon: Icons.pin_drop_outlined, text: '${route.stopCount} stops'),
-                              ],
-                            ),
-                          ),
-                          Icon(Icons.chevron_right_rounded, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ],
+
+                return FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(initialCenter: _center, initialZoom: 14),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.setutrack.mobile_app',
+                    ),
+                    MarkerLayer(markers: [
+                      Marker(
+                        point: _center,
+                        width: 22,
+                        height: 22,
+                        child: const _UserLocationDot(),
                       ),
-                    );
-                  },
+                      for (final r in ranked)
+                        Marker(
+                          point: r.bus.latLng,
+                          width: 40,
+                          height: 40,
+                          child: GestureDetector(
+                            onTap: () => _showBusDetails(r.bus),
+                            child: _BusMarker(bus: r.bus),
+                          ),
+                        ),
+                    ]),
+                  ],
                 );
               },
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(AppTheme.screenPadding, 12, AppTheme.screenPadding, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: (theme.brightness == Brightness.dark ? AppTheme.cardDark : Colors.white)
+                              .withValues(alpha: 0.92),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                          boxShadow: AppTheme.cardShadow(theme.brightness == Brightness.dark),
+                        ),
+                        child: AnimatedBuilder(
+                          animation: FleetScope.of(context),
+                          builder: (context, _) {
+                            final count = FleetScope.of(context).busList.length;
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    count == 0 ? 'No buses live right now' : '$count bus${count == 1 ? '' : 'es'} live nearby',
+                                    style: theme.textTheme.titleMedium,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (!_locationIsReal && !_locating) ...[
+                                  const SizedBox(width: 8),
+                                  Icon(Icons.location_off_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                                ],
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    CircleIconButton(
+                      icon: Icons.directions_bus_filled_rounded,
+                      tooltip: 'Find a route by number',
+                      onPressed: _openRoutePicker,
+                    ),
+                    const SizedBox(width: 12),
+                    _DataModeButton(connectivity: connectivity),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              minimum: EdgeInsets.only(bottom: widget.bottomInset),
+              child: AnimatedBuilder(
+                animation: FleetScope.of(context),
+                builder: (context, _) {
+                  final ranked = _sortedByDistance(FleetScope.of(context).busList);
+                  if (ranked.isEmpty) return const SizedBox.shrink();
+                  return SizedBox(
+                    height: 128,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.fromLTRB(AppTheme.screenPadding, 0, AppTheme.screenPadding, 12),
+                      itemCount: ranked.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (context, i) => _NearbyBusCard(
+                        bus: ranked[i].bus,
+                        distanceM: ranked[i].distanceM,
+                        onTap: () => _showBusDetails(ranked[i].bus),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -158,39 +276,125 @@ class _RoutePickerViewState extends State<_RoutePickerView> {
   }
 }
 
-class _RouteLiveMapView extends StatefulWidget {
-  const _RouteLiveMapView({super.key, required this.directionId, required this.onChangeRoute});
-  final String directionId;
-  final VoidCallback onChangeRoute;
+class _UserLocationDot extends StatelessWidget {
+  const _UserLocationDot();
 
   @override
-  State<_RouteLiveMapView> createState() => _RouteLiveMapViewState();
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.primary,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+        boxShadow: const [BoxShadow(color: Color(0x40000000), blurRadius: 6, offset: Offset(0, 2))],
+      ),
+    );
+  }
 }
 
-class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
+/// Compact card for the nearby strip — bus + route badge, confidence tier, real
+/// distance from the device. Deliberately smaller than [_PrimaryBusCard] since
+/// several of these sit in one horizontally-scrolling row.
+class _NearbyBusCard extends StatelessWidget {
+  const _NearbyBusCard({required this.bus, required this.distanceM, required this.onTap});
+  final LiveBus bus;
+  final double distanceM;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      width: 190,
+      child: SoftCard(
+        onTap: onTap,
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                RouteBadge(label: bus.routeId ?? bus.busId),
+                const Spacer(),
+                StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              bus.nextStopName == null ? 'Bus ${bus.busId}' : 'Heading to ${bus.nextStopName}',
+              style: theme.textTheme.bodyMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            MetaRow(icon: Icons.social_distance_rounded, text: '${_formatDistance(distanceM)} away'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Route-fleet mode
+// ---------------------------------------------------------------------------
+
+class _RouteFleetView extends StatefulWidget {
+  const _RouteFleetView({
+    super.key,
+    required this.routeNumber,
+    required this.onBack,
+    this.bottomInset = 0,
+  });
+  final RouteNumber routeNumber;
+  final VoidCallback onBack;
+  final double bottomInset;
+
+  @override
+  State<_RouteFleetView> createState() => _RouteFleetViewState();
+}
+
+class _DirectionGeometry {
+  const _DirectionGeometry({required this.geometry, required this.stops});
+  final List<LatLng> geometry;
+  final List<RouteStop> stops;
+}
+
+class _RouteFleetViewState extends State<_RouteFleetView> {
   final _mapController = MapController();
-  late Future<(List<LatLng> geometry, List<RouteStop> stops)> _routeDataFuture;
+  late Future<List<_DirectionGeometry>> _routeDataFuture;
   bool _fitted = false;
   bool _initialized = false;
+
+  // Captured once rather than looked up fresh in dispose() — an ancestor
+  // InheritedWidget lookup from inside dispose() can crash if this screen and
+  // its FleetScope ancestor unmount in the same pass (a real, previously-caught
+  // bug on this exact pattern — see git history). Holding the reference avoids
+  // the lookup entirely.
+  late final FleetSocket _fleet;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_initialized) return;
     _initialized = true;
-    _routeDataFuture = _loadRouteData(ApiScope.of(context));
-    FleetScope.read(context).subscribeRoute(widget.directionId);
-  }
-
-  Future<(List<LatLng>, List<RouteStop>)> _loadRouteData(ApiClient api) async {
-    final geometry = await api.routeGeometry(widget.directionId);
-    final stops = await api.routeStops(widget.directionId);
-    return (geometry, stops);
+    _fleet = FleetScope.read(context);
+    final api = ApiScope.of(context);
+    _routeDataFuture = Future.wait(widget.routeNumber.directionIds.map((id) async {
+      final geometry = await api.routeGeometry(id);
+      final stops = await api.routeStops(id);
+      return _DirectionGeometry(geometry: geometry, stops: stops);
+    }));
+    for (final id in widget.routeNumber.directionIds) {
+      _fleet.subscribeRoute(id);
+    }
   }
 
   @override
   void dispose() {
-    FleetScope.read(context).unsubscribeRoute(widget.directionId);
+    for (final id in widget.routeNumber.directionIds) {
+      _fleet.unsubscribeRoute(id);
+    }
     super.dispose();
   }
 
@@ -199,9 +403,7 @@ class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
     _fitted = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _mapController.fitCamera(
-        CameraFit.coordinates(coordinates: points, padding: const EdgeInsets.all(48)),
-      );
+      _mapController.fitCamera(CameraFit.coordinates(coordinates: points, padding: const EdgeInsets.all(48)));
     });
   }
 
@@ -216,75 +418,91 @@ class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final connectivity = ConnectivityScope.of(context);
 
     return Scaffold(
       body: Stack(
         children: [
-          FutureBuilder<(List<LatLng>, List<RouteStop>)>(
-            future: _routeDataFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: StateCard.error(message: snapshot.error.toString()));
-              }
-              final (geometry, stops) = snapshot.data!;
-              _fitBounds(geometry);
+          AnimatedBuilder(
+            animation: connectivity,
+            builder: (context, _) => FutureBuilder<List<_DirectionGeometry>>(
+              future: _routeDataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: StateCard.error(message: snapshot.error.toString()));
+                }
+                final directions = snapshot.data!;
+                // One stop can appear on more than one direction (a shared
+                // interchange) — dedupe by real osm_node_id so it isn't drawn twice.
+                final stopsByNode = <int, RouteStop>{};
+                for (final d in directions) {
+                  for (final s in d.stops) {
+                    stopsByNode[s.osmNodeId] = s;
+                  }
+                }
+                final allPoints = [for (final d in directions) ...d.geometry];
 
-              return AnimatedBuilder(
-                animation: FleetScope.of(context),
-                builder: (context, _) {
-                  final fleet = FleetScope.of(context);
-                  final buses = fleet.busesOnDirection(widget.directionId);
+                return AnimatedBuilder(
+                  animation: FleetScope.of(context),
+                  builder: (context, _) {
+                    final buses = FleetScope.of(context).busesOnRoute(widget.routeNumber.routeId);
 
-                  return FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: geometry.isNotEmpty
-                          ? geometry[geometry.length ~/ 2]
-                          : const LatLng(AppConfig.fallbackLat, AppConfig.fallbackLon),
-                      initialZoom: 13,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.setutrack.mobile_app',
+                    if (connectivity.shouldShowTextOnly) {
+                      return TextOnlyRouteView(stops: stopsByNode.values.toList(), buses: buses);
+                    }
+
+                    _fitBounds(allPoints);
+                    return FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        initialCenter:
+                            allPoints.isNotEmpty ? allPoints[allPoints.length ~/ 2] : const LatLng(AppConfig.fallbackLat, AppConfig.fallbackLon),
+                        initialZoom: 13,
                       ),
-                      if (geometry.isNotEmpty)
+                      children: [
+                        TileLayer(
+                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.setutrack.mobile_app',
+                        ),
                         PolylineLayer(polylines: [
-                          Polyline(points: geometry, strokeWidth: 4, color: theme.colorScheme.primary.withValues(alpha: 0.55)),
+                          for (final d in directions)
+                            if (d.geometry.isNotEmpty)
+                              Polyline(points: d.geometry, strokeWidth: 2.2, color: theme.colorScheme.primary),
                         ]),
-                      MarkerLayer(markers: [
-                        for (final stop in stops)
-                          Marker(
-                            point: stop.latLng,
-                            width: 10,
-                            height: 10,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: theme.scaffoldBackgroundColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: theme.colorScheme.onSurfaceVariant, width: 1.5),
+                        MarkerLayer(markers: [
+                          for (final stop in stopsByNode.values)
+                            Marker(
+                              point: stop.latLng,
+                              width: 10,
+                              height: 10,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: theme.scaffoldBackgroundColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: theme.colorScheme.onSurfaceVariant, width: 1.5),
+                                ),
                               ),
                             ),
-                          ),
-                        for (final bus in buses)
-                          Marker(
-                            point: bus.latLng,
-                            width: 40,
-                            height: 40,
-                            child: GestureDetector(
-                              onTap: () => _showBusDetails(bus),
-                              child: _BusMarker(bus: bus),
+                          for (final bus in buses)
+                            Marker(
+                              point: bus.latLng,
+                              width: 40,
+                              height: 40,
+                              child: GestureDetector(
+                                onTap: () => _showBusDetails(bus),
+                                child: _BusMarker(bus: bus),
+                              ),
                             ),
-                          ),
-                      ]),
-                    ],
-                  );
-                },
-              );
-            },
+                        ]),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
           ),
           Positioned(
             top: 0,
@@ -298,8 +516,8 @@ class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
                   children: [
                     CircleIconButton(
                       icon: Icons.arrow_back_rounded,
-                      tooltip: 'Choose another route',
-                      onPressed: widget.onChangeRoute,
+                      tooltip: 'Back to nearby buses',
+                      onPressed: widget.onBack,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -314,9 +532,11 @@ class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
                         child: AnimatedBuilder(
                           animation: FleetScope.of(context),
                           builder: (context, _) {
-                            final count = FleetScope.of(context).busesOnDirection(widget.directionId).length;
+                            final count = FleetScope.of(context).busesOnRoute(widget.routeNumber.routeId).length;
                             return Text(
-                              count == 0 ? 'No buses live right now' : '$count bus${count == 1 ? '' : 'es'} live',
+                              count == 0
+                                  ? 'Route ${widget.routeNumber.routeId} · no buses live'
+                                  : 'Route ${widget.routeNumber.routeId} · $count live',
                               style: theme.textTheme.titleMedium,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -325,10 +545,157 @@ class _RouteLiveMapViewState extends State<_RouteLiveMapView> {
                         ),
                       ),
                     ),
+                    const SizedBox(width: 12),
+                    _DataModeButton(connectivity: connectivity),
                   ],
                 ),
               ),
             ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              minimum: EdgeInsets.only(bottom: widget.bottomInset),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(AppTheme.screenPadding, 0, AppTheme.screenPadding, 12),
+                child: AnimatedBuilder(
+                  animation: FleetScope.of(context),
+                  builder: (context, _) {
+                    final buses = FleetScope.of(context).busesOnRoute(widget.routeNumber.routeId);
+                    return _PrimaryBusCard(buses: buses, onTapDetails: _showBusDetails);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The persistent "ETA + next stop" card the passenger dashboard reference
+/// always shows at the bottom of the tracking screen, rather than only on
+/// tapping a marker (that stays available too — see [_BusDetailsSheet]). Picks
+/// the soonest-ETA bus as the one worth surfacing without a tap when more than
+/// one is live on this route. No "Buy Ticket" button: ticketing was descoped
+/// from this build entirely (fare calc, QR, payment — see docs §10), and a
+/// button that does nothing would be worse than one that isn't there.
+class _PrimaryBusCard extends StatelessWidget {
+  const _PrimaryBusCard({required this.buses, required this.onTapDetails});
+  final List<LiveBus> buses;
+  final ValueChanged<LiveBus> onTapDetails;
+
+  LiveBus? get _primary {
+    if (buses.isEmpty) return null;
+    final withEta = buses.where((b) => b.etaSeconds != null).toList()
+      ..sort((a, b) => a.etaSeconds!.compareTo(b.etaSeconds!));
+    return withEta.isNotEmpty ? withEta.first : buses.first;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bus = _primary;
+
+    if (bus == null) {
+      return SoftCard(
+        child: Row(
+          children: [
+            Icon(Icons.directions_bus_outlined, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text('No buses live on this route right now', style: theme.textTheme.bodyMedium),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SoftCard(
+      onTap: () => onTapDetails(bus),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppTheme.tierColor(bus.confidenceTier),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.directions_bus_filled_rounded, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      bus.routeId == null ? 'Bus ${bus.busId}' : '${bus.routeId} · ${bus.busId}',
+                      style: theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (bus.nextStopName != null)
+                      Text(
+                        'Heading to ${bus.nextStopName}',
+                        style: theme.textTheme.bodySmall,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const MetaRow(icon: Icons.schedule_rounded, text: 'ETA'),
+                    const SizedBox(height: 3),
+                    Text(
+                      formatEta(bus.etaSeconds),
+                      style: theme.textTheme.displaySmall?.copyWith(fontSize: 24, color: theme.colorScheme.primary),
+                    ),
+                  ],
+                ),
+              ),
+              Container(width: 1, height: 36, color: theme.colorScheme.outlineVariant),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const MetaRow(icon: Icons.pin_drop_outlined, text: 'Next Stop'),
+                    const SizedBox(height: 3),
+                    Text(
+                      bus.nextStopName ?? '—',
+                      style: theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if ((bus.distanceToNextStopM ?? 0) > 0)
+                      Text(
+                        '${_formatDistance(bus.distanceToNextStopM!)} away',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -354,6 +721,34 @@ class _BusMarker extends StatelessWidget {
         boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 6, offset: Offset(0, 2))],
       ),
       child: const Icon(Icons.directions_bus_filled_rounded, color: Colors.white, size: 20),
+    );
+  }
+}
+
+/// Cycles [DataSaverMode] (auto -> data saver -> full map -> auto). Filled blue
+/// whenever the passenger has overridden the automatic bandwidth heuristic, so an
+/// active override is visible at a glance rather than a silent app-state flag —
+/// same "never hide the mode you're in" principle as the confidence-tier badges.
+class _DataModeButton extends StatelessWidget {
+  const _DataModeButton({required this.connectivity});
+  final ConnectivityService connectivity;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, tooltip) = switch (connectivity.mode) {
+      DataSaverMode.auto => (
+          connectivity.shouldShowTextOnly ? Icons.text_snippet_outlined : Icons.map_outlined,
+          'Auto — showing ${connectivity.shouldShowTextOnly ? 'text-only ETAs (weak/cellular connection)' : 'the live map (wifi)'}. Tap for data saver.',
+        ),
+      DataSaverMode.dataSaver => (Icons.text_snippet_rounded, 'Data saver — always text-only. Tap for full map.'),
+      DataSaverMode.fullMap => (Icons.map_rounded, 'Full map — always shown, even on cellular. Tap for auto.'),
+    };
+
+    return CircleIconButton(
+      icon: icon,
+      tooltip: tooltip,
+      filled: connectivity.mode != DataSaverMode.auto,
+      onPressed: connectivity.cycleMode,
     );
   }
 }

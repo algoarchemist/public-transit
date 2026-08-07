@@ -4,6 +4,7 @@ import '../core/app_scope.dart';
 import '../core/models.dart';
 import '../theme/app_theme.dart';
 import '../ui/components.dart';
+import 'schedule_start_screen.dart' show StartTimeReason;
 
 /// Pick the route/direction to run. Docs §4.2 describes this as picking an
 /// "assigned route/shift from a depot roster" — no roster exists, so any of the
@@ -22,6 +23,10 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
   String _busId = 'unknown-bus';
   String? _driverId;
 
+  /// 'auto' (default): straight to GPS auto-detect. 'schedule': via the
+  /// predefined-timing screen first (driver_home_screen.dart's "Schedule" button).
+  String _flow = 'auto';
+
   Future<List<BusRoute>>? _routesFuture;
   final _searchController = TextEditingController();
   String _query = '';
@@ -35,6 +40,7 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     _busId = (args?['busId'] as String?) ?? _busId;
     _driverId = args?['driverId'] as String?;
+    _flow = (args?['flow'] as String?) ?? 'auto';
     _routesFuture = ApiScope.of(context).routes();
   }
 
@@ -47,17 +53,18 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
   void _startTrip() {
     final selected = _selected;
     if (selected == null) return;
+    final args = {
+      'busId': _busId,
+      'driverId': _driverId,
+      'directionId': selected.directionId,
+      'routeId': selected.shortLabel,
+      'routeName': selected.displayName,
+      'route': selected,
+    };
     Navigator.pushNamed(
       context,
-      '/driver/on-trip',
-      arguments: {
-        'busId': _busId,
-        'driverId': _driverId,
-        'directionId': selected.directionId,
-        'routeId': selected.shortLabel,
-        'routeName': selected.displayName,
-        'route': selected,
-      },
+      _flow == 'schedule' ? '/driver/schedule-start' : '/driver/trip-start',
+      arguments: _flow == 'schedule' ? {...args, 'reason': StartTimeReason.schedule} : args,
     );
   }
 
@@ -141,8 +148,8 @@ class _RouteSelectionScreenState extends State<RouteSelectionScreen> {
           ),
           const SizedBox(height: AppTheme.gap),
           PillButton(
-            label: 'Start Trip',
-            icon: Icons.play_arrow_rounded,
+            label: _flow == 'schedule' ? 'Next: Set Start Time' : 'Start Trip',
+            icon: _flow == 'schedule' ? Icons.arrow_forward_rounded : Icons.play_arrow_rounded,
             onPressed: _selected == null ? null : _startTrip,
           ),
           const SizedBox(height: 8),

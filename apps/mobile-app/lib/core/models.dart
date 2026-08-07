@@ -174,6 +174,125 @@ class NearbyStop {
       distanceM < 1000 ? '${distanceM.round()} m' : '${(distanceM / 1000).toStringAsFixed(1)} km';
 }
 
+/// A real stop, anywhere in the city (`GET /api/stops`) — unlike [NearbyStop],
+/// not filtered by the phone's current location. Backs the passenger app's
+/// origin/destination picker (stop_picker_screen.dart), where "search by name"
+/// is the whole point, not "search near me".
+class SearchStop {
+  final int osmNodeId;
+  final String? name;
+  final double lat;
+  final double lon;
+  final List<ServingRoute> routes;
+
+  const SearchStop({required this.osmNodeId, this.name, required this.lat, required this.lon, required this.routes});
+
+  factory SearchStop.fromJson(Map<String, dynamic> json) => SearchStop(
+        osmNodeId: (json['osmNodeId'] as num).toInt(),
+        name: json['name'] as String?,
+        lat: (json['lat'] as num).toDouble(),
+        lon: (json['lon'] as num).toDouble(),
+        routes: (json['routes'] as List<dynamic>)
+            .map((r) => ServingRoute.fromJson(r as Map<String, dynamic>))
+            .toList(),
+      );
+
+  LatLng get latLng => LatLng(lat, lon);
+
+  String get displayName => (name != null && name!.isNotEmpty) ? name! : 'Stop $osmNodeId';
+
+  bool matches(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return true;
+    return displayName.toLowerCase().contains(q) ||
+        routes.any((r) => (r.routeId ?? '').toLowerCase().contains(q));
+  }
+}
+
+/// A real direct (no-transfer) route between two real stops
+/// (`GET /api/routes/journeys`) — see routes.service.ts's `journeys()` for what
+/// this deliberately does and doesn't claim: real distance always; real duration
+/// only when every covered segment has an OSRM baseline (null otherwise, never
+/// guessed); no fare, no frequency — neither exists anywhere in this system.
+class JourneyOption {
+  final String directionId;
+  final String? routeId;
+  final String? routeName;
+  final int fromStopId;
+  final int toStopId;
+  final int stopsBetween;
+  final double distanceM;
+  final int? durationSec;
+
+  const JourneyOption({
+    required this.directionId,
+    this.routeId,
+    this.routeName,
+    required this.fromStopId,
+    required this.toStopId,
+    required this.stopsBetween,
+    required this.distanceM,
+    this.durationSec,
+  });
+
+  factory JourneyOption.fromJson(Map<String, dynamic> json) => JourneyOption(
+        directionId: json['directionId'] as String,
+        routeId: json['routeId'] as String?,
+        routeName: json['routeName'] as String?,
+        fromStopId: (json['fromStopId'] as num).toInt(),
+        toStopId: (json['toStopId'] as num).toInt(),
+        stopsBetween: (json['stopsBetween'] as num).toInt(),
+        distanceM: (json['distanceM'] as num).toDouble(),
+        durationSec: (json['durationSec'] as num?)?.toInt(),
+      );
+
+  String get displayName => BusRoute(directionId: directionId, routeId: routeId, name: routeName).displayName;
+
+  String get durationLabel {
+    final s = durationSec;
+    if (s == null) return 'Duration unavailable';
+    final minutes = (s / 60).round();
+    if (minutes < 60) return '$minutes min';
+    return '${minutes ~/ 60}h ${minutes % 60}m';
+  }
+
+  String get distanceLabel =>
+      distanceM < 1000 ? '${distanceM.round()} m' : '${(distanceM / 1000).toStringAsFixed(1)} km';
+}
+
+/// A driver-raised or system-detected incident (`GET /api/alerts`,
+/// alerts.controller.ts) — the same real feed the admin dashboard's Alerts panel
+/// reads, re-labeled for a passenger audience in alerts_screen.dart. There is no
+/// "delay" or "cancellation" alert type in this system (no schedule exists to be
+/// delayed against, no cancellation concept in the trip model) — only the real
+/// types below are ever actually raised.
+class AlertItem {
+  final int alertId;
+  final String type;
+  final String? busId;
+  final int? tripId;
+  final String? notes;
+  final DateTime raisedAt;
+
+  const AlertItem({
+    required this.alertId,
+    required this.type,
+    this.busId,
+    this.tripId,
+    this.notes,
+    required this.raisedAt,
+  });
+
+  factory AlertItem.fromJson(Map<String, dynamic> json) => AlertItem(
+        alertId: (json['alertId'] as num).toInt(),
+        type: json['type'] as String,
+        busId: json['busId'] as String?,
+        tripId: (json['tripId'] as num?)?.toInt(),
+        notes: json['notes'] as String?,
+        raisedAt: DateTime.parse(json['raisedAt'] as String),
+      );
+}
+
 /// One upcoming-stop ETA, as computed by ml-service's `/eta/predict-batch` and
 /// attached to every `bus:update` by the stream-processor's scoring loop.
 class StopEta {
@@ -300,6 +419,13 @@ class TripSession {
   final String? routeName;
   final String status;
   final int stopCount;
+
+  /// The driver's stated/expected start time (`trips.scheduled_start`) — distinct
+  /// from [startedAt], which is when the trip was actually recorded as starting.
+  /// Null for a trip started the plain "tap Start Trip, GPS acquired" way; set
+  /// when the driver went through the schedule/predefined-timing flow
+  /// (schedule_start_screen.dart) first.
+  final DateTime? scheduledStart;
   final DateTime? startedAt;
   final DateTime? endedAt;
 
@@ -311,6 +437,7 @@ class TripSession {
     this.routeName,
     required this.status,
     this.stopCount = 0,
+    this.scheduledStart,
     this.startedAt,
     this.endedAt,
   });
@@ -323,7 +450,13 @@ class TripSession {
         routeName: json['routeName'] as String?,
         status: (json['status'] as String?) ?? 'running',
         stopCount: (json['stopCount'] as num?)?.toInt() ?? 0,
+        scheduledStart: DateTime.tryParse((json['scheduledStart'] as String?) ?? ''),
         startedAt: DateTime.tryParse((json['startedAt'] as String?) ?? ''),
         endedAt: DateTime.tryParse((json['endedAt'] as String?) ?? ''),
       );
+
+  /// Whether this trip's real recorded start ran later than what was scheduled —
+  /// only meaningful when both are actually known.
+  Duration? get startDelay =>
+      (scheduledStart != null && startedAt != null) ? startedAt!.difference(scheduledStart!) : null;
 }

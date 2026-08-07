@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   SnapshotService,
   type GeoJsonCollection,
   type GeoJsonFeature,
+  type JourneyOption,
   type RouteSummary,
   type StopSummary,
 } from '../snapshot/snapshot.service';
@@ -48,5 +49,19 @@ export class RoutesService {
     const feature = this.snapshot.routeGeometry(id);
     if (!feature) throw new NotFoundException(`unknown route direction '${id}'`);
     return feature;
+  }
+
+  /** The passenger app's "Find Routes" search (route_search_screen.dart) —
+   * real direct (no-transfer) matches between two real stops, real distance,
+   * and a real duration only where every covered segment has an OSRM baseline.
+   * See SnapshotService.findJourneys for what's honest about this and what isn't
+   * (no fare, no schedule/frequency — none of that data exists in this system). */
+  journeys(fromStopId: string, toStopId: string): { journeys: JourneyOption[] } {
+    const from = Number(fromStopId);
+    const to = Number(toStopId);
+    if (!Number.isFinite(from) || !Number.isFinite(to)) {
+      throw new BadRequestException('from and to must be real stop osm_node_ids (see GET /api/stops)');
+    }
+    return { journeys: this.snapshot.findJourneys(from, to) };
   }
 }

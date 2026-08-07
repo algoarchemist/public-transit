@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, Matches, Max, MaxLength, Min } from 'class-validator';
+import { IsInt, IsISO8601, IsOptional, IsString, Matches, Max, MaxLength, Min } from 'class-validator';
 
 export class StartTripDto {
   /** The bus's registration number — the same string the driver app publishes as
@@ -27,4 +27,22 @@ export class StartTripDto {
   @Min(0)
   @Max(999)
   initialOccupancy?: number;
+
+  /** The driver's stated/expected start time — populates the `trips.scheduled_start`
+   * column, which existed in the schema (0001_init.sql) but nothing ever wrote to
+   * it until now. Distinct from `startedAt` below: this is what the trip was
+   * *supposed* to start at, for later schedule-adherence comparison (driver app's
+   * History screen shows both). */
+  @IsOptional()
+  @IsISO8601()
+  scheduledStart?: string;
+
+  /** Client-supplied actual start instant, for the GPS-unavailable manual-entry
+   * flow — a driver recording a trip that already started before connectivity/GPS
+   * came back must be able to say when it really began rather than have the server
+   * stamp `now()` and silently misrecord it. Omitted on the normal path, where the
+   * server's `now()` is the honest value. */
+  @IsOptional()
+  @IsISO8601()
+  startedAt?: string;
 }

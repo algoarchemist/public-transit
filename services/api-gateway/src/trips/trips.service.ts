@@ -32,6 +32,7 @@ interface TripRow {
   route_id: number;
   bus_id: number;
   driver_id: string | null;
+  scheduled_start: Date | null;
   started_at: Date | null;
   ended_at: Date | null;
   status: string;
@@ -45,6 +46,7 @@ export interface TripResponse {
   routeName: string | null;
   driverId: string | null;
   status: string;
+  scheduledStart: string | null;
   startedAt: string | null;
   endedAt: string | null;
   stopCount: number;
@@ -121,6 +123,7 @@ export class TripsService {
       routeName: route?.name ?? null,
       driverId: row.driver_id,
       status: row.status,
+      scheduledStart: row.scheduled_start?.toISOString() ?? null,
       startedAt: row.started_at?.toISOString() ?? null,
       endedAt: row.ended_at?.toISOString() ?? null,
       stopCount: route?.stopCount ?? 0,
@@ -159,10 +162,20 @@ export class TripsService {
 
       const trip = TripsService.rows<TripRow>(
         await manager.query(
-          `INSERT INTO trips (route_id, bus_id, driver_id, started_at, status)
-           VALUES ($1, $2, $3, now(), 'running')
-           RETURNING id, route_id, bus_id, driver_id, started_at, ended_at, status`,
-          [routePk, busPk, dto.driverId ?? null],
+          // COALESCE($5, now()): a normal start has no client-supplied instant and
+          // gets the server's real now(); the GPS-unavailable manual-entry flow
+          // supplies its own (docs: driver recorded a start the server never saw
+          // live) and that value wins instead.
+          `INSERT INTO trips (route_id, bus_id, driver_id, scheduled_start, started_at, status)
+           VALUES ($1, $2, $3, $4, COALESCE($5, now()), 'running')
+           RETURNING id, route_id, bus_id, driver_id, scheduled_start, started_at, ended_at, status`,
+          [
+            routePk,
+            busPk,
+            dto.driverId ?? null,
+            dto.scheduledStart ? new Date(dto.scheduledStart) : null,
+            dto.startedAt ? new Date(dto.startedAt) : null,
+          ],
         ),
       )[0];
 
@@ -190,7 +203,7 @@ export class TripsService {
 
   private async loadTrip(tripId: number): Promise<{ row: TripRow; busId: string; directionId: string }> {
     const rows: (TripRow & { registration_no: string; osm_relation_id: string | null })[] = await this.db.query(
-      `SELECT t.id, t.route_id, t.bus_id, t.driver_id, t.started_at, t.ended_at, t.status,
+      `SELECT t.id, t.route_id, t.bus_id, t.driver_id, t.scheduled_start, t.started_at, t.ended_at, t.status,
               b.registration_no, r.osm_relation_id
          FROM trips t
          JOIN buses b ON b.id = t.bus_id
@@ -213,7 +226,7 @@ export class TripsService {
    * this is a query param straight from the client. */
   async findAll(busId?: string, limit = 20): Promise<TripResponse[]> {
     const rows: (TripRow & { registration_no: string; osm_relation_id: string | null })[] = await this.db.query(
-      `SELECT t.id, t.route_id, t.bus_id, t.driver_id, t.started_at, t.ended_at, t.status,
+      `SELECT t.id, t.route_id, t.bus_id, t.driver_id, t.scheduled_start, t.started_at, t.ended_at, t.status,
               b.registration_no, r.osm_relation_id
          FROM trips t
          JOIN buses b ON b.id = t.bus_id

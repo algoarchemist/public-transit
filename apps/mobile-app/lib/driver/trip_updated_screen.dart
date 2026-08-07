@@ -21,6 +21,13 @@ class TripUpdatedScreen extends StatelessWidget {
     Navigator.popUntil(context, (r) => r.settings.name == '/driver/route-selection');
   }
 
+  void _backToHome(BuildContext context) {
+    // The wizard (route-selection -> trip-start/schedule-start -> on-trip ->
+    // here) was pushed on top of the shell that's already on the stack from
+    // login — pop back to it rather than pushing a fresh one.
+    Navigator.popUntil(context, (r) => r.settings.name == '/driver/home');
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -145,11 +152,15 @@ class TripUpdatedScreen extends StatelessWidget {
               PillButton(
                 label: 'VIEW ALL TRIPS',
                 icon: Icons.receipt_long_rounded,
-                onPressed: () => Navigator.pushNamed(context, '/driver/trip-history', arguments: {'busId': trip.busId}),
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  '/driver/home',
+                  arguments: {'busId': trip.busId, 'driverId': null, 'initialTab': 2},
+                ),
               ),
               const SizedBox(height: 14),
               TextButton(
-                onPressed: () => _backToRouteSelection(context),
+                onPressed: () => _backToHome(context),
                 child: Text(
                   'BACK TO HOME',
                   style: TextStyle(

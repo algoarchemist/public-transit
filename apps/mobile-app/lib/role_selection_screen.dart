@@ -18,7 +18,7 @@ class RoleSelectionScreen extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.pushReplacementNamed(
       context,
-      role == 'passenger' ? '/passenger/home' : '/driver/login',
+      role == 'passenger' ? '/passenger/login' : '/driver/login',
     );
   }
 

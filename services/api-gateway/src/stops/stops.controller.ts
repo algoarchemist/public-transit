@@ -1,11 +1,19 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
-import { SnapshotService, type NearbyStop } from '../snapshot/snapshot.service';
+import { SnapshotService, type AllStop, type NearbyStop } from '../snapshot/snapshot.service';
 
 /** `GET /api/stops/nearby?lat&lon&radius_m` (docs §8) — what the passenger app's
  * "stops near me" list is built on, and the entry point to per-stop ETAs. */
 @Controller('stops')
 export class StopsController {
   constructor(private readonly snapshot: SnapshotService) {}
+
+  /** Every real stop, name-sorted — backs the passenger app's origin/destination
+   * search (route_search_screen.dart's stop picker), which searches by typed
+   * name rather than by the phone's current location. */
+  @Get()
+  all(): { stops: AllStop[] } {
+    return { stops: this.snapshot.listAllStops() };
+  }
 
   @Get('nearby')
   nearby(

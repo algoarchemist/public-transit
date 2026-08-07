@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { RoutesService } from './routes.service';
 
 @Controller('routes')
@@ -13,6 +13,13 @@ export class RoutesController {
   @Get('geometry')
   geometry() {
     return this.routesService.geometry();
+  }
+
+  // Registered ahead of ':id' — Nest/Express matches static segments in
+  // registration order, so 'journeys' must not fall through to findOne(id='journeys').
+  @Get('journeys')
+  journeys(@Query('from') from: string, @Query('to') to: string) {
+    return this.routesService.journeys(from, to);
   }
 
   @Get(':id')

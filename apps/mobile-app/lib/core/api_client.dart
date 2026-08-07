@@ -38,6 +38,7 @@ class ApiClient {
   /// a route you already viewed costs nothing.
   final Map<String, List<LatLng>> _geometryCache = {};
   List<BusRoute>? _routesCache;
+  List<SearchStop>? _allStopsCache;
 
   Future<dynamic> _get(String path) async {
     final uri = Uri.parse('$_baseUrl$path');
@@ -116,6 +117,32 @@ class ApiClient {
     return _geometryCache[directionId] = points;
   }
 
+  /// Every real stop in the city, name-sorted — cached like [routes], since it's
+  /// the same kind of static reference data. Backs the origin/destination picker
+  /// (stop_picker_screen.dart), which searches by name, not by location.
+  Future<List<SearchStop>> allStops({bool forceRefresh = false}) async {
+    if (_allStopsCache != null && !forceRefresh) return _allStopsCache!;
+    final data = await _get('/stops') as Map<String, dynamic>;
+    return _allStopsCache =
+        (data['stops'] as List<dynamic>).map((s) => SearchStop.fromJson(s as Map<String, dynamic>)).toList();
+  }
+
+  /// Real direct routes between two real stops (`GET /api/routes/journeys`) —
+  /// route_search_screen.dart's "Find Routes". See JourneyOption's docstring for
+  /// what's real here (distance, sometimes duration) and what deliberately isn't
+  /// invented (fare, frequency).
+  Future<List<JourneyOption>> journeys({required int fromStopId, required int toStopId}) async {
+    final data = await _get('/routes/journeys?from=$fromStopId&to=$toStopId') as Map<String, dynamic>;
+    return (data['journeys'] as List<dynamic>).map((j) => JourneyOption.fromJson(j as Map<String, dynamic>)).toList();
+  }
+
+  /// Open driver-raised/system-detected alerts (`GET /api/alerts`) — the same
+  /// real feed the admin dashboard's Alerts panel reads.
+  Future<List<AlertItem>> openAlerts({int limit = 50}) async {
+    final data = await _get('/alerts?limit=$limit') as Map<String, dynamic>;
+    return (data['alerts'] as List<dynamic>).map((a) => AlertItem.fromJson(a as Map<String, dynamic>)).toList();
+  }
+
   Future<List<NearbyStop>> nearbyStops({
     required double lat,
     required double lon,
@@ -136,12 +163,21 @@ class ApiClient {
     required String directionId,
     String? driverId,
     int? initialOccupancy,
+    /// The driver's stated/expected start time — set when they went through the
+    /// schedule/predefined-timing flow. Populates the real `scheduled_start`
+    /// column (trips.service.ts), previously dormant.
+    DateTime? scheduledStart,
+    /// Client-supplied actual-start override for the GPS-unavailable manual-entry
+    /// flow. Omitted on the normal path, where the server's own `now()` is correct.
+    DateTime? startedAt,
   }) async {
     final data = await _send('POST', '/trips', {
       'busId': busId,
       'directionId': directionId,
       if (driverId != null && driverId.isNotEmpty) 'driverId': driverId,
       if (initialOccupancy != null) 'initialOccupancy': initialOccupancy,
+      if (scheduledStart != null) 'scheduledStart': scheduledStart.toUtc().toIso8601String(),
+      if (startedAt != null) 'startedAt': startedAt.toUtc().toIso8601String(),
     }) as Map<String, dynamic>;
     return TripSession.fromJson(data);
   }
@@ -167,20 +203,31 @@ class ApiClient {
     await _send('POST', '/trips/$tripId/tally', {'occupancy': occupancy});
   }
 
-  // --- Driver auth (demo-mode OTP, auth.controller.ts) -----------------------
+  // --- Shared demo-mode OTP auth (auth.controller.ts) -------------------------
+  // The backend's RequestOtpDto/VerifyOtpDto genuinely accept either `driverId`
+  // or `phone` and treat them identically (no separate passenger/driver auth
+  // exists) — this is one real flow, not two, so both roles' login screens call
+  // the same two methods rather than each having their own copy.
 
   /// No SMS gateway is wired up server-side, so the response carries the code
   /// itself (`demoMode: true`) instead of it being delivered anywhere — see
   /// auth.service.ts's docstring. The UI shows it rather than pretending a text
-  /// was sent.
-  Future<Map<String, dynamic>> requestDriverOtp(String driverId) async {
-    return await _send('POST', '/auth/otp/request', {'driverId': driverId}) as Map<String, dynamic>;
+  /// was sent. Exactly one of [driverId]/[phone] should be set.
+  Future<Map<String, dynamic>> requestOtp({String? driverId, String? phone}) async {
+    return await _send('POST', '/auth/otp/request', {
+      if (driverId != null) 'driverId': driverId,
+      if (phone != null) 'phone': phone,
+    }) as Map<String, dynamic>;
   }
 
   /// Throws [ApiException] (expired/incorrect/too-many-attempts) rather than
-  /// returning false — the message is already phrased for the driver to read.
-  Future<void> verifyDriverOtp(String driverId, String code) async {
-    await _send('POST', '/auth/otp/verify', {'driverId': driverId, 'code': code});
+  /// returning false — the message is already phrased for the user to read.
+  Future<void> verifyOtp({String? driverId, String? phone, required String code}) async {
+    await _send('POST', '/auth/otp/verify', {
+      if (driverId != null) 'driverId': driverId,
+      if (phone != null) 'phone': phone,
+      'code': code,
+    });
   }
 
   /// Driver-raised incident (`alerts.controller.ts`'s `POST /alerts`) — traffic,

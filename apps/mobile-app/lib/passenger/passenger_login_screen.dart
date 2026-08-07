@@ -6,31 +6,28 @@ import '../role_switch.dart';
 import '../theme/app_theme.dart';
 import '../ui/components.dart';
 
-/// Driver ID + OTP login, then bus registration to feed the real trip lifecycle
-/// (`POST /api/trips`'s `busId`/`driverId` — see trips.service.ts and
-/// route_selection_screen.dart).
-///
-/// The OTP itself is real end to end — server-generated, expiring, single-use,
-/// rate-limited (auth.service.ts) — but there is no SMS gateway wired up, so the
-/// request-OTP response carries the code back directly (`demoMode: true`) and
-/// this screen shows it instead of pretending a text was sent. Verifying returns
-/// no session token (nothing downstream checks one yet), so successful
-/// verification just unlocks bus entry rather than gating a protected route.
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+/// Passenger mobile-number + OTP login — the same real, generic auth flow
+/// driver/login_screen.dart uses (auth.service.ts's OTP state machine doesn't
+/// distinguish passenger from driver; only the identifier field name differs on
+/// the wire, `phone` here vs `driverId` there). Same honesty note applies: no
+/// SMS gateway exists, so the demo-mode code is shown on screen rather than
+/// pretending one was texted, and there's no session token afterward — entering
+/// a phone number here is really "start using the app as this number", not a
+/// real account system (there is no passenger table anywhere in this schema).
+class PassengerLoginScreen extends StatefulWidget {
+  const PassengerLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<PassengerLoginScreen> createState() => _PassengerLoginScreenState();
 }
 
-enum _Step { driverId, otp, bus }
+enum _Step { phone, otp }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _driverIdController = TextEditingController();
+class _PassengerLoginScreenState extends State<PassengerLoginScreen> {
+  final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
-  final _busIdController = TextEditingController();
 
-  _Step _step = _Step.driverId;
+  _Step _step = _Step.phone;
   String? _error;
   bool _busy = false;
   String? _demoCode;
@@ -48,16 +45,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _driverIdController.dispose();
+    _phoneController.dispose();
     _otpController.dispose();
-    _busIdController.dispose();
     super.dispose();
   }
 
   Future<void> _requestOtp() async {
-    final driverId = _driverIdController.text.trim();
-    if (driverId.isEmpty) {
-      setState(() => _error = 'Enter your driver ID');
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      setState(() => _error = 'Enter your mobile number');
       return;
     }
     setState(() {
@@ -65,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final result = await _api.requestOtp(driverId: driverId);
+      final result = await _api.requestOtp(phone: phone);
       if (!mounted) return;
       setState(() {
         _demoCode = result['code'] as String?;
@@ -83,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _verifyOtp() async {
-    final driverId = _driverIdController.text.trim();
+    final phone = _phoneController.text.trim();
     final code = _otpController.text.trim();
     if (code.isEmpty) {
       setState(() => _error = 'Enter the code');
@@ -94,12 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await _api.verifyOtp(driverId: driverId, code: code);
+      await _api.verifyOtp(phone: phone, code: code);
       if (!mounted) return;
-      setState(() {
-        _step = _Step.bus;
-        _busy = false;
-      });
+      Navigator.pushReplacementNamed(context, '/passenger/home', arguments: {'phone': phone});
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {
@@ -109,31 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _continueToRoutes() {
-    final busId = _busIdController.text.trim();
-    if (busId.isEmpty) {
-      setState(() => _error = 'Enter the bus registration number');
-      return;
-    }
-    Navigator.pushReplacementNamed(
-      context,
-      '/driver/home',
-      arguments: {
-        'busId': busId,
-        'driverId': _driverIdController.text.trim(),
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Driver Login',
-      subtitle: switch (_step) {
-        _Step.driverId => 'Enter your driver ID to get a code',
-        _Step.otp => 'Enter the code to verify',
-        _Step.bus => 'Enter your bus to start a shift',
-      },
+      title: 'Passenger Login',
+      subtitle: _step == _Step.phone ? 'Enter your mobile number to get a code' : 'Enter the code to verify',
       actions: [
         CircleIconButton(
           icon: Icons.swap_horiz_rounded,
@@ -148,9 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (_step == _Step.driverId) ..._driverIdStep(),
+                if (_step == _Step.phone) ..._phoneStep(),
                 if (_step == _Step.otp) ..._otpStep(),
-                if (_step == _Step.bus) ..._busStep(),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
                   Text(_error!, style: const TextStyle(color: AppTheme.crowded, fontWeight: FontWeight.w600)),
@@ -163,14 +135,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  List<Widget> _driverIdStep() {
+  List<Widget> _phoneStep() {
     return [
-      Text('Driver ID', style: Theme.of(context).textTheme.titleSmall),
+      Text('Mobile number', style: Theme.of(context).textTheme.titleSmall),
       const SizedBox(height: 8),
       SoftTextField(
-        controller: _driverIdController,
-        hint: 'Depot-issued driver ID or phone',
-        icon: Icons.badge_outlined,
+        controller: _phoneController,
+        hint: '10-digit mobile number',
+        icon: Icons.smartphone_rounded,
+        keyboardType: TextInputType.phone,
         autofocus: true,
         onSubmitted: (_) => _requestOtp(),
       ),
@@ -199,26 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
         onSubmitted: (_) => _verifyOtp(),
       ),
       const SizedBox(height: 12),
-      SecondaryPillButton(label: 'Use a different driver ID', onPressed: () => setState(() => _step = _Step.driverId)),
+      SecondaryPillButton(label: 'Use a different number', onPressed: () => setState(() => _step = _Step.phone)),
       const SizedBox(height: 12),
-      PillButton(label: 'Verify', icon: Icons.check_rounded, loading: _busy, onPressed: _verifyOtp),
-    ];
-  }
-
-  List<Widget> _busStep() {
-    return [
-      Text('Bus registration', style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 8),
-      SoftTextField(
-        controller: _busIdController,
-        hint: 'e.g. PB-65-A-1234',
-        icon: Icons.directions_bus_filled_rounded,
-        textCapitalization: TextCapitalization.characters,
-        autofocus: true,
-        onSubmitted: (_) => _continueToRoutes(),
-      ),
-      const SizedBox(height: 20),
-      PillButton(label: 'Continue', icon: Icons.arrow_forward_rounded, onPressed: _continueToRoutes),
+      PillButton(label: 'Continue', icon: Icons.check_rounded, loading: _busy, onPressed: _verifyOtp),
     ];
   }
 }

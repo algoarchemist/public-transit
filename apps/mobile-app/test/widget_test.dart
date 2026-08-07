@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:setutrack_mobile/core/connectivity_service.dart';
 import 'package:setutrack_mobile/main.dart';
 import 'package:setutrack_mobile/theme/theme_controller.dart';
 
@@ -16,8 +17,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final theme = ThemeController();
     await theme.load();
+    final connectivity = ConnectivityService();
+    await connectivity.load();
 
-    await tester.pumpWidget(SetuTrackApp(themeController: theme));
+    await tester.pumpWidget(SetuTrackApp(themeController: theme, connectivityService: connectivity));
     await tester.pumpAndSettle();
 
     expect(find.text("I'm a Passenger"), findsOneWidget);

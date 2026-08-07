@@ -3,6 +3,7 @@ name: setutrack
 services:
   postgres:
     image: postgis/postgis:16-3.4
+    restart: unless-stopped
     environment:
       POSTGRES_USER: setutrack
       POSTGRES_PASSWORD: setutrack
@@ -19,6 +20,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
@@ -26,6 +28,7 @@ services:
 
   redpanda:
     image: redpandadata/redpanda:v24.2.7
+    restart: unless-stopped
     command:
       - redpanda
       - start
@@ -44,6 +47,7 @@ services:
 
   emqx:
     image: emqx/emqx:5.8
+    restart: unless-stopped
     ports:
       - "1883:1883" # MQTT
       # MQTT-over-WebSocket. The driver app's transmitter runs on Flutter web during
@@ -60,6 +64,7 @@ services:
   # serves it. Rebuild via infra/docker/osrm/build.sh if the bbox or OSM data changes.
   osrm:
     image: ghcr.io/project-osrm/osrm-backend
+    restart: unless-stopped
     command: osrm-routed --algorithm mld /data/tricity.osrm
     ports:
       - "5000:5000"
