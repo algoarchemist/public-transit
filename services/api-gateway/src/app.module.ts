@@ -11,6 +11,7 @@ import { StopsModule } from './stops/stops.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { TripsModule } from './trips/trips.module';
 import { AuthModule } from './auth/auth.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AuthModule } from './auth/auth.module';
     TripsModule,
     AlertsModule,
     AuthModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

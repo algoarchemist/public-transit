@@ -15,6 +15,7 @@ import 'driver/trip_updated_screen.dart';
 import 'core/models.dart';
 import 'passenger/passenger_login_screen.dart';
 import 'passenger/passenger_shell.dart';
+import 'passenger/voice/voice_search_screen.dart';
 import 'role_selection_screen.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_controller.dart';
@@ -85,6 +86,7 @@ class _SetuTrackAppState extends State<SetuTrackApp> {
                       initialTab: (args?['initialTab'] as int?) ?? 1,
                     );
                   },
+                  '/passenger/voice-search': (context) => const VoiceSearchScreen(),
                   '/driver/login': (context) => const LoginScreen(),
                   '/driver/home': (context) {
                     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;

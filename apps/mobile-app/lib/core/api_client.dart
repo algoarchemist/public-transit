@@ -156,6 +156,16 @@ class ApiClient {
         .toList();
   }
 
+  /// Resolves a bus number and destination name — typed, or pulled out of a
+  /// spoken transcript by the voice search flow (`lib/passenger/voice/`) — into a
+  /// route+stop match (`GET /api/search`, search.controller.ts).
+  Future<SearchResult> search({required String bus, required String location}) async {
+    final data = await _get(
+      '/search?bus=${Uri.encodeQueryComponent(bus)}&location=${Uri.encodeQueryComponent(location)}',
+    ) as Map<String, dynamic>;
+    return SearchResult.fromJson(data);
+  }
+
   // --- Driver trip lifecycle -------------------------------------------------
 
   Future<TripSession> startTrip({
