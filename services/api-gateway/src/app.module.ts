@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SnapshotModule } from './snapshot/snapshot.module';
 import { MqttModule } from './mqtt/mqtt.module';
+import { RedisModule } from './redis/redis.module';
 import { RoutesModule } from './routes/routes.module';
 import { BusesModule } from './buses/buses.module';
 import { StopsModule } from './stops/stops.module';
@@ -12,6 +13,7 @@ import { AlertsModule } from './alerts/alerts.module';
 import { TripsModule } from './trips/trips.module';
 import { AuthModule } from './auth/auth.module';
 import { SearchModule } from './search/search.module';
+import { AdminAnalyticsModule } from './admin-analytics/admin-analytics.module';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { SearchModule } from './search/search.module';
     }),
     SnapshotModule,
     MqttModule,
+    RedisModule,
     RoutesModule,
     BusesModule,
     StopsModule,
@@ -35,6 +38,7 @@ import { SearchModule } from './search/search.module';
     AlertsModule,
     AuthModule,
     SearchModule,
+    AdminAnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

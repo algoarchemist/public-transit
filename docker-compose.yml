@@ -107,6 +107,11 @@ services:
       MQTT_BROKER_URL: mqtt://emqx:1883
       SNAPSHOT_LABEL: mohali-tricity
       REPO_ROOT: /repo
+      # AdminAnalyticsModule/BusesService read the same live fleet state
+      # stream-processor writes (docs §7.3 item 4) and proxy ml-service's
+      # trained-model metrics for the admin dashboard's Model Health page.
+      REDIS_URL: redis://redis:6379
+      ML_SERVICE_URL: http://ml-service:8000
     volumes:
       - ./data:/repo/data:ro
     depends_on:
@@ -114,6 +119,10 @@ services:
         condition: service_healthy
       emqx:
         condition: service_healthy
+      redis:
+        condition: service_started
+      ml-service:
+        condition: service_started
 
   # One image, two processes (docs/etaScoringLoop.ts's own comment: "two processes
   # ship from this image") — consumer.ts ingests GPS + runs the ETA scoring loop,
