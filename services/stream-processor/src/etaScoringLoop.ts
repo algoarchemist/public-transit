@@ -33,7 +33,7 @@
 import type { Producer } from 'kafkajs';
 import type Redis from 'ioredis';
 import { config } from './config';
-import { ACTIVE_BUSES_KEY, busOccupancyKey, busPositionKey } from './redisClient';
+import { ACTIVE_BUSES_KEY, busEtaKey, busOccupancyKey, busPositionKey } from './redisClient';
 import { getDirection, type RouteSegmentInfo } from './routeStore';
 import { predictEtaBatch, type BusEtaQuery, type SegmentEtaFeatures } from './etaBatchClient';
 import { getSegmentStat, getDwellStat, lookupCounts } from './statsStore';
@@ -193,10 +193,22 @@ function buildQuery(row: LiveBusRow): BuiltQuery | null {
   return { query: { bus_id: row.busId, route_id: row.routeId, segments }, upcoming };
 }
 
-/** Latest scored ETAs per bus, so consumer.ts's per-ping handler can attach a
- * best-effort (possibly up to one tick stale) upcomingStops to every position
- * update between batch ticks, instead of shipping position with no ETA at all. */
+/** Latest scored ETAs per bus, so consumer.ts's per-ping handler (same process)
+ * can attach a best-effort (possibly up to one tick stale) upcomingStops to every
+ * position update between batch ticks, instead of shipping position with no ETA
+ * at all. Also mirrored to Redis (busEtaKey, below) for gateway.ts's degradation
+ * watchdog, which runs in a SEPARATE process/container and can't see this Map —
+ * without that mirror, a bus that goes quiet has its last-known ETA silently
+ * dropped the moment the watchdog starts publishing extrapolated positions for
+ * it, even though the number itself is still perfectly usable for a few minutes. */
 export const latestEtaCache = new Map<string, { stopId: string; stopName: string | null; etaSeconds: number }[]>();
+
+// A bus stops being scored (loadLiveBuses excludes it) once its last real ping
+// exceeds liveMaxAgeSec, so the Redis mirror only needs to outlive the
+// 'estimated' tier window it's actually meant to backfill — set it to expire
+// automatically once that window closes rather than never pruning it, unlike
+// ACTIVE_BUSES_KEY's documented (and acceptable, at demo scale) never-prune gap.
+const ETA_CACHE_TTL_SEC = config.estimatedMaxAgeSec + 60;
 
 const LOOKUP_LOG_INTERVAL_TICKS = 60; // ~once/minute at the default 1s tick
 let tickCount = 0;
@@ -241,6 +253,12 @@ export function startEtaScoringLoop(redis: Redis, producer: Producer): NodeJS.Ti
           etaSeconds: s.eta_seconds,
         }));
         latestEtaCache.set(busId, upcomingStops);
+        // Best-effort: a dropped write here just means the watchdog falls back to
+        // no ETA for this bus once it goes quiet, same as before this existed —
+        // never worth failing the whole scoring tick over.
+        redis.set(busEtaKey(busId), JSON.stringify(upcomingStops), 'EX', ETA_CACHE_TTL_SEC).catch((err) => {
+          console.error('[etaScoringLoop] failed to mirror ETA to redis', busId, err);
+        });
 
         messages.push({
           key: busId,

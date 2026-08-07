@@ -4,7 +4,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Kafka } from 'kafkajs';
 import Redis from 'ioredis';
 import { config } from './config';
-import { ACTIVE_BUSES_KEY, busOccupancyKey, busPositionKey } from './redisClient';
+import { ACTIVE_BUSES_KEY, busEtaKey, busOccupancyKey, busPositionKey } from './redisClient';
 import { estimatePosition, type LastKnownState } from './deadReckoning';
 
 const BUS_STATE_TOPIC = 'bus-state-updates';
@@ -43,6 +43,13 @@ function startDegradationWatchdog(io: Server, redisClient: Redis) {
       };
       const estimate = estimatePosition(last, now);
       const occupancy = await redisClient.get(busOccupancyKey(busId));
+      // etaScoringLoop.ts (consumer.ts's process) mirrors its last score here
+      // specifically so this watchdog — a different process — can still show it.
+      // Without this, every bus that goes quiet would silently lose its ETA the
+      // instant this loop starts publishing for it, even though the number is
+      // still perfectly usable for the next couple of minutes.
+      const rawEta = await redisClient.get(busEtaKey(busId));
+      const upcomingStops = rawEta ? JSON.parse(rawEta) : [];
 
       const payload = {
         busId,
@@ -51,8 +58,17 @@ function startDegradationWatchdog(io: Server, redisClient: Redis) {
         lat: estimate.lat,
         lon: estimate.lon,
         occupancy: occupancy ? Number(occupancy) : null,
-        nextStopId: hash.nextStopId || null,
-        nextStopName: estimate.nextStopName,
+        etaSeconds: upcomingStops[0]?.etaSeconds,
+        upcomingStops,
+        // Prefer the cached ETA's own stop over dead reckoning's fresh
+        // recompute when both exist — the app shows "Heading to X, ETA Y" as
+        // one pair, and if the bus has spatially moved past the stop the
+        // cached ETA is for, showing dead reckoning's newer stop name next to
+        // that older ETA would pair a time with the wrong destination.
+        // Falls back to dead reckoning's own estimate only when this bus was
+        // never actually scored (e.g. went quiet before the first tick).
+        nextStopId: upcomingStops[0]?.stopId ?? hash.nextStopId ?? null,
+        nextStopName: upcomingStops[0]?.stopName ?? estimate.nextStopName,
         distanceToNextStopM: estimate.distanceToNextStopM,
         confidenceTier: estimate.tier,
         badge: estimate.badge,
