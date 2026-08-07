@@ -290,6 +290,82 @@ class LiveBus {
   }
 }
 
+/// The route half of a `GET /api/search` match.
+class BusSearchMatch {
+  final String directionId;
+  final String? routeId;
+  final String? ref;
+  final String? routeName;
+
+  const BusSearchMatch({required this.directionId, this.routeId, this.ref, this.routeName});
+
+  factory BusSearchMatch.fromJson(Map<String, dynamic> json) => BusSearchMatch(
+        directionId: json['directionId'] as String,
+        routeId: json['routeId'] as String?,
+        ref: json['ref'] as String?,
+        routeName: json['routeName'] as String?,
+      );
+
+  String get label => ref ?? routeId ?? directionId;
+}
+
+/// The stop half of a `GET /api/search` match.
+class StopSearchMatch {
+  final int osmNodeId;
+  final String name;
+  final double lat;
+  final double lon;
+  final int sequence;
+
+  const StopSearchMatch({
+    required this.osmNodeId,
+    required this.name,
+    required this.lat,
+    required this.lon,
+    required this.sequence,
+  });
+
+  factory StopSearchMatch.fromJson(Map<String, dynamic> json) => StopSearchMatch(
+        osmNodeId: (json['osmNodeId'] as num).toInt(),
+        name: json['name'] as String,
+        lat: (json['lat'] as num).toDouble(),
+        lon: (json['lon'] as num).toDouble(),
+        sequence: (json['sequence'] as num).toInt(),
+      );
+
+  LatLng get latLng => LatLng(lat, lon);
+}
+
+/// Result of `GET /api/search?bus=&location=` (search.controller.ts) — resolves a
+/// spoken/typed bus number and destination into a route+stop match. `upcomingStops`
+/// rides BusesService.eta(), which is currently a stub (always empty) until that
+/// reads live position off Redis — see buses.service.ts's TODO.
+class SearchResult {
+  final bool matched;
+  final String? reason; // 'bus_not_found' | 'location_not_found'
+  final BusSearchMatch? bus;
+  final StopSearchMatch? stop;
+  final List<StopEta> upcomingStops;
+
+  const SearchResult({
+    required this.matched,
+    this.reason,
+    this.bus,
+    this.stop,
+    this.upcomingStops = const [],
+  });
+
+  factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
+        matched: json['matched'] as bool? ?? false,
+        reason: json['reason'] as String?,
+        bus: json['bus'] != null ? BusSearchMatch.fromJson(json['bus'] as Map<String, dynamic>) : null,
+        stop: json['stop'] != null ? StopSearchMatch.fromJson(json['stop'] as Map<String, dynamic>) : null,
+        upcomingStops: (json['upcomingStops'] as List<dynamic>? ?? [])
+            .map((s) => StopEta.fromJson(Map<String, dynamic>.from(s as Map)))
+            .toList(),
+      );
+}
+
 /// An active (or past) driver trip (`POST /api/trips`, `GET /api/trips`,
 /// `PATCH /api/trips/:id/end`) — trips.controller.ts's `TripResponse`.
 class TripSession {

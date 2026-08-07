@@ -12,6 +12,7 @@ import 'driver/trip_updated_screen.dart';
 import 'core/models.dart';
 import 'passenger/home_screen.dart';
 import 'passenger/live_map_screen.dart';
+import 'passenger/voice/voice_search_screen.dart';
 import 'role_selection_screen.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_controller.dart';
@@ -70,6 +71,7 @@ class _SetuTrackAppState extends State<SetuTrackApp> {
                 '/role-selection': (context) => const RoleSelectionScreen(),
                 '/passenger/home': (context) => const HomeScreen(),
                 '/passenger/live-map': (context) => const LiveMapScreen(),
+                '/passenger/voice-search': (context) => const VoiceSearchScreen(),
                 '/driver/login': (context) => const LoginScreen(),
                 '/driver/route-selection': (context) => const RouteSelectionScreen(),
                 '/driver/on-trip': (context) => const OnTripScreen(),

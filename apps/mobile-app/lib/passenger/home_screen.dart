@@ -62,6 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
       title: 'SetuTrack',
       actions: [
         CircleIconButton(
+          icon: Icons.mic_rounded,
+          tooltip: 'Voice search',
+          onPressed: () => Navigator.pushNamed(context, '/passenger/voice-search'),
+        ),
+        const SizedBox(width: 8),
+        CircleIconButton(
           icon: Icons.swap_horiz_rounded,
           tooltip: 'Switch role',
           onPressed: () => switchRole(context),

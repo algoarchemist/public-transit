@@ -8,6 +8,9 @@
          them Geolocator denies every permission request unconditionally. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Voice search's speech_to_text plugin (lib/passenger/voice/) needs mic
+         capture; the on-device recognizer engine is queried separately below. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
         android:label="setutrack_mobile"
         android:name="${applicationName}"
@@ -49,6 +52,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Android 11+ package visibility: without this, speech_to_text's
+             initialize() reports no recognizer available even when one exists. -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
         </intent>
     </queries>
 </manifest>
