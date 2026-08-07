@@ -57,6 +57,13 @@ interface GeoJsonCollection<P> {
 }
 
 function repoRoot(): string {
+  // REPO_ROOT wins when set — a Docker image only ships dist/ + node_modules/,
+  // not the services/stream-processor/../.. nesting a real checkout has, so the
+  // directory-arithmetic fallback below can't find data/snapshots inside a
+  // container. docker-compose sets REPO_ROOT to wherever it bind-mounts the
+  // repo's data/ directory; a bare `npm run dev:consumer` from a real checkout
+  // still resolves correctly without it via the old relative-path math.
+  if (process.env.REPO_ROOT) return process.env.REPO_ROOT;
   // src/routeStore.ts and dist/routeStore.js are both two levels inside
   // services/stream-processor, so this resolves correctly either way.
   return path.resolve(__dirname, '..', '..', '..');

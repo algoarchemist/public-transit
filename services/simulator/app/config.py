@@ -2,7 +2,11 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+# REPO_ROOT env var wins when set — a Docker image only ships services/simulator/
+# (see the Dockerfile), not the real checkout's app/->simulator->services->root
+# nesting the parents[3] fallback below assumes, so it can't find data/snapshots
+# inside a container. docker-compose sets this to wherever it bind-mounts data/.
+REPO_ROOT = Path(os.environ["REPO_ROOT"]) if os.environ.get("REPO_ROOT") else Path(__file__).resolve().parents[3]
 SNAPSHOT_DIR = REPO_ROOT / "data" / "snapshots"
 BACKFILL_DIR = REPO_ROOT / "data" / "backfill"
 

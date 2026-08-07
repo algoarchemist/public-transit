@@ -112,6 +112,11 @@ interface LoadedSnapshot {
 }
 
 function repoRoot(): string {
+  // REPO_ROOT wins when set — same reasoning as stream-processor's routeStore.ts:
+  // a Docker image only ships dist/ + node_modules/, not the real checkout's
+  // directory nesting, so the fallback below can't find data/snapshots inside a
+  // container. docker-compose sets this to wherever it bind-mounts data/.
+  if (process.env.REPO_ROOT) return process.env.REPO_ROOT;
   // src/snapshot/snapshot.service.ts and dist/snapshot/snapshot.service.js are both
   // four levels inside the repo root, so this resolves correctly either way.
   return path.resolve(__dirname, '..', '..', '..', '..');

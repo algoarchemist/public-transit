@@ -35,15 +35,28 @@ services:
       - --smp=1
       - --overprovisioned
       - --node-id=0
-      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
-      # Everything that talks to Kafka (consumer.ts, gateway.ts, the simulator) runs on
-      # the host, not inside the compose network — advertise localhost so the metadata
-      # redpanda hands back on connect is actually reachable, not just the bootstrap port.
-      - --advertise-kafka-addr=PLAINTEXT://localhost:9092
+      # Two listeners: PLAINTEXT is what api-gateway/stream-processor/simulator use
+      # from inside the compose network (advertised as the `redpanda` service name —
+      # a container-internal hostname, unreachable from the host); OUTSIDE is for
+      # anything run directly on the host (ad hoc debug scripts, `npm run dev:*`
+      # outside docker) and is advertised as localhost on a different published port
+      # so its metadata response is actually dialable from outside the network.
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092
+      - --advertise-kafka-addr=PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
     ports:
-      - "9092:9092"
+      # 9092 is intentionally NOT published to the host: it's advertised as
+      # `redpanda:9092`, a container-internal hostname the host can't resolve —
+      # publishing it would just let a host client complete the initial connect
+      # before failing confusingly on the first real request. Use 19092 (OUTSIDE)
+      # from the host instead; KAFKA_BROKERS=redpanda:9092 from inside compose.
+      - "19092:19092"
     volumes:
       - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -q 'Healthy:.*true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   emqx:
     image: emqx/emqx:5.8
@@ -57,6 +70,11 @@ services:
       - "18083:18083" # dashboard (admin/public by default)
     volumes:
       - emqx-data:/opt/emqx/data
+    healthcheck:
+      test: ["CMD-SHELL", "emqx ctl status | grep -q 'is started'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # Self-hosted routing for the Chandigarh Tricity bbox — replaces the public demo
   # server geo-ingest falls back to. Graph is pre-built (osrm-extract/partition/
@@ -70,6 +88,120 @@ services:
       - "5000:5000"
     volumes:
       - ./infra/docker/osrm/data:/data
+
+  # --- application services -------------------------------------------------
+  # Everything below used to run as ad hoc `npm run dev:*` / `python -m app.main`
+  # processes on the host. REPO_ROOT=/repo + the ./data bind mount below is what
+  # lets each service's data/snapshots/<label> read (routeStore.ts,
+  # snapshot.service.ts, app/config.py) resolve correctly from inside a container
+  # — see the REPO_ROOT env-var override each of those three now has.
+
+  api-gateway:
+    build: ./services/api-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://setutrack:setutrack@postgres:5432/setutrack
+      MQTT_BROKER_URL: mqtt://emqx:1883
+      SNAPSHOT_LABEL: mohali-tricity
+      REPO_ROOT: /repo
+    volumes:
+      - ./data:/repo/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      emqx:
+        condition: service_healthy
+
+  # One image, two processes (docs/etaScoringLoop.ts's own comment: "two processes
+  # ship from this image") — consumer.ts ingests GPS + runs the ETA scoring loop,
+  # gateway.ts is the Socket.IO fan-out the mobile app connects to. Split into two
+  # compose services (not one running both) so either can restart/scale
+  # independently, same as when they were two separate `npm run dev:*` terminals.
+  stream-processor-consumer:
+    build: ./services/stream-processor
+    restart: unless-stopped
+    command: ["node", "dist/consumer.js"]
+    environment:
+      MQTT_BROKER_URL: mqtt://emqx:1883
+      KAFKA_BROKERS: redpanda:9092
+      KAFKA_CLIENT_ID: setutrack-stream-processor
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgres://setutrack:setutrack@postgres:5432/setutrack
+      ML_SERVICE_URL: http://ml-service:8000
+      SNAPSHOT_LABEL: mohali-tricity
+      REPO_ROOT: /repo
+    volumes:
+      - ./data:/repo/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      emqx:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+
+  stream-processor-gateway:
+    build: ./services/stream-processor
+    restart: unless-stopped
+    command: ["node", "dist/gateway.js"]
+    ports:
+      - "4001:4001"
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      KAFKA_CLIENT_ID: setutrack-stream-processor
+      REDIS_URL: redis://redis:6379
+      WEBSOCKET_PORT: 4001
+      # gateway.ts's own dead-reckoning watchdog (deadReckoning.ts's
+      # estimatePosition) reads the route snapshot independently of
+      # consumer.ts — without these two, it 500s on the first extrapolation
+      # tick trying to open a snapshot file that doesn't exist at all inside
+      # this container (repoRoot() has nothing to fall back to but `/`).
+      SNAPSHOT_LABEL: mohali-tricity
+      REPO_ROOT: /repo
+    volumes:
+      - ./data:/repo/data:ro
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  # No trained artifacts/*.onnx ships in this repo (regenerable — see
+  # docker-compose.yml's own convention elsewhere for build-vs-runtime data);
+  # eta.py/crowd.py fall back to their naive/heuristic paths automatically when
+  # the .onnx files aren't present, so this comes up serving real (if simpler)
+  # predictions with no extra setup. Stateless — no DB/broker connection at all.
+  ml-service:
+    build: ./services/ml-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+
+  # `--mode live` runs each simulated bus through exactly one trip and exits —
+  # restart: unless-stopped is what keeps the live feed from going stale between
+  # batches (this is exactly the "why did every route stop showing an ETA"
+  # failure mode from running it by hand). Override `command:` for backfill mode.
+  simulator:
+    build: ./services/simulator
+    restart: unless-stopped
+    environment:
+      MQTT_BROKER_HOST: emqx
+      MQTT_BROKER_PORT: 1883
+      SNAPSHOT_LABEL: mohali-tricity
+      DATABASE_URL: postgres://setutrack:setutrack@postgres:5432/setutrack
+      REPO_ROOT: /repo
+    volumes:
+      - ./data:/repo/data
+    depends_on:
+      emqx:
+        condition: service_healthy
 
 volumes:
   postgres-data:
