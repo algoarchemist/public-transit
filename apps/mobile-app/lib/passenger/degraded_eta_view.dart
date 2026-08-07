@@ -111,7 +111,9 @@ class _BusEtaCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+              Flexible(
+                child: StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+              ),
             ],
           ),
           const SizedBox(height: 8),

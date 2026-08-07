@@ -310,17 +310,23 @@ class StopEta {
         sequence: _asInt(json['sequence']),
       );
 
-  String get displayName => (stopName != null && stopName!.isNotEmpty) ? stopName! : 'Stop';
+  /// Same "Stop <id>" fallback as [SearchStop.displayName] — a real, if
+  /// unnamed, OSM node (common gap in this region's map data) still needs a
+  /// label that tells consecutive entries apart. A bare "Stop" repeated across
+  /// every unnamed entry in a 3-stop timeline reads as one broken row, not
+  /// three distinct upcoming stops.
+  String get displayName =>
+      (stopName != null && stopName!.isNotEmpty) ? stopName! : (stopId != null ? 'Stop $stopId' : 'Stop');
 
   String get etaLabel => formatEta(etaSeconds);
 }
 
 /// Shared ETA formatting so the map sheet, the stop list and the bus list all
-/// phrase "3 min" identically.
+/// phrase "3 min" identically. Always a minute count, never "Arriving" — floors
+/// at 1 min rather than showing "0 min" for anything under a minute out.
 String formatEta(int? seconds) {
   if (seconds == null) return '—';
-  if (seconds < 45) return 'Arriving';
-  final minutes = (seconds / 60).round();
+  final minutes = (seconds / 60).round().clamp(1, 1 << 30);
   if (minutes < 60) return '$minutes min';
   final hours = minutes ~/ 60;
   return '${hours}h ${minutes % 60}m';

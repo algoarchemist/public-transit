@@ -669,12 +669,22 @@ class StatusPill extends StatelessWidget {
               decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
           SizedBox(width: compact ? 5 : 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: compact ? 11 : 12,
-              fontWeight: FontWeight.w600,
-              color: color,
+          // Same overflow-safety as RouteBadge: `mainAxisSize: min` sizes this
+          // pill to the label's intrinsic width normally, but the degradation
+          // ladder's non-"live" labels ("Estimated · signal lost 45s ago") run
+          // long — wrapping in Flexible where this pill sits in a tight Row
+          // (see live_map_screen.dart's _NearbyBusCard) only helps if the text
+          // itself can also shrink instead of demanding its full width.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: compact ? 11 : 12,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
             ),
           ),
         ],
@@ -704,6 +714,14 @@ class RouteBadge extends StatelessWidget {
       ),
       child: Text(
         label,
+        // A route number is always short ("35A", "240"), but several call sites
+        // fall back to a longer identifier (direction/bus id) when no route
+        // number is resolved yet — clip that case instead of blowing out
+        // whatever Row this badge sits in (see live_map_screen.dart's
+        // _NearbyBusCard, which used to overflow on exactly this).
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        softWrap: false,
         style: TextStyle(
           fontSize: large ? 18 : 14,
           fontWeight: FontWeight.w700,

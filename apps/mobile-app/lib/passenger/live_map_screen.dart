@@ -314,16 +314,35 @@ class _NearbyBusCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                RouteBadge(label: bus.routeId ?? bus.busId),
+                // Flexible, not a bare child: routeId falls back to the full
+                // busId (e.g. "sim-bus-4") when a bus hasn't resolved to a
+                // route number yet, which is far wider than a real route badge
+                // — this card's fixed 190px width needs the badge able to
+                // shrink instead of pushing the StatusPill off the right edge.
+                Flexible(child: RouteBadge(label: bus.routeId ?? bus.busId)),
                 const Spacer(),
-                StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+                // Same reasoning as the badge above: 'estimated'/'stale' tier
+                // freshness labels ("Estimated · signal lost 45s ago") run much
+                // longer than "Live" and were the other half of this card's
+                // right-edge overflow — Flexible lets it ellipsize instead.
+                Flexible(
+                  child: StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+                ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              bus.nextStopName == null ? 'Bus ${bus.busId}' : 'Heading to ${bus.nextStopName}',
+              switch ((bus.nextStopName, bus.nextStopId)) {
+                (final name?, _) => 'Heading to $name',
+                (null, final id?) => 'Heading to Stop $id',
+                (null, null) => 'Bus ${bus.busId}',
+              },
               style: theme.textTheme.bodyMedium,
-              maxLines: 2,
+              // One line, not two: this card sits in a height-constrained
+              // horizontal strip (128px, see the ListView below) alongside a
+              // Spacer and a MetaRow — a second wrapped line doesn't fit that
+              // budget and was the bottom overflow.
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const Spacer(),
@@ -652,7 +671,13 @@ class _PrimaryBusCard extends StatelessWidget {
                   ],
                 ),
               ),
-              StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+              // Same fix as _NearbyBusCard: an unbounded StatusPill next to an
+              // Expanded sibling still overflows the Row on a long
+              // "estimated"/"stale" freshness label, since Expanded shrinking
+              // the other side doesn't cap this one.
+              Flexible(
+                child: StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier), compact: true),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -682,7 +707,7 @@ class _PrimaryBusCard extends StatelessWidget {
                     const MetaRow(icon: Icons.pin_drop_outlined, text: 'Next Stop'),
                     const SizedBox(height: 3),
                     Text(
-                      bus.nextStopName ?? '—',
+                      bus.nextStopName ?? (bus.nextStopId != null ? 'Stop ${bus.nextStopId}' : '—'),
                       style: theme.textTheme.titleMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -795,7 +820,7 @@ class _BusDetailsSheet extends StatelessWidget {
                     child: Text('Bus ${bus.busId}',
                         style: theme.textTheme.titleLarge, maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
-                  StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier)),
+                  Flexible(child: StatusPill(label: bus.freshnessLabel, color: AppTheme.tierColor(bus.confidenceTier))),
                 ],
               ),
               const SizedBox(height: 12),
