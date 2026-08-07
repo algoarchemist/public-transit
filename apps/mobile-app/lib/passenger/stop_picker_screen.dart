@@ -4,6 +4,7 @@ import '../core/app_scope.dart';
 import '../core/models.dart';
 import '../theme/app_theme.dart';
 import '../ui/components.dart';
+import 'voice/voice_mic_button.dart';
 
 /// Full-screen searchable list of every real stop in the city
 /// (`GET /api/stops`), used for both the origin and destination fields on
@@ -44,6 +45,25 @@ class _StopPickerScreenState extends State<StopPickerScreen> {
     super.dispose();
   }
 
+  /// Mirrors what typing into [_searchController] does — same field, same
+  /// filter — just fed from [VoiceMicButton] instead of the keyboard. Cursor
+  /// is pinned to the end so a mid-utterance partial result doesn't leave the
+  /// caret (and therefore the next typed character) stranded mid-string.
+  void _setQueryFromVoice(String text) {
+    _searchController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+    setState(() => _query = text);
+  }
+
+  void _showVoiceError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -63,6 +83,11 @@ class _StopPickerScreenState extends State<StopPickerScreen> {
             icon: Icons.search_rounded,
             autofocus: true,
             onChanged: (v) => setState(() => _query = v),
+            suffix: VoiceMicButton(
+              onPartialResult: _setQueryFromVoice,
+              onFinalResult: _setQueryFromVoice,
+              onError: _showVoiceError,
+            ),
           ),
           const SizedBox(height: AppTheme.gap),
           Expanded(

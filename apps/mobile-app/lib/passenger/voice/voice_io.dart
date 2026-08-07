@@ -57,10 +57,12 @@ class PluginVoiceRecognizer implements VoiceRecognizer {
     }
     await _stt.listen(
       onResult: (SpeechRecognitionResult result) => onResult(result.recognizedWords, result.finalResult),
-      listenFor: const Duration(seconds: 12),
-      pauseFor: const Duration(seconds: 3),
-      partialResults: true,
-      cancelOnError: true,
+      listenOptions: SpeechListenOptions(
+        listenFor: const Duration(seconds: 12),
+        pauseFor: const Duration(seconds: 3),
+        partialResults: true,
+        cancelOnError: true,
+      ),
     );
   }
 

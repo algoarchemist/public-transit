@@ -93,7 +93,7 @@ class _VoiceSearchScreenState extends State<VoiceSearchScreen> {
           if (_state.stage == VoiceSearchStage.error)
             StateCard.error(message: _state.errorMessage ?? 'Something went wrong.', onRetry: () => _service.start()),
           const Spacer(),
-          SectionHeader('Or type it', padTop: false),
+          const SectionHeader('Or type it', padTop: false),
           Row(
             children: [
               Expanded(

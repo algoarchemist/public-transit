@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   intl: any
   shared_preferences: ^2.3.3
-  socket_io_client: ^2.0.3+1
+  socket_io_client: ^3.1.6
   http: ^1.2.2
   sqflite: ^2.4.1
   path: ^1.9.0
@@ -22,7 +22,7 @@ dependencies:
   # Passenger-side
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
-  speech_to_text: ^6.6.2
+  speech_to_text: ^7.4.0
   flutter_tts: ^4.0.2
   # Driver-side
   geolocator: ^13.0.2
