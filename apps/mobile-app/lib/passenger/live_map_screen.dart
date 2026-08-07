@@ -51,7 +51,7 @@ class _LiveMapScreenState extends State<LiveMapScreen> {
         onPickRoute: (rn) => setState(() => _routeNumber = rn),
       );
     }
-    return _RouteFleetView(
+    return RouteFleetView(
       key: ValueKey(routeNumber.routeId),
       routeNumber: routeNumber,
       bottomInset: widget.bottomInset,
@@ -358,8 +358,13 @@ class _NearbyBusCard extends StatelessWidget {
 // Route-fleet mode
 // ---------------------------------------------------------------------------
 
-class _RouteFleetView extends StatefulWidget {
-  const _RouteFleetView({
+/// Public (not file-private like most widgets in this file) because
+/// route_search_screen.dart also pushes this directly — "tap a suggested
+/// journey" needs the same live map + ETA + next-stop view "find a route by
+/// number" already builds, just entered from a search result instead of the
+/// route-number picker.
+class RouteFleetView extends StatefulWidget {
+  const RouteFleetView({
     super.key,
     required this.routeNumber,
     required this.onBack,
@@ -370,7 +375,7 @@ class _RouteFleetView extends StatefulWidget {
   final double bottomInset;
 
   @override
-  State<_RouteFleetView> createState() => _RouteFleetViewState();
+  State<RouteFleetView> createState() => _RouteFleetViewState();
 }
 
 class _DirectionGeometry {
@@ -379,7 +384,7 @@ class _DirectionGeometry {
   final List<RouteStop> stops;
 }
 
-class _RouteFleetViewState extends State<_RouteFleetView> {
+class _RouteFleetViewState extends State<RouteFleetView> {
   final _mapController = MapController();
   late Future<List<_DirectionGeometry>> _routeDataFuture;
   bool _fitted = false;

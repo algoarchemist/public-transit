@@ -10,6 +10,8 @@ import '../core/location_service.dart';
 import '../core/models.dart';
 import '../theme/app_theme.dart';
 import '../ui/components.dart';
+import 'live_map_screen.dart';
+import 'route_number_picker_screen.dart';
 import 'stop_picker_screen.dart';
 
 /// Passenger dashboard's front page — reference design's search/find-routes
@@ -233,6 +235,19 @@ class _RouteSearchScreenState extends State<RouteSearchScreen> {
     await _findRoutes();
   }
 
+  /// "Your current location", not the resolved stop's own name/id — that stop is
+  /// an internal detail for computing the route, and plenty of real stops in this
+  /// region's OSM data have no name tag at all (SearchStop.displayName's "Stop
+  /// <id>" fallback is meant for telling entries apart in a list; showing that
+  /// same raw id back to the passenger as their OWN location reads as broken,
+  /// not honest). Only surface the resolved name when it's real.
+  String get _originLabel {
+    final from = _from;
+    if (from == null) return 'Current location';
+    final name = from.name;
+    return (name != null && name.isNotEmpty) ? 'Near $name' : 'Your current location';
+  }
+
   bool get _isCustomTime => _departAt != null || !_isToday;
   bool get _isToday {
     final now = DateTime.now();
@@ -260,9 +275,7 @@ class _RouteSearchScreenState extends State<RouteSearchScreen> {
                   _StopField(
                     icon: Icons.my_location_rounded,
                     iconColor: AppTheme.liveGreen,
-                    label: _originLoading
-                        ? 'Finding your location…'
-                        : (_originError ?? _from?.displayName ?? 'Current location'),
+                    label: _originLoading ? 'Finding your location…' : (_originError ?? _originLabel),
                     filled: _from != null,
                     onTap: _loadOrigin,
                   ),
@@ -514,10 +527,31 @@ class _JourneyCard extends StatelessWidget {
   final JourneyOption journey;
   final bool isFastest;
 
+  /// Same live map + ETA + next-3-stops view "Find a route by number" already
+  /// builds (live_map_screen.dart's RouteFleetView) — a suggested journey is
+  /// just a different way of arriving at "show me this route's real buses"
+  /// than picking a number out of a list.
+  void _openFleetView(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RouteFleetView(
+          routeNumber: RouteNumber(
+            routeId: journey.routeId ?? journey.directionId,
+            directionIds: [journey.directionId],
+            sampleName: journey.displayName,
+          ),
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SoftCard(
+      onTap: () => _openFleetView(context),
       border: isFastest ? Border(left: BorderSide(color: theme.colorScheme.primary, width: 3)) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -529,8 +563,11 @@ class _JourneyCard extends StatelessWidget {
               Expanded(
                 child: Text(journey.displayName, style: theme.textTheme.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
               ),
-              if (isFastest)
+              if (isFastest) ...[
                 StatusPill(label: 'Fastest', color: theme.colorScheme.primary, icon: Icons.bolt_rounded, compact: true),
+                const SizedBox(width: 6),
+              ],
+              Icon(Icons.chevron_right_rounded, color: theme.colorScheme.onSurfaceVariant),
             ],
           ),
           const SizedBox(height: 12),
