@@ -1,6 +1,6 @@
 {
-  "trained_at": "2026-08-06T09:34:20.168823+00:00",
-  "git_sha": "3f4b7dc08a88020586ff6874fe6a37ea5834d89c",
+  "trained_at": "2026-08-07T05:49:06.196669+00:00",
+  "git_sha": "7295426a40004721d36a639fec277d582f9e6d38",
   "smoke_run": false,
   "snapshot_label": "mohali-tricity",
   "feature_columns": [
@@ -15,73 +15,73 @@
     "live_traffic_factor"
   ],
   "row_counts": {
-    "train": 124080,
-    "val": 31020,
-    "test": 31020
+    "train": 41360,
+    "val": 10340,
+    "test": 10340
   },
   "training_window_days": {
-    "train": 60,
-    "val": 15,
-    "test": 15
+    "train": 20,
+    "val": 5,
+    "test": 5
   },
   "historical_stat_fallback_counts": {
-    "speed_30d": 44,
-    "speed_7d": 28338,
+    "speed_30d": 402,
+    "speed_7d": 8596,
     "dwell_prior": 0,
-    "expected_duration": 22
+    "expected_duration": 201
   },
   "per_segment_mae_sec": {
-    "model": 5.8,
-    "naive_baseline": 49.4
+    "model": 7.3,
+    "naive_baseline": 47.3
   },
-  "per_segment_improvement_pct": 88.3,
+  "per_segment_improvement_pct": 84.6,
   "horizon_bucketed_mae_sec": {
     "model": {
       "0-2min": {
-        "mae_sec": 3.3,
-        "n": 7519
+        "mae_sec": 3.7,
+        "n": 2463
       },
       "2-5min": {
-        "mae_sec": 5.0,
-        "n": 19068
+        "mae_sec": 5.8,
+        "n": 6310
       },
       "5-10min": {
-        "mae_sec": 9.0,
-        "n": 27605
+        "mae_sec": 10.3,
+        "n": 9138
       },
       "10min+": {
-        "mae_sec": 21.2,
-        "n": 67128
+        "mae_sec": 23.6,
+        "n": 22529
       }
     },
     "naive_baseline": {
       "0-2min": {
-        "mae_sec": 33.2,
-        "n": 7519
+        "mae_sec": 32.8,
+        "n": 2463
       },
       "2-5min": {
-        "mae_sec": 51.2,
-        "n": 19068
+        "mae_sec": 51.0,
+        "n": 6310
       },
       "5-10min": {
-        "mae_sec": 75.4,
-        "n": 27605
+        "mae_sec": 72.1,
+        "n": 9138
       },
       "10min+": {
-        "mae_sec": 192.1,
-        "n": 67128
+        "mae_sec": 182.4,
+        "n": 22529
       }
     }
   },
   "feature_importance": {
-    "segment_avg_speed_7d": 861.0,
-    "segment_avg_speed_30d": 3721.0,
-    "time_of_day_bucket": 1373.0,
-    "day_of_week": 661.0,
-    "distance_to_stop_m": 4137.0,
-    "current_delay_sec": 477.0,
+    "segment_avg_speed_7d": 1137.0,
+    "segment_avg_speed_30d": 3379.0,
+    "time_of_day_bucket": 1056.0,
+    "day_of_week": 750.0,
+    "distance_to_stop_m": 4153.0,
+    "current_delay_sec": 778.0,
     "weather_bucket": 0.0,
-    "upcoming_stop_dwell_prior_sec": 2660.0,
-    "live_traffic_factor": 1067.0
+    "upcoming_stop_dwell_prior_sec": 2438.0,
+    "live_traffic_factor": 1062.0
   }
 }
