@@ -21,8 +21,13 @@
  *     1.0 — there's no observation to base a ratio on yet.
  *   - current_delay_sec stays 0: no trip-start/schedule tracking exists to measure
  *     delay against (buses run on randomized headways, not a fixed timetable).
- *   - upcoming_stop_dwell_prior_sec is a flat constant (DWELL_PRIOR_FALLBACK_SEC):
- *     no stop_dwell_stats table to look up a real per-stop, per-hour prior.
+ *   - upcoming_stop_dwell_prior_sec uses a real per-stop/per-hour stop_dwell_stats
+ *     bucket when one exists; otherwise it's derived from THIS bus's live reported
+ *     occupancy (dwellPriorSecFromOccupancy below) rather than a flat constant — a
+ *     fuller bus takes longer to board/alight at every stop. This is NOT the
+ *     per-stop footfall_prior geo-ingest ships (that field is 0 for every stop in
+ *     every snapshot — never populated by any ingestion step), it's the one real,
+ *     live crowd signal every ping actually carries.
  *   - weather_bucket stays 0: nothing in this system observes or models weather.
  */
 import type { Producer } from 'kafkajs';
@@ -36,8 +41,28 @@ import { getSegmentStat, getDwellStat, lookupCounts } from './statsStore';
 const BUS_STATE_TOPIC = 'bus-state-updates';
 const N_UPCOMING_STOPS = 3; // docs §6.4: "the passenger UI shows the next three stops"
 const FALLBACK_SPEED_MPS = 8.0; // matches services/simulator's SimRoute.average_speed_mps fallback
-const DWELL_PRIOR_FALLBACK_SEC = 20; // placeholder pending a real stop_dwell_stats table (§3.3)
+const DWELL_PRIOR_FALLBACK_SEC = 20; // used only when a bus has never reported occupancy at all
 const LIVE_TRAFFIC_FACTOR_CLAMP: [number, number] = [0.2, 3.0]; // guards near-zero-speed blowups
+
+// Dwell-from-occupancy: no stop_dwell_stats table (§3.3) or per-stop footfall_prior
+// exists yet (geo-ingest ships that field, but every stop in every snapshot has it
+// at 0 — never populated), so there is no real historical "how long do people take
+// to board here" signal to fall back on. What every bus DOES report, every ping, is
+// its own current occupancy — a real, live crowd signal, just never plugged into
+// dwell time before. A fuller bus takes longer at each stop (more people fighting to
+// get off, less room for people getting on), so scale dwell against the same 50-seat
+// capacity convention app_theme.dart's occupancyColor/occupancyLabel already use for
+// "Seats free"/"Standing"/"Crowded", rather than inventing a different one here.
+const DWELL_CAPACITY = 50;
+const DWELL_BASE_SEC = 12; // door open/close + minimum stop overhead, even near-empty
+const DWELL_PER_OCCUPANCY_SEC = 18; // additional dwell climbing to a full bus
+const DWELL_OCCUPANCY_RATIO_CLAMP: [number, number] = [0, 1.2]; // standing room can push "occupancy" a bit past capacity
+
+function dwellPriorSecFromOccupancy(occupancy: number | null): number {
+  if (occupancy == null) return DWELL_PRIOR_FALLBACK_SEC;
+  const ratio = clamp(occupancy / DWELL_CAPACITY, DWELL_OCCUPANCY_RATIO_CLAMP);
+  return DWELL_BASE_SEC + DWELL_PER_OCCUPANCY_SEC * ratio;
+}
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 
@@ -91,9 +116,29 @@ async function loadLiveBuses(redis: Redis): Promise<LiveBusRow[]> {
   return rows;
 }
 
+/** A built query plus the exact segment objects it was built from, kept around
+ * so the response can be matched back to a stop NAME by position rather than by
+ * re-deriving `stop_id` (see the module-level note on [buildQuery]'s return). */
+interface BuiltQuery {
+  query: BusEtaQuery;
+  upcoming: RouteSegmentInfo[];
+}
+
 /** Builds one bus's upcoming-segment feature list, or null if its route/segments
- * aren't resolvable (unmatched direction, or already past the last stop). */
-function buildQuery(row: LiveBusRow): BusEtaQuery | null {
+ * aren't resolvable (unmatched direction, or already past the last stop).
+ *
+ * Returns the source `upcoming` segments alongside the query rather than making
+ * the caller re-find them from `stop_id` afterwards: a segment whose real
+ * `toStopId` is null (segments.geojson has gaps — not every OSRM-matched segment
+ * boundary lands on a real GTFS/OSM stop) falls back to a synthetic
+ * `directionId:sequence` id for the ml-service query below, and re-deriving the
+ * name via `String(seg.toStopId) === stop_id` can never match that synthetic
+ * string back to anything (`String(null/undefined)` is `"null"`/`"undefined"`) —
+ * silently producing a null stop name (and, since etaScoringLoop's own
+ * `nextStopName` is sourced from this same list, a nameless "Heading to" card
+ * too) even though the ETA number itself was computed correctly the whole time.
+ */
+function buildQuery(row: LiveBusRow): BuiltQuery | null {
   const direction = getDirection(row.directionId);
   if (!direction || direction.segments.length === 0) return null;
 
@@ -117,8 +162,12 @@ function buildQuery(row: LiveBusRow): BusEtaQuery | null {
     const speed30dMps = stat30d ? stat30d.avgSpeedKmh / 3.6 : baselineSpeedMps;
     const speed7dMps = stat7d ? stat7d.avgSpeedKmh / 3.6 : baselineSpeedMps;
 
+    // A real per-stop/per-hour dwell stat wins when one exists; otherwise fall
+    // back to THIS bus's live occupancy rather than a flat constant — see the
+    // module-level note above dwellPriorSecFromOccupancy for why occupancy,
+    // not footfall_prior, is the honest crowd signal available today.
     const dwellStat = getDwellStat(stopId, hour, dow);
-    const dwellPriorSec = dwellStat ? dwellStat.p50DwellSec : DWELL_PRIOR_FALLBACK_SEC;
+    const dwellPriorSec = dwellStat ? dwellStat.p50DwellSec : dwellPriorSecFromOccupancy(row.occupancy);
 
     const distanceToStopM = isCurrent
       ? Math.max(seg.toDistAlongRouteM - row.distAlongRouteM, 0)
@@ -141,7 +190,7 @@ function buildQuery(row: LiveBusRow): BusEtaQuery | null {
     };
   });
 
-  return { bus_id: row.busId, route_id: row.routeId, segments };
+  return { query: { bus_id: row.busId, route_id: row.routeId, segments }, upcoming };
 }
 
 /** Latest scored ETAs per bus, so consumer.ts's per-ping handler can attach a
@@ -168,9 +217,11 @@ export function startEtaScoringLoop(redis: Redis, producer: Producer): NodeJS.Ti
       if (liveBuses.length === 0) return;
 
       const byBusId = new Map(liveBuses.map((r) => [r.busId, r]));
-      const queries = liveBuses.map(buildQuery).filter((q): q is BusEtaQuery => q !== null);
-      if (queries.length === 0) return;
+      const built = liveBuses.map(buildQuery).filter((b): b is BuiltQuery => b !== null);
+      if (built.length === 0) return;
 
+      const queries = built.map((b) => b.query);
+      const upcomingByBusId = new Map(built.map((b) => [b.query.bus_id, b.upcoming]));
       const results = await predictEtaBatch(queries);
 
       const messages = [];
@@ -178,15 +229,15 @@ export function startEtaScoringLoop(redis: Redis, producer: Producer): NodeJS.Ti
         const row = byBusId.get(busId);
         if (!row) continue;
 
+        // Matched by position against the SAME segment list buildQuery scored,
+        // not re-derived from stop_id — see buildQuery's docstring for why that
+        // re-derivation silently loses the name whenever a segment's real
+        // toStopId was null and a synthetic id had to stand in for it.
+        const upcoming = upcomingByBusId.get(busId) ?? [];
         const query = queries.find((q) => q.bus_id === busId);
         const upcomingStops = stops.map((s, i) => ({
           stopId: s.stop_id,
-          // stop names aren't in SegmentEtaFeatures (ml-service only needs the id) —
-          // look them up back out of the segment we built the query from.
-          stopName: query?.segments[i]
-            ? (getDirection(row.directionId)?.segments.find((seg) => String(seg.toStopId) === s.stop_id)
-                ?.toStopName ?? null)
-            : null,
+          stopName: upcoming[i]?.toStopName ?? null,
           etaSeconds: s.eta_seconds,
         }));
         latestEtaCache.set(busId, upcomingStops);
