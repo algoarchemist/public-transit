@@ -1,10 +1,94 @@
 @import "tailwindcss";
 
+/*
+ * SetuTrack's visual system, ported from apps/mobile-app/lib/theme/app_theme.dart
+ * so the admin dashboard and the driver/passenger app read as one product:
+ * a pale cool-toned background, content in large soft-shadowed white cards
+ * (never bordered), one soft blue accent carrying every interactive/active
+ * state, and status metadata (live/estimated/stale, seats/standing/crowded)
+ * desaturated so it never competes with that blue.
+ */
 :root {
   color-scheme: light dark;
+
+  --background: #eff3f9;
+  --card: #ffffff;
+  --card-nested: #f6f8fc;
+  --border: #e4eaf3;
+  --foreground: #121826;
+  --muted-foreground: #7b8798;
+
+  --primary: #4a7df0;
+  --primary-pressed: #3c6bd8;
+  --primary-wash: #eaf0fe;
+  --primary-foreground: #ffffff;
+
+  --live: #2fa36b;
+  --estimated: #d99a2b;
+  --stale: #8d99ab;
+  --crowded: #dd6b5c;
+  --seats-free: #2fa36b;
+  --standing-room: #d99a2b;
+
+  --shadow-card-value: 0 10px 28px -4px rgb(27 59 107 / 0.08), 0 2px 8px -2px rgb(15 30 56 / 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0d1117;
+    --card: #171d27;
+    --card-nested: #1e2531;
+    --border: #262e3b;
+    --foreground: #edf1f7;
+    --muted-foreground: #8d99ab;
+
+    --primary: #7ba4ff;
+    --primary-pressed: #4a7df0;
+    --primary-wash: #1b2436;
+    --primary-foreground: #0b1220;
+
+    --shadow-card-value: 0 8px 20px 0 rgb(0 0 0 / 0.33);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-card-nested: var(--card-nested);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-wash: var(--primary-wash);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-live: var(--live);
+  --color-estimated: var(--estimated);
+  --color-stale: var(--stale);
+  --color-crowded: var(--crowded);
+  --color-seats-free: var(--seats-free);
+  --color-standing-room: var(--standing-room);
+
+  --radius-card: 1.5rem;
+  --radius-nested: 1.125rem;
+
+  --shadow-card: var(--shadow-card-value);
+
+  --font-sans: 'SF Pro Text', -apple-system, 'Inter', 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+.maplibregl-popup-content {
+  border-radius: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
 }

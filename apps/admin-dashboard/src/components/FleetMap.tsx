@@ -54,7 +54,7 @@ export function FleetMap({ buses }: { buses: Map<string, BusState> }) {
         id: 'routes-line',
         type: 'line',
         source: 'routes',
-        paint: { 'line-color': '#2563eb', 'line-width': 1.5, 'line-opacity': 0.5 },
+        paint: { 'line-color': '#4a7df0', 'line-width': 1.5, 'line-opacity': 0.5 },
       })
     }
 
@@ -94,5 +94,5 @@ export function FleetMap({ buses }: { buses: Map<string, BusState> }) {
     }
   }, [buses])
 
-  return <div ref={containerRef} className="h-[calc(100vh-2rem)] w-full" />
+  return <div ref={containerRef} className="h-full w-full" />
 }
